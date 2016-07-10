@@ -1,66 +1,35 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-/*                                                                           */
-/*                  This file is part of the examples to                     */
-/*                         An introduction to SCIP                           */
-/*                                                                           */
-/*    Copyright (C) 2007 Cornelius Schwarz                                   */
-/*                                                                           */
-/*                  2007 University of Bayreuth                              */
-/*                                                                           */
-/*                                                                           */
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-/**@file queens_main.cpp
- * @brief main file for the queens example
- * @author Cornelius Schwarz
- */
-
 #include "copycat.hpp"
 #include <cstdlib>
 #include <iostream>
 #include "scip_exception.hpp"
 
 using namespace std;
-using namespace scipexamples;
 
-
-/** main function for queens example */
-int
-main(
-     int args,
-     char ** argv
-     )
+int main(int args, char ** argv)
 {
-   cout << "********************************************" << endl;
-   cout << "* n-queens solver based on SCIP            *" << endl;
-   cout << "*                                          *" << endl;
-   cout << "* (c) Cornelius Schwarz (2007)             *" << endl;
-   cout << "********************************************" << endl << endl;
-
-   if (args < 2)
+   if (args < 5)
    {
-      cerr << "call " << argv[0] << " <number of queens>" << endl;
-      exit(1);
+      cerr << argv[0]
+           << " <number of x states> <number of y states> <number of futures> <horizon depth>" << endl;
+      exit(EXIT_FAILURE);
    }
 
-   // get the number of queens for commandline
-   size_t n = abs(atoi(argv[1])); /*lint !e732*/
+   int n = abs(atoi(argv[1]));
+   int d = abs(atoi(argv[2]));
+   int m = abs(atoi(argv[3]));
+   int h = abs(atoi(argv[4]));
 
    try
    {
-      // initialize the queens solver
-      QueensSolver solver(n);
+      CopycatSolver solver(n, d, m, h);
 
-      // solve the queens problem
       solver.solve();
-
-      // display the solution on stdout
-      solver.disp();
-
-   } catch(const SCIPException& exc)
+   }
+   catch (const SCIPException& exc)
    {
       cerr << exc.what() << endl;
       exit((int) exc.getRetcode());
    }
+
    return EXIT_SUCCESS;
 }

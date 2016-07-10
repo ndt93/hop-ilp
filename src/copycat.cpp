@@ -1,175 +1,98 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-/*                                                                           */
-/*                  This file is part of the examples to                     */
-/*                         An introduction to SCIP                           */
-/*                                                                           */
-/*    Copyright (C) 2007 Cornelius Schwarz                                   */
-/*                                                                           */
-/*                  2007 University of Bayreuth                              */
-/*                                                                           */
-/*                                                                           */
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-/**
- * @file queens.cpp
- * @author Cornelius Schwarz
- * @brief n-queens examlple implementation
- */
-
 #include "copycat.hpp"
 #include <sstream>
 #include "scip_exception.hpp"
 
 using namespace std;
-using namespace scipexamples;
 
-/* constructor */
-scipexamples::QueensSolver::QueensSolver(size_t n)
-   : _scip(0), _n(n), _vars(n, vector<SCIP_VAR *>(n)), _cons()
+CopycatSolver::CopycatSolver(int _n, int _d, int _m, int _h)
+: scip(NULL), n(_n), d(_d), m(_m), h(_h),
+  vars_x(_m, vector<vector<SCIP_Var *>>(_h, vector<SCIP_Var *>(_n))),
+  vars_a(_m, vector<vector<SCIP_Var *>>(_h, vector<SCIP_Var *>(_n))),
+  vars_y(_m, vector<vector<SCIP_Var *>>(_h, vector<SCIP_Var *>(_d)))
 {
-   // initialize scip
-   SCIP_CALL_EXC( SCIPcreate(& _scip) );
+    init_scip_env();
+    create_vars();
+    /*
+    for( size_t i = 0; i < _n; ++i )
+    {
+       SCIP_CONS * cons;
+       namebuf.str("");
+       namebuf<<"row_"<<i;
 
-   // load default plugins linke separators, heuristics, etc.
-   SCIP_CALL_EXC( SCIPincludeDefaultPlugins(_scip) );
+       // create SCIP_CONS object
+       // this is an equality since there must be a queen in every row
+       SCIP_CALL_EXC(SCIPcreateConsLinear(_scip, & cons, namebuf.str().c_str(), 0, NULL, NULL, 1.0, 1.0,
+ 					  TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE) );
 
-   // disable scip output to stdout
-   SCIP_CALL_EXC( SCIPsetMessagehdlr(_scip, NULL) );
+       // add the vars belonging to field in this row to the constraint
+       for( size_t j = 0; j < _n; ++j )
+          SCIP_CALL_EXC( SCIPaddCoefLinear(_scip, cons, _vars[i][j], 1.0) );
 
-   // create an empty problem
-   SCIP_CALL_EXC( SCIPcreateProb(_scip, "queens", NULL, NULL, NULL, NULL, NULL, NULL, NULL) );
+       // add the constraint to scip
+       SCIP_CALL_EXC( SCIPaddCons(_scip, cons) );
 
-   // set the objective sense to maximize, default is minimize
-   SCIP_CALL_EXC( SCIPsetObjsense(_scip, SCIP_OBJSENSE_MAXIMIZE) );
-
-   // create a binary variable for every field (i,j) on the chess board
-   ostringstream namebuf;
-   for( size_t i = 0; i < _n; ++i )
-   {
-      for( size_t j = 0; j < _n; ++j )
-      {
-         SCIP_VAR* var;
-         namebuf.str("");
-         namebuf << "x#" << i << "#" << j;
-
-         // create the SCIP_VAR object
-         SCIP_CALL_EXC( SCIPcreateVar(_scip, & var, namebuf.str().c_str(), 0.0, 1.0, 1.0, SCIP_VARTYPE_BINARY, TRUE, FALSE, NULL, NULL, NULL, NULL, NULL) );
-
-         // add the SCIP_VAR object to the scip problem
-         SCIP_CALL_EXC( SCIPaddVar(_scip, var) );
-
-         // storing the SCIP_VAR pointer for later access
-         _vars[i][j] = var;
-      }
-   }
-
-   // create constraints
-   // one queen per row
-   for( size_t i = 0; i < _n; ++i )
-   {
-      SCIP_CONS * cons;
-      namebuf.str("");
-      namebuf<<"row_"<<i;
-
-      // create SCIP_CONS object
-      // this is an equality since there must be a queen in every row
-      SCIP_CALL_EXC( SCIPcreateConsLinear(_scip, & cons, namebuf.str().c_str(), 0, NULL, NULL, 1.0, 1.0,
-					  TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE) );
-
-      // add the vars belonging to field in this row to the constraint
-      for( size_t j = 0; j < _n; ++j )
-         SCIP_CALL_EXC( SCIPaddCoefLinear(_scip, cons, _vars[i][j], 1.0) );
-
-      // add the constraint to scip
-      SCIP_CALL_EXC( SCIPaddCons(_scip, cons) );
-
-      // store the constraint for later on
-      _cons.push_back(cons);
-   }
-
-   // this is the same with the col constraints ( one queen per column)
-   for( size_t j = 0; j < _n; ++j )
-   {
-      SCIP_CONS * cons;
-      namebuf.str("");
-      namebuf << "col_" << j;
-      SCIP_CALL_EXC( SCIPcreateConsLinear(_scip, & cons, namebuf.str().c_str(), 0, NULL, NULL, 1.0, 1.0,
-					  TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE) );
-
-      for( size_t i = 0; i < _n; ++i )
-         SCIP_CALL_EXC( SCIPaddCoefLinear(_scip, cons, _vars[i][j], 1.0) );
-
-      SCIP_CALL_EXC( SCIPaddCons(_scip, cons) );
-      _cons.push_back(cons);
-   }
-
-   // now we create the constraints for the diagonals
-   // there is only one queen allowed in each diagonal, but there do not need to be one. Therefore we add a <= 1 constraint
-   // in this problem case we can set the lhs to zero instead of -SCIPinfinity
-   // diag col down
-   for( size_t j = 0; j < _n; ++j )
-   {
-      SCIP_CONS * cons;
-      namebuf.str("");
-      namebuf << "diag_col_down_" << j;
-      SCIP_CALL_EXC(SCIPcreateConsLinear(_scip, & cons, namebuf.str().c_str(), 0, NULL, NULL, 0.0, 1.0,
-					 TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE) );
-
-      for( size_t i = 0; i < _n - j; ++i )
-         SCIP_CALL_EXC( SCIPaddCoefLinear(_scip, cons, _vars[i][j+i], 1.0) );
-      SCIP_CALL_EXC( SCIPaddCons(_scip, cons) );
-      _cons.push_back(cons);
-   }
-
-   // diag row down
-   for( size_t i = 0; i < _n; ++i )
-   {
-      SCIP_CONS * cons;
-      namebuf.str("");
-      namebuf<<"diag_row_down_"<<i;
-      SCIP_CALL_EXC( SCIPcreateConsLinear(_scip, & cons, namebuf.str().c_str(), 0, NULL, NULL, 0.0, 1.0,
-					  TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE) );
-
-      for( size_t j = 0; j < _n - i; ++j )
-         SCIP_CALL_EXC( SCIPaddCoefLinear(_scip, cons, _vars[i+j][j], 1.0) );
-      SCIP_CALL_EXC( SCIPaddCons(_scip, cons) );
-      _cons.push_back(cons);
-   }
-
-   // diag col up
-   for( size_t j = 0; j < _n; ++j )
-   {
-      SCIP_CONS * cons;
-      namebuf.str("");
-      namebuf<<"diag_col_up_"<<j;
-      SCIP_CALL_EXC( SCIPcreateConsLinear(_scip, & cons, namebuf.str().c_str(), 0, NULL, NULL, 0.0, 1.0,
-					  TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE));
-
-      for( size_t i = 0; i < _n - j; ++i )
-         SCIP_CALL_EXC( SCIPaddCoefLinear(_scip, cons, _vars[i][_n - j - i - 1], 1.0) );
-      SCIP_CALL_EXC( SCIPaddCons(_scip, cons) );
-      _cons.push_back(cons);
-   }
-
-   // diag row up
-   for( size_t i = 0; i < _n; ++i )
-   {
-      SCIP_CONS * cons;
-      namebuf.str("");
-      namebuf<<"diag_row_up"<<i;
-      SCIP_CALL_EXC( SCIPcreateConsLinear(_scip, & cons, namebuf.str().c_str(), 0, NULL, NULL, 0.0, 1.0,
-					  TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE) );
-
-      for( size_t j = 0; j < _n - i; ++j )
-         SCIP_CALL_EXC( SCIPaddCoefLinear(_scip, cons, _vars[i+j][_n - j - 1], 1.0) );
-      SCIP_CALL_EXC( SCIPaddCons(_scip, cons) );
-      _cons.push_back(cons);
-   }
+       // store the constraint for later on
+       _cons.push_back(cons);
+    }*/
 }
 
+void CopycatSolver::init_scip_env()
+{
+   SCIP_CALL_EXC(SCIPcreate(&scip));
 
-/* display the solution */
-void scipexamples::QueensSolver::disp(std::ostream& out)
+   SCIP_CALL_EXC(SCIPincludeDefaultPlugins(scip));
+
+   // disable scip output to stdout
+   SCIP_CALL_EXC(SCIPsetMessagehdlr(scip, NULL));
+
+   SCIP_CALL_EXC(SCIPcreateProb(scip, "copycat", NULL, NULL, NULL, NULL, NULL, NULL, NULL));
+
+   SCIP_CALL_EXC(SCIPsetObjsense(scip, SCIP_OBJSENSE_MAXIMIZE));
+}
+
+void CopycatSolver::create_vars()
+{
+    ostringstream namebuf;
+    SCIP_Var* var;
+    for (int k = 0; k < m; ++k)
+    {
+        for (int t = 0; t < h; ++t)
+        {
+            for (int i = 0; i < n; i++)
+            {
+                 namebuf.str("");
+                 namebuf << "x#" << k << "#" << t << "#" << i;
+                 SCIP_CALL_EXC(SCIPcreateVar(scip, &var, namebuf.str().c_str(),
+                                             0.0, 1.0, 0.0, SCIP_VARTYPE_BINARY,
+                                             TRUE, FALSE, NULL, NULL, NULL, NULL, NULL));
+                 SCIP_CALL_EXC(SCIPaddVar(scip, var));
+                 vars_x[k][t][i] = var;
+
+                 namebuf.str("");
+                 namebuf << "a#" << k << "#" << t << "#" << i;
+                 SCIP_CALL_EXC(SCIPcreateVar(scip, &var, namebuf.str().c_str(),
+                                             0.0, 1.0, 0.0, SCIP_VARTYPE_BINARY,
+                                             TRUE, FALSE, NULL, NULL, NULL, NULL, NULL));
+                 SCIP_CALL_EXC(SCIPaddVar(scip, var));
+                 vars_a[k][t][i] = var;
+            }
+
+            for (int i = 0; i < d; i++)
+            {
+                 namebuf.str("");
+                 namebuf << "y#" << k << "#" << t << "#" << i;
+                 SCIP_CALL_EXC(SCIPcreateVar(scip, &var, namebuf.str().c_str(),
+                                             0.0, 1.0, 0.0, SCIP_VARTYPE_BINARY,
+                                             TRUE, FALSE, NULL, NULL, NULL, NULL, NULL));
+                 SCIP_CALL_EXC(SCIPaddVar(scip, var));
+                 vars_y[k][t][i] = var;
+            }
+        }
+    }
+}
+
+/*
+void CopycatSolver::disp(std::ostream& out)
 {
    // get the best found solution from scip
    SCIP_SOL * sol = SCIPgetBestSol(_scip);
@@ -203,32 +126,35 @@ void scipexamples::QueensSolver::disp(std::ostream& out)
       out << " ---";
    out << endl;
 }
+*/
 
-
-/* destructor */
-scipexamples::QueensSolver::~QueensSolver(void)
+CopycatSolver::~CopycatSolver(void)
 {
-   // since the SCIPcreateVar captures all variables, we have to release them now
-   for( size_t i = 0; i < _n; ++i )
-   {
-      for ( size_t j = 0; j < _n; ++j )
-         SCIP_CALL_EXC( SCIPreleaseVar(_scip, & _vars[i][j]) ); /*lint !e1551 !e1546*/
-   }
-   _vars.clear(); /*lint !e1551*/
+    for (int k = 0; k < m; ++k)
+    {
+        for (int t = 0; t < h; ++t)
+        {
+            for (int i = 0; i < n; i++)
+            {
+                SCIP_CALL_EXC(SCIPreleaseVar(scip, &vars_x[k][t][i]));
+                SCIP_CALL_EXC(SCIPreleaseVar(scip, &vars_a[k][t][i]));
+            }
+            for (int i = 0; i < d; i++)
+            {
+                SCIP_CALL_EXC(SCIPreleaseVar(scip, &vars_y[k][t][i]));
+            }
+        }
+    }
 
-   // the same for the constraints
-   for( vector<SCIP_CONS *>::size_type i = 0; i < _cons.size(); ++i ) /*lint !e1551*/
-      SCIP_CALL_EXC( SCIPreleaseCons(_scip, &_cons[i]) ); /*lint !e1551 !e1546*/
-   _cons.clear(); /*lint !e1551*/
+    for(vector<SCIP_CONS *>::size_type i = 0; i < constraints.size(); ++i)
+    {
+        SCIP_CALL_EXC(SCIPreleaseCons(scip, &constraints[i]) );
+    }
 
-   // after releasing all vars and cons we can free the scip problem
-   // remember this has allways to be the last call to scip
-   SCIP_CALL_EXC( SCIPfree(&_scip) ); /*lint !e1551 !e1546*/
+    SCIP_CALL_EXC(SCIPfree(&scip));
 }
 
-/* solve the n-queens problem */
-void QueensSolver::solve(void)
+void CopycatSolver::solve(void)
 {
-   // this tells scip to start the solution process
-   SCIP_CALL_EXC( SCIPsolve(_scip) );
+   SCIP_CALL_EXC(SCIPsolve(scip));
 }
