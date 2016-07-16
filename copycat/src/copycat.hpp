@@ -48,7 +48,7 @@ private:
 
     SCIP_RETCODE create_constraints(const std::vector<int>& states);
     SCIP_RETCODE create_initial_states_constraints(const std::vector<int>& states);
-    SCIP_RETCODE create_initial_actions_constraints(const std::vector<int>& states);
+    SCIP_RETCODE create_initial_actions_constraints();
 
     SCIP_RETCODE modify_constraints(const std::vector<int>& states);
 
