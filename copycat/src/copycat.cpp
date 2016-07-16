@@ -26,7 +26,7 @@ void CopycatSolver::init_scip_env()
    SCIP_CALL_EXC(SCIPincludeDefaultPlugins(scip));
 
    // Disable scip output to stdout
-   SCIP_CALL_EXC(SCIPsetMessagehdlr(scip, NULL));
+   //SCIP_CALL_EXC(SCIPsetMessagehdlr(scip, NULL));
 
    SCIP_CALL_EXC(SCIPcreateProb(scip, "copycat", NULL, NULL, NULL, NULL, NULL, NULL, NULL));
 
@@ -65,7 +65,7 @@ void CopycatSolver::create_vars()
                  namebuf.str("");
                  namebuf << "y#" << k << "#" << t << "#" << i;
                  SCIP_CALL_EXC(SCIPcreateVar(scip, &var, namebuf.str().c_str(),
-                                             0.0, 1.0, 0.0, SCIP_VARTYPE_BINARY,
+                                             0.0, 1.0, 1.0, SCIP_VARTYPE_BINARY,
                                              TRUE, FALSE, NULL, NULL, NULL, NULL, NULL));
                  SCIP_CALL_EXC(SCIPaddVar(scip, var));
                  vars_y[k][t][i] = var;
@@ -177,17 +177,15 @@ SCIP_RETCODE CopycatSolver::create_initial_states_constraints(const std::vector<
         for (int i = 0; i < n; ++i)
         {
             namebuf.str("");
-            namebuf << "cons_x#" << k << "#0" <<  i;
+            namebuf << "cons_x#" << k << "#0#" <<  i;
             SCIP_CALL(create_single_var_constraint(namebuf.str().c_str(), vars_x[k][0][i], states[i], &cons));
-            SCIP_CALL(SCIPaddCons(scip, cons));
             x_transition_constraints[k][0][i] = cons;
         }
         for (int i = 0; i < d; ++i)
         {
             namebuf.str("");
-            namebuf << "cons_y#" << k << "#0" <<  i;
+            namebuf << "cons_y#" << k << "#0#" <<  i;
             SCIP_CALL(create_single_var_constraint(namebuf.str().c_str(), vars_y[k][0][i], states[n + i], &cons));
-            SCIP_CALL(SCIPaddCons(scip, cons));
             y_transition_constraints[k][0][i] = cons;
         }
     }
@@ -205,13 +203,11 @@ SCIP_RETCODE CopycatSolver::create_initial_actions_constraints()
         for (int i = 0; i < n; ++i)
         {
             namebuf.str("");
-            namebuf << "cons_a#" << k << "#0" <<  i;
+            namebuf << "cons_a#" << k << "#0#" <<  i;
 
             SCIP_CALL(create_constraint(namebuf.str().c_str(), 0.0, 0.0, &cons));
             SCIP_CALL(SCIPaddCoefLinear(scip, cons, vars_y[k][0][i], 1.0));
             SCIP_CALL(SCIPaddCoefLinear(scip, cons, vars_y[k + 1][0][i], -1.0));
-
-            SCIP_CALL(SCIPaddCons(scip, cons));
             initial_a_constraints[k][i] = cons;
         }
     }
@@ -278,4 +274,9 @@ vector<int> CopycatSolver::get_optimal_action()
 double CopycatSolver::generate_rand()
 {
     return ((double) rand()) / RAND_MAX;
+}
+
+void CopycatSolver::print_problem()
+{
+    SCIP_CALL_EXC(SCIPprintOrigProblem(scip, NULL, NULL, FALSE));
 }

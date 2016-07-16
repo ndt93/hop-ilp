@@ -15,6 +15,7 @@ public:
     ~CopycatSolver();
 
     std::vector<int> next_action(const std::vector<int>& states);
+    void print_problem();
 private:
     /*
      * Private fields
