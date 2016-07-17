@@ -10,7 +10,7 @@ int main(int args, char ** argv)
     if (args < 5)
     {
         cerr << "Usage: " << argv[0]
-                                  << " <number of x states> <number of y states> <number of futures> <horizon depth>" << endl;
+             << " <number of x states> <number of y states> <number of futures> <horizon depth>" << endl;
         exit(EXIT_FAILURE);
     }
 
@@ -21,9 +21,13 @@ int main(int args, char ** argv)
     vector<int> states(n + d);
 
     cout << "Enter initial states > ";
-    for (int i = 0; i < n + d; i++)
+    for (int i = 0; i < n; i++)
     {
         cin >> states[i];
+    }
+    for (int i = 0; i < d; i++)
+    {
+        states[n + i] = 0;
     }
 
     try

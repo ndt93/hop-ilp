@@ -32,12 +32,9 @@ private:
     std::vector<std::vector<std::vector<SCIP_VAR *>>> vars_x;
     std::vector<std::vector<std::vector<SCIP_VAR *>>> vars_a;
     std::vector<std::vector<std::vector<SCIP_VAR *>>> vars_y;
+    std::vector<std::vector<SCIP_VAR *>> vars_z;
 
-    // Transition constraints indexed by [future][step][state]
-    std::vector<std::vector<std::vector<SCIP_Cons *>>> x_transition_constraints;
-    std::vector<std::vector<std::vector<SCIP_Cons *>>> y_transition_constraints;
-    // Initial action constraints indexed by [future][state]
-    std::vector<std::vector<SCIP_Cons *>> initial_a_constraints;
+    std::vector<SCIP_Cons *> constraints;
 
     /*
      * Private methods
@@ -49,9 +46,11 @@ private:
     SCIP_RETCODE create_constraints(const std::vector<int>& states);
     SCIP_RETCODE create_initial_states_constraints(const std::vector<int>& states);
     SCIP_RETCODE create_initial_actions_constraints();
-    SCIP_RETCODE create_x_transition_constraints();
+    SCIP_RETCODE create_transition_constraints();
+    SCIP_RETCODE create_y_transition_constraints(
+            int k, int t, const std::vector<int>& determinized_x);
 
-    SCIP_RETCODE modify_constraints(const std::vector<int>& states);
+    void release_constraints();
 
     // Create constraint in the form of <var> = <value>
     SCIP_RETCODE create_single_var_constraint(
