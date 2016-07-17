@@ -12,6 +12,7 @@ CopycatSolver::CopycatSolver(int _n, int _d, int _m, int _h)
   vars_x(_m, vector<vector<SCIP_Var *>>(_h, vector<SCIP_Var *>(_n))),
   vars_a(_m, vector<vector<SCIP_Var *>>(_h, vector<SCIP_Var *>(_n))),
   vars_y(_m, vector<vector<SCIP_Var *>>(_h, vector<SCIP_Var *>(_d))),
+  vars_f(_m, vector<vector<SCIP_Var *>>(_h, vector<SCIP_Var *>(_d))),
   vars_z(_m, vector<SCIP_Var *>(_h))
 {
     init_scip_env();
@@ -77,47 +78,18 @@ void CopycatSolver::create_vars()
                                              TRUE, FALSE, NULL, NULL, NULL, NULL, NULL));
                  SCIP_CALL_EXC(SCIPaddVar(scip, var));
                  vars_y[k][t][i] = var;
+
+                 namebuf.str("");
+                 namebuf << "f#" << k << "#" << t << "#" << i;
+                 SCIP_CALL_EXC(SCIPcreateVar(scip, &var, namebuf.str().c_str(),
+                                             0.0, 1.0, 0.0, SCIP_VARTYPE_BINARY,
+                                             TRUE, FALSE, NULL, NULL, NULL, NULL, NULL));
+                 SCIP_CALL_EXC(SCIPaddVar(scip, var));
+                 vars_f[k][t][i] = var;
             }
         }
     }
 }
-
-/*
-void CopycatSolver::disp(std::ostream& out)
-{
-   // get the best found solution from scip
-   SCIP_SOL * sol = SCIPgetBestSol(_scip);
-   out << "solution for " << _n << "-queens:" << endl << endl;
-
-   // when SCIP did not succeed then sol is NULL
-   if (sol == NULL)
-   {
-      out << "no solution found" << endl;
-      return;
-   }
-
-   for( size_t i = 0; i < _n; ++i )
-   {
-      for( size_t j = 0; j < _n; ++j )
-         out << " ---";
-      out << endl;
-
-      for( size_t j = 0; j < _n; ++j )
-      {
-         out << "| ";
-         // we display a D in every field if x[i][j] = 1 which means that a queen will be placed there
-         if ( SCIPgetSolVal(_scip, sol, _vars[i][j]) > 0.5 )
-            out << "D ";
-         else
-            out << "  ";
-      }
-      out << "|" << endl;
-   }
-   for( size_t j = 0; j < _n; ++j)
-      out << " ---";
-   out << endl;
-}
-*/
 
 CopycatSolver::~CopycatSolver(void)
 {
@@ -125,6 +97,7 @@ CopycatSolver::~CopycatSolver(void)
     {
         for (int t = 0; t < h; ++t)
         {
+            SCIP_CALL_EXC(SCIPreleaseVar(scip, &vars_z[k][t]));
             for (int i = 0; i < n; ++i)
             {
                 SCIP_CALL_EXC(SCIPreleaseVar(scip, &vars_x[k][t][i]));
@@ -133,6 +106,7 @@ CopycatSolver::~CopycatSolver(void)
             for (int i = 0; i < d; ++i)
             {
                 SCIP_CALL_EXC(SCIPreleaseVar(scip, &vars_y[k][t][i]));
+                SCIP_CALL_EXC(SCIPreleaseVar(scip, &vars_f[k][t][i]));
             }
         }
     }
@@ -149,7 +123,8 @@ std::vector<int> CopycatSolver::next_action(const vector<int>& states)
 
     create_constraints(states);
     is_first_action = false;
-    // TODO: SCIP_CALL_EXC(SCIPsolve(scip));
+
+    SCIP_CALL_EXC(SCIPsolve(scip));
     return get_optimal_action();
 }
 
@@ -249,44 +224,115 @@ SCIP_RETCODE CopycatSolver::create_y_transition_constraints(int k, int t, const 
     SCIP_CONS *cons;
     ostringstream namebuf;
 
-    int positive_x_count = accumulate(begin(determinized_x), end(determinized_x), 0);
-    SCIP_Var **cons_a_vars = new SCIP_Var*[n];
-    SCIP_Real *cons_a_coeffs = new SCIP_Real[n];
-    for (int i = 0; i < n; ++i)
-    {
-        cons_a_vars[i] = vars_a[k][t - 1][i];
-        cons_a_coeffs[i] = determinized_x[i] == 0 ? 1.0 : -1.0;
-    }
-
-    if (generate_rand() < 0.49)
-    {
-        namebuf.str("");
-        namebuf << "cons_y#" << k << "#" <<  t << "#0";
-        SCIP_CALL(SCIPcreateConsLinear(scip, &cons, namebuf.str().c_str(),
-                                       n, cons_a_vars, cons_a_coeffs,
-                                       1 - positive_x_count, n + 1 - positive_x_count,
-                                       TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE));
-        SCIP_CALL(SCIPaddCoefLinear(scip, cons, vars_y[k][t][0], 1.0));
-        SCIP_CALL(SCIPaddCons(scip, cons));
-        constraints.push_back(cons);
-    }
-
     for (int i = 1; i < d; ++i)
     {
-        if (generate_rand() >= 0.49)
-            continue;
-
         namebuf.str("");
         namebuf << "cons_y#" << k << "#" <<  t << "#" << i;
-        SCIP_CALL(SCIPcreateConsLinear(scip, &cons, namebuf.str().c_str(),
-                                       n, cons_a_vars, cons_a_coeffs,
-                                       -positive_x_count, n + 1 - positive_x_count,
-                                       TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE));
-        SCIP_CALL(SCIPaddCoefLinear(scip, cons, vars_y[k][t][i - 1], -1.0));
+
+        if (generate_rand() >= 0.49)
+        {
+            SCIP_CALL(create_constraint(namebuf.str().c_str(), 0.0, 0.0, &cons));
+            SCIP_CALL(SCIPaddCoefLinear(scip, cons, vars_y[k][t - 1][i], -1.0));
+            SCIP_CALL(SCIPaddCoefLinear(scip, cons, vars_y[k][t][i], 1.0));
+            constraints.push_back(cons);
+            continue;
+        }
+
+        SCIP_CALL(create_z_constraints(k, t, i, determinized_x));
+        SCIP_CALL(create_f_constraints(k, t, i));
+        SCIP_CALL(create_constraint(namebuf.str().c_str(), 0.0, 0.0, &cons));
+        SCIP_CALL(SCIPaddCoefLinear(scip, cons, vars_f[k][t - 1][i], -1.0));
         SCIP_CALL(SCIPaddCoefLinear(scip, cons, vars_y[k][t][i], 1.0));
         SCIP_CALL(SCIPaddCons(scip, cons));
         constraints.push_back(cons);
     }
+
+    return SCIP_OKAY;
+}
+
+SCIP_RETCODE CopycatSolver::create_f_constraints(int k, int t, int i)
+{
+    SCIP_CONS *cons;
+    ostringstream namebuf;
+    SCIP_Var *cons_vars[3] = {vars_y[k][t - 1][i], vars_z[k][t - 1], vars_f[k][i][t - 1]};
+    SCIP_Real cons_coeffs_lhs[3] = {1, 1, -1};
+    SCIP_Real cons_coeffs_rhs[3] = {1, 1, -2};
+
+    namebuf.str("");
+    namebuf << "cons_f_lhs#" << k << "#" <<  t << "#" << i;
+    SCIP_CALL(SCIPcreateConsLinear(scip, &cons, namebuf.str().c_str(),
+                                   3, cons_vars, cons_coeffs_lhs,
+                                   0, SCIPinfinity(scip),
+                                   TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE));
+    SCIP_CALL(SCIPaddCons(scip, cons));
+    constraints.push_back(cons);
+
+    namebuf.str("");
+    namebuf << "cons_f_rhs#" << k << "#" <<  t << "#" << i;
+    SCIP_CALL(SCIPcreateConsLinear(scip, &cons, namebuf.str().c_str(),
+                                   3, cons_vars, cons_coeffs_rhs,
+                                   -SCIPinfinity(scip), 0,
+                                   TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE));
+    SCIP_CALL(SCIPaddCons(scip, cons));
+    constraints.push_back(cons);
+
+    return SCIP_OKAY;
+}
+
+SCIP_RETCODE CopycatSolver::create_z_constraints(
+        int k, int t, int i, const std::vector<int>& determinized_x)
+{
+    SCIP_CONS *cons;
+    ostringstream namebuf;
+
+    int negative_x_count = n - accumulate(begin(determinized_x), end(determinized_x), 0);
+    SCIP_Var **cons_a_vars = new SCIP_Var*[n];
+    SCIP_Real *cons_a_coeffs = new SCIP_Real[n];
+    for (int j = 0; j < n; ++j)
+    {
+        cons_a_vars[j] = vars_a[k][t - 1][j];
+        cons_a_coeffs[j] = determinized_x[j] == 1 ? 1.0 : -1.0;
+    }
+
+    namebuf.str("");
+    namebuf << "cons_z_lhs#" << k << "#" <<  t;
+    SCIP_CALL(SCIPcreateConsLinear(scip, &cons, namebuf.str().c_str(),
+                                   n, cons_a_vars, cons_a_coeffs,
+                                   -negative_x_count, SCIPinfinity(scip),
+                                   TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE));
+    if (i == 0)
+    {
+        SCIP_CALL(SCIPaddCoefLinear(scip, cons, vars_z[k][t - 1], -n));
+    }
+    else
+    {
+        SCIP_CALL(SCIPaddCoefLinear(scip, cons, vars_z[k][t - 1], -(n + 1)));
+        SCIP_CALL(SCIPaddCoefLinear(scip, cons, vars_y[k][t - 1][i - 1], 1.0));
+    }
+    SCIP_CALL(SCIPaddCons(scip, cons));
+    constraints.push_back(cons);
+
+    namebuf.str("");
+    namebuf << "cons_z_rhs#" << k << "#" <<  t;
+    if (i == 0)
+    {
+        SCIP_CALL(SCIPcreateConsLinear(scip, &cons, namebuf.str().c_str(),
+                                       n, cons_a_vars, cons_a_coeffs,
+                                       -SCIPinfinity(scip), n - 1 - negative_x_count,
+                                       TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE));
+    }
+    else
+    {
+
+        SCIP_CALL(SCIPcreateConsLinear(scip, &cons, namebuf.str().c_str(),
+                                       n, cons_a_vars, cons_a_coeffs,
+                                       -SCIPinfinity(scip), n - negative_x_count,
+                                       TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE));
+        SCIP_CALL(SCIPaddCoefLinear(scip, cons, vars_y[k][t - 1][i - 1], 1.0));
+    }
+    SCIP_CALL(SCIPaddCoefLinear(scip, cons, vars_z[k][t - 1], -1.0));
+    SCIP_CALL(SCIPaddCons(scip, cons));
+    constraints.push_back(cons);
 
     delete [] cons_a_vars;
     delete [] cons_a_coeffs;
@@ -315,7 +361,6 @@ void CopycatSolver::release_constraints()
 {
     for (auto cons : constraints)
     {
-        SCIP_CALL_EXC(SCIPdelCons(scip, cons));
         SCIP_CALL_EXC(SCIPreleaseCons(scip, &cons));
     }
     constraints.clear();
@@ -323,7 +368,22 @@ void CopycatSolver::release_constraints()
 
 vector<int> CopycatSolver::get_optimal_action()
 {
-    return vector<int>();
+    //SCIP_CALL_EXC(SCIPprintBestSol(scip, NULL, TRUE));
+    vector<int> action;
+
+    SCIP_SOL * sol = SCIPgetBestSol(scip);
+    if (sol == NULL)
+        return action;
+
+    for (int i = 0; i < n; ++i)
+    {
+        if (SCIPgetSolVal(scip, sol, vars_a[0][0][i]) > 0.5)
+            action.push_back(1);
+        else
+            action.push_back(0);
+    }
+
+    return action;
 }
 
 double CopycatSolver::generate_rand()

@@ -37,7 +37,6 @@ int main(int args, char ** argv)
         cout << "Solver initialized" << endl;
 
         vector<int> next_action = solver.next_action(states);
-        solver.print_problem();
         cout << "Action: ";
         for (int i : next_action)
         {

@@ -32,6 +32,7 @@ private:
     std::vector<std::vector<std::vector<SCIP_VAR *>>> vars_x;
     std::vector<std::vector<std::vector<SCIP_VAR *>>> vars_a;
     std::vector<std::vector<std::vector<SCIP_VAR *>>> vars_y;
+    std::vector<std::vector<std::vector<SCIP_VAR *>>> vars_f;
     std::vector<std::vector<SCIP_VAR *>> vars_z;
 
     std::vector<SCIP_Cons *> constraints;
@@ -49,6 +50,9 @@ private:
     SCIP_RETCODE create_transition_constraints();
     SCIP_RETCODE create_y_transition_constraints(
             int k, int t, const std::vector<int>& determinized_x);
+    SCIP_RETCODE create_z_constraints(
+            int k, int t, int i, const std::vector<int>& determinized_x);
+    SCIP_RETCODE create_f_constraints(int k, int t, int i);
 
     void release_constraints();
 
