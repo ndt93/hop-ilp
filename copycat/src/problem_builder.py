@@ -3,6 +3,9 @@ from parser import *
 from itertools import chain
 
 from logger import logger
+from copy import deepcopy
+
+from tree.tree import Node, Tree
 
 
 class SpuddVisitorImpl(spuddVisitor):
@@ -19,9 +22,28 @@ class SpuddVisitorImpl(spuddVisitor):
 
         actions = chain.from_iterable([self.get_actions(a)
                                        for a in ctx.actionBlock()])
-        problem_inst['actions'] = list(set(actions))
+        actions = list(set(actions))
+        actions.reverse()
+        problem_inst['actions'] = actions
+
+        transition_tress = self.create_transition_trees(variables, actions, ctx)
+        problem_inst['transition_trees'] = transition_tress
 
         return problem_inst
+
+    def create_transition_trees(self, vars, actions, ctx):
+        base_tree = self.create_base_trees(actions)
+        return dict((v, deepcopy(base_tree)) for v in vars)
+
+    def create_base_trees(self, actions):
+        if len(actions) == 0:
+            return None
+
+        subtree_actions = actions[1:]
+        left_subtree = self.create_base_trees(subtree_actions)
+        right_subtree = deepcopy(left_subtree)
+
+        return Tree(Node(actions[0]), left_subtree, right_subtree)
 
     def get_actions(self, ctx):
         actions_str = ctx.ID().getText()
@@ -61,6 +83,7 @@ class SpuddVisitorImpl(spuddVisitor):
 
 
 class ProblemBuilder(object):
+    problem_inst = {}
 
     def from_file(self, model_file):
         input_stream = FileStream(model_file)
@@ -75,4 +98,7 @@ class ProblemBuilder(object):
 
         logger.info("Building data structures...")
         evaluator = SpuddVisitorImpl()
-        logger.info(evaluator.visit(tree))
+
+        self.problem_inst = evaluator.visit(tree)
+        for v, t in self.problem_inst['transition_trees'].items():
+            logger.info('{}\n{!s}'.format(v, t))
