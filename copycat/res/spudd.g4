@@ -49,8 +49,8 @@ ttree : ID dtree ;
 
 dtree
     : '(' node ')'
-    | '(' node dtree ')'
-    | '(' node dtree dtree ')'
+    | '(' node left=dtree ')'
+    | '(' node left=dtree right=dtree ')'
     ;
 
 node : ID | number | BOOL ;

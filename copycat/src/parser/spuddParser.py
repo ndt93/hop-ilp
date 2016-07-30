@@ -738,6 +738,8 @@ class spuddParser ( Parser ):
         def __init__(self, parser, parent=None, invokingState=-1):
             super(spuddParser.DtreeContext, self).__init__(parent, invokingState)
             self.parser = parser
+            self.left = None # DtreeContext
+            self.right = None # DtreeContext
 
         def node(self):
             return self.getTypedRuleContext(spuddParser.NodeContext,0)
@@ -787,7 +789,7 @@ class spuddParser ( Parser ):
                 self.state = 109
                 self.node()
                 self.state = 110
-                self.dtree()
+                localctx.left = self.dtree()
                 self.state = 111
                 self.match(spuddParser.T__4)
                 pass
@@ -799,9 +801,9 @@ class spuddParser ( Parser ):
                 self.state = 114
                 self.node()
                 self.state = 115
-                self.dtree()
+                localctx.left = self.dtree()
                 self.state = 116
-                self.dtree()
+                localctx.right = self.dtree()
                 self.state = 117
                 self.match(spuddParser.T__4)
                 pass
