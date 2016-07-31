@@ -7,7 +7,7 @@ from io import StringIO
 def serializedATN():
     with StringIO() as buf:
         buf.write(u"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3")
-        buf.write(u"\24\u0083\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7")
+        buf.write(u"\23\u0082\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7")
         buf.write(u"\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\4\f\t\f\4\r\t")
         buf.write(u"\r\4\16\t\16\4\17\t\17\3\2\3\2\5\2!\n\2\3\2\6\2$\n\2")
         buf.write(u"\r\2\16\2%\3\2\6\2)\n\2\r\2\16\2*\3\3\3\3\3\3\6\3\60")
@@ -17,36 +17,36 @@ def serializedATN():
         buf.write(u"\n\7\r\7\16\7U\3\7\3\7\3\b\3\b\3\b\5\b]\n\b\3\t\3\t\3")
         buf.write(u"\t\3\n\3\n\3\n\3\13\3\13\3\13\3\f\3\f\3\f\3\r\3\r\3\r")
         buf.write(u"\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\5\r")
-        buf.write(u"z\n\r\3\16\3\16\3\16\5\16\177\n\16\3\17\3\17\3\17\2\2")
-        buf.write(u"\20\2\4\6\b\n\f\16\20\22\24\26\30\32\34\2\3\3\2\22\23")
-        buf.write(u"\u0082\2\36\3\2\2\2\4,\3\2\2\2\6\65\3\2\2\2\b=\3\2\2")
-        buf.write(u"\2\nF\3\2\2\2\fP\3\2\2\2\16\\\3\2\2\2\20^\3\2\2\2\22")
-        buf.write(u"a\3\2\2\2\24d\3\2\2\2\26g\3\2\2\2\30y\3\2\2\2\32~\3\2")
-        buf.write(u"\2\2\34\u0080\3\2\2\2\36 \5\6\4\2\37!\5\4\3\2 \37\3\2")
-        buf.write(u"\2\2 !\3\2\2\2!#\3\2\2\2\"$\5\n\6\2#\"\3\2\2\2$%\3\2")
-        buf.write(u"\2\2%#\3\2\2\2%&\3\2\2\2&(\3\2\2\2\')\5\16\b\2(\'\3\2")
-        buf.write(u"\2\2)*\3\2\2\2*(\3\2\2\2*+\3\2\2\2+\3\3\2\2\2,-\7\3\2")
-        buf.write(u"\2-/\7\4\2\2.\60\5\30\r\2/.\3\2\2\2\60\61\3\2\2\2\61")
-        buf.write(u"/\3\2\2\2\61\62\3\2\2\2\62\63\3\2\2\2\63\64\7\5\2\2\64")
-        buf.write(u"\5\3\2\2\2\65\67\7\6\2\2\668\5\b\5\2\67\66\3\2\2\289")
-        buf.write(u"\3\2\2\29\67\3\2\2\29:\3\2\2\2:;\3\2\2\2;<\7\7\2\2<\7")
-        buf.write(u"\3\2\2\2=>\7\b\2\2>@\7\20\2\2?A\5\32\16\2@?\3\2\2\2A")
-        buf.write(u"B\3\2\2\2B@\3\2\2\2BC\3\2\2\2CD\3\2\2\2DE\7\7\2\2E\t")
-        buf.write(u"\3\2\2\2FG\7\t\2\2GI\7\20\2\2HJ\5\26\f\2IH\3\2\2\2JK")
-        buf.write(u"\3\2\2\2KI\3\2\2\2KL\3\2\2\2LM\3\2\2\2MN\5\f\7\2NO\7")
-        buf.write(u"\n\2\2O\13\3\2\2\2PQ\7\13\2\2QS\7\f\2\2RT\5\30\r\2SR")
-        buf.write(u"\3\2\2\2TU\3\2\2\2US\3\2\2\2UV\3\2\2\2VW\3\2\2\2WX\7")
-        buf.write(u"\5\2\2X\r\3\2\2\2Y]\5\20\t\2Z]\5\22\n\2[]\5\24\13\2\\")
-        buf.write(u"Y\3\2\2\2\\Z\3\2\2\2\\[\3\2\2\2]\17\3\2\2\2^_\7\r\2\2")
-        buf.write(u"_`\5\30\r\2`\21\3\2\2\2ab\7\16\2\2bc\5\34\17\2c\23\3")
-        buf.write(u"\2\2\2de\7\17\2\2ef\5\34\17\2f\25\3\2\2\2gh\7\20\2\2")
-        buf.write(u"hi\5\30\r\2i\27\3\2\2\2jk\7\b\2\2kl\5\32\16\2lm\7\7\2")
-        buf.write(u"\2mz\3\2\2\2no\7\b\2\2op\5\32\16\2pq\5\30\r\2qr\7\7\2")
-        buf.write(u"\2rz\3\2\2\2st\7\b\2\2tu\5\32\16\2uv\5\30\r\2vw\5\30")
-        buf.write(u"\r\2wx\7\7\2\2xz\3\2\2\2yj\3\2\2\2yn\3\2\2\2ys\3\2\2")
-        buf.write(u"\2z\31\3\2\2\2{\177\7\20\2\2|\177\5\34\17\2}\177\7\21")
-        buf.write(u"\2\2~{\3\2\2\2~|\3\2\2\2~}\3\2\2\2\177\33\3\2\2\2\u0080")
-        buf.write(u"\u0081\t\2\2\2\u0081\35\3\2\2\2\r %*\619BKU\\y~")
+        buf.write(u"z\n\r\3\16\3\16\5\16~\n\16\3\17\3\17\3\17\2\2\20\2\4")
+        buf.write(u"\6\b\n\f\16\20\22\24\26\30\32\34\2\3\3\2\21\22\u0080")
+        buf.write(u"\2\36\3\2\2\2\4,\3\2\2\2\6\65\3\2\2\2\b=\3\2\2\2\nF\3")
+        buf.write(u"\2\2\2\fP\3\2\2\2\16\\\3\2\2\2\20^\3\2\2\2\22a\3\2\2")
+        buf.write(u"\2\24d\3\2\2\2\26g\3\2\2\2\30y\3\2\2\2\32}\3\2\2\2\34")
+        buf.write(u"\177\3\2\2\2\36 \5\6\4\2\37!\5\4\3\2 \37\3\2\2\2 !\3")
+        buf.write(u"\2\2\2!#\3\2\2\2\"$\5\n\6\2#\"\3\2\2\2$%\3\2\2\2%#\3")
+        buf.write(u"\2\2\2%&\3\2\2\2&(\3\2\2\2\')\5\16\b\2(\'\3\2\2\2)*\3")
+        buf.write(u"\2\2\2*(\3\2\2\2*+\3\2\2\2+\3\3\2\2\2,-\7\3\2\2-/\7\4")
+        buf.write(u"\2\2.\60\5\30\r\2/.\3\2\2\2\60\61\3\2\2\2\61/\3\2\2\2")
+        buf.write(u"\61\62\3\2\2\2\62\63\3\2\2\2\63\64\7\5\2\2\64\5\3\2\2")
+        buf.write(u"\2\65\67\7\6\2\2\668\5\b\5\2\67\66\3\2\2\289\3\2\2\2")
+        buf.write(u"9\67\3\2\2\29:\3\2\2\2:;\3\2\2\2;<\7\7\2\2<\7\3\2\2\2")
+        buf.write(u"=>\7\b\2\2>@\7\20\2\2?A\5\32\16\2@?\3\2\2\2AB\3\2\2\2")
+        buf.write(u"B@\3\2\2\2BC\3\2\2\2CD\3\2\2\2DE\7\7\2\2E\t\3\2\2\2F")
+        buf.write(u"G\7\t\2\2GI\7\20\2\2HJ\5\26\f\2IH\3\2\2\2JK\3\2\2\2K")
+        buf.write(u"I\3\2\2\2KL\3\2\2\2LM\3\2\2\2MN\5\f\7\2NO\7\n\2\2O\13")
+        buf.write(u"\3\2\2\2PQ\7\13\2\2QS\7\f\2\2RT\5\30\r\2SR\3\2\2\2TU")
+        buf.write(u"\3\2\2\2US\3\2\2\2UV\3\2\2\2VW\3\2\2\2WX\7\5\2\2X\r\3")
+        buf.write(u"\2\2\2Y]\5\20\t\2Z]\5\22\n\2[]\5\24\13\2\\Y\3\2\2\2\\")
+        buf.write(u"Z\3\2\2\2\\[\3\2\2\2]\17\3\2\2\2^_\7\r\2\2_`\5\30\r\2")
+        buf.write(u"`\21\3\2\2\2ab\7\16\2\2bc\5\34\17\2c\23\3\2\2\2de\7\17")
+        buf.write(u"\2\2ef\5\34\17\2f\25\3\2\2\2gh\7\20\2\2hi\5\30\r\2i\27")
+        buf.write(u"\3\2\2\2jk\7\b\2\2kl\5\32\16\2lm\7\7\2\2mz\3\2\2\2no")
+        buf.write(u"\7\b\2\2op\5\32\16\2pq\5\30\r\2qr\7\7\2\2rz\3\2\2\2s")
+        buf.write(u"t\7\b\2\2tu\5\32\16\2uv\5\30\r\2vw\5\30\r\2wx\7\7\2\2")
+        buf.write(u"xz\3\2\2\2yj\3\2\2\2yn\3\2\2\2ys\3\2\2\2z\31\3\2\2\2")
+        buf.write(u"{~\7\20\2\2|~\5\34\17\2}{\3\2\2\2}|\3\2\2\2~\33\3\2\2")
+        buf.write(u"\2\177\u0080\t\2\2\2\u0080\35\3\2\2\2\r %*\619BKU\\y")
+        buf.write(u"}")
         return buf.getvalue()
 
 
@@ -67,8 +67,8 @@ class spuddParser ( Parser ):
     symbolicNames = [ u"<INVALID>", u"<INVALID>", u"<INVALID>", u"<INVALID>", 
                       u"<INVALID>", u"<INVALID>", u"<INVALID>", u"<INVALID>", 
                       u"<INVALID>", u"<INVALID>", u"<INVALID>", u"<INVALID>", 
-                      u"<INVALID>", u"<INVALID>", u"ID", u"BOOL", u"INT", 
-                      u"FLOAT", u"WS" ]
+                      u"<INVALID>", u"<INVALID>", u"ID", u"INT", u"FLOAT", 
+                      u"WS" ]
 
     RULE_init = 0
     RULE_initBlock = 1
@@ -105,10 +105,9 @@ class spuddParser ( Parser ):
     T__11=12
     T__12=13
     ID=14
-    BOOL=15
-    INT=16
-    FLOAT=17
-    WS=18
+    INT=15
+    FLOAT=16
+    WS=17
 
     def __init__(self, input):
         super(spuddParser, self).__init__(input)
@@ -368,7 +367,7 @@ class spuddParser ( Parser ):
                 self.state = 64 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                if not ((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << spuddParser.ID) | (1 << spuddParser.BOOL) | (1 << spuddParser.INT) | (1 << spuddParser.FLOAT))) != 0)):
+                if not ((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << spuddParser.ID) | (1 << spuddParser.INT) | (1 << spuddParser.FLOAT))) != 0)):
                     break
 
             self.state = 66
@@ -830,9 +829,6 @@ class spuddParser ( Parser ):
             return self.getTypedRuleContext(spuddParser.NumberContext,0)
 
 
-        def BOOL(self):
-            return self.getToken(spuddParser.BOOL, 0)
-
         def getRuleIndex(self):
             return spuddParser.RULE_node
 
@@ -850,7 +846,7 @@ class spuddParser ( Parser ):
         localctx = spuddParser.NodeContext(self, self._ctx, self.state)
         self.enterRule(localctx, 24, self.RULE_node)
         try:
-            self.state = 124
+            self.state = 123
             token = self._input.LA(1)
             if token in [spuddParser.ID]:
                 self.enterOuterAlt(localctx, 1)
@@ -861,11 +857,6 @@ class spuddParser ( Parser ):
                 self.enterOuterAlt(localctx, 2)
                 self.state = 122
                 self.number()
-
-            elif token in [spuddParser.BOOL]:
-                self.enterOuterAlt(localctx, 3)
-                self.state = 123
-                self.match(spuddParser.BOOL)
 
             else:
                 raise NoViableAltException(self)
@@ -909,7 +900,7 @@ class spuddParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 126
+            self.state = 125
             _la = self._input.LA(1)
             if not(_la==spuddParser.INT or _la==spuddParser.FLOAT):
                 self._errHandler.recoverInline(self)

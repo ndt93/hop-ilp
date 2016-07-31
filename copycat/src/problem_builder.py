@@ -16,24 +16,74 @@ class SpuddVisitorImpl(spuddVisitor):
         for config in ctx.config():
             problem_inst.update(self.visit(config))
 
-        variables = self.visit(ctx.variablesBlock())
-        variables.update(self.visit(ctx.initBlock()))
+        variables = self.get_variables(ctx)
         problem_inst['variables'] = variables
 
-        actions = chain.from_iterable([self.get_actions(a)
-                                       for a in ctx.actionBlock()])
-        actions = list(set(actions))
-        actions.reverse()
+        actions = self.get_all_actions(ctx)
         problem_inst['actions'] = actions
 
-        transition_tress = self.create_transition_trees(variables, actions, ctx)
-        problem_inst['transition_trees'] = transition_tress
+        transition_trees = self.create_transition_trees(variables, actions, ctx)
+        problem_inst['transition_trees'] = transition_trees
 
         return problem_inst
 
-    def create_transition_trees(self, vars, actions, ctx):
+    def create_transition_trees(self, variables, actions, ctx):
         base_tree = self.create_base_trees(actions)
-        return dict((v, deepcopy(base_tree)) for v in vars)
+        trees = dict((v, deepcopy(base_tree)) for v in variables)
+
+        for action_block in ctx.actionBlock():
+            self.create_transition_tree(trees, action_block)
+
+        return trees
+
+    def create_transition_tree(self, trees, action_block):
+        actions_str = action_block.ID().getText()
+        actions = [] if actions_str == 'noop' else actions_str.split('___')
+
+        for ttree in action_block.ttree():
+            self.insert_transition_tree(trees[ttree.ID().getText()],
+                                        ttree.dtree(),
+                                        actions)
+
+    def insert_transition_tree(self, base_tree, dtree, actions):
+        dtree = self.create_dtree(dtree)
+        parent = base_tree
+
+        while parent.left is not None and parent.right is not None:
+            if parent.node.name in actions:
+                parent = parent.left
+            else:
+                parent = parent.right
+
+        if parent.node.name in actions:
+            parent.left = dtree
+        else:
+            parent.right = dtree
+
+    def create_dtree(self, dtree):
+        if dtree.left is None and dtree.right is None:
+            val = dtree.node().number().getText()
+            return Tree(Node('leaf', float(val)))
+
+        left = self.create_dtree(dtree.left.left)
+        right = self.create_dtree(dtree.right.left)
+
+        identifier = dtree.node().ID().getText()
+        if identifier.endswith("'"):
+            if dtree.left.node().getText() == 'true':
+                return left
+            else:
+                return right
+
+        root = Tree(Node(identifier))
+        if dtree.left.node().getText() == 'true':
+            root.left = left
+            root.right = right
+        else:
+            root.right = left
+            root.left = right
+
+        return root
 
     def create_base_trees(self, actions):
         if len(actions) == 0:
@@ -45,6 +95,13 @@ class SpuddVisitorImpl(spuddVisitor):
 
         return Tree(Node(actions[0]), left_subtree, right_subtree)
 
+    def get_all_actions(self, ctx):
+        actions = chain.from_iterable([self.get_actions(a)
+                                       for a in ctx.actionBlock()])
+        actions = list(set(actions))
+        actions.reverse()
+        return actions
+
     def get_actions(self, ctx):
         actions_str = ctx.ID().getText()
 
@@ -52,6 +109,11 @@ class SpuddVisitorImpl(spuddVisitor):
             return ()
 
         return actions_str.split('___')
+
+    def get_variables(self, ctx):
+        variables = self.visit(ctx.variablesBlock())
+        variables.update(self.visit(ctx.initBlock()))
+        return variables
 
     def visitVariablesBlock(self, ctx):
         variables = [self.visit(v) for v in ctx.variable()]

@@ -53,13 +53,11 @@ dtree
     | '(' node left=dtree right=dtree ')'
     ;
 
-node : ID | number | BOOL ;
+node : ID | number ;
 
 number : INT | FLOAT ;
 
 ID : [a-z][a-zA-Z0-9_']+ ;
-
-BOOL : 'true' | 'false' ;
 
 INT : [+-]? DIGIT+ ;
 
