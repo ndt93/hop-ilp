@@ -8,6 +8,9 @@ class Node(object):
         if self.value is None:
             return self.name
 
+        if self.name == 'leaf':
+            return str(self.value)
+
         return '{}#{}'.format(self.name, self.value)
 
 

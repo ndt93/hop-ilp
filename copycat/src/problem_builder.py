@@ -11,6 +11,10 @@ from tree.tree import Node, Tree
 class SpuddVisitorImpl(spuddVisitor):
 
     def visitInit(self, ctx):
+        """
+        Constructs a problem instance from the AST
+        """
+
         problem_inst = {}
 
         for config in ctx.config():
@@ -28,24 +32,44 @@ class SpuddVisitorImpl(spuddVisitor):
         return problem_inst
 
     def create_transition_trees(self, variables, actions, ctx):
+        """
+        Returns a dictionary of state variables to their transition trees. Each tree
+        consists of a base tree created from all combinations of actions values
+
+        :param variables: list of all state variables literals
+        :param actions: list of all actions literals
+        :param ctx: list of all actionBlock
+        """
+
         base_tree = self.create_base_trees(actions)
         trees = dict((v, deepcopy(base_tree)) for v in variables)
 
         for action_block in ctx.actionBlock():
-            self.create_transition_tree(trees, action_block)
+            self.extend_trees_from_action_block(trees, action_block)
 
         return trees
 
-    def create_transition_tree(self, trees, action_block):
+    def extend_trees_from_action_block(self, trees, action_block):
+        """
+        Extends all transitions trees with trees found in an actionBlock AST
+        """
+
         actions_str = action_block.ID().getText()
         actions = [] if actions_str == 'noop' else actions_str.split('___')
 
         for ttree in action_block.ttree():
-            self.insert_transition_tree(trees[ttree.ID().getText()],
-                                        ttree.dtree(),
-                                        actions)
+            self.extend_base_tree(trees[ttree.ID().getText()],
+                                  ttree.dtree(),
+                                  actions)
 
-    def insert_transition_tree(self, base_tree, dtree, actions):
+    def extend_base_tree(self, base_tree, dtree, actions):
+        """
+        Extends a base tree of a state by inserting a transition tree to
+        an appropriate path following the list of positive action literals.
+
+        The base tree will be modified in place
+        """
+
         dtree = self.create_dtree(dtree)
         parent = base_tree
 
@@ -61,6 +85,10 @@ class SpuddVisitorImpl(spuddVisitor):
             parent.right = dtree
 
     def create_dtree(self, dtree):
+        """
+        Creates a state transition tree from a dtree AST
+        """
+
         if dtree.left is None and dtree.right is None:
             val = dtree.node().number().getText()
             return Tree(Node('leaf', float(val)))
