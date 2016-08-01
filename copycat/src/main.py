@@ -1,7 +1,7 @@
 import sys
 
-from problem_builder import ProblemBuilder
 from logger import logger
+import model
 
 
 def main(argv):
@@ -10,8 +10,9 @@ def main(argv):
         return
 
     logger.info("Bulding problem instance from file")
-    builder = ProblemBuilder()
-    builder.from_file(argv[1])
+    problem = model.from_file(argv[1])
+    problem.log_transition_trees()
+    problem.log_reward_tree()
 
 
 if __name__ == "__main__":

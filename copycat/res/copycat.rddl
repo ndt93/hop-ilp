@@ -7,26 +7,26 @@ domain copycat {
 
 	requirements = { reward-deterministic };
 
-        types {
-            x_index : object;
-            y_index : object;
-        };
+    types {
+        x_index : object;
+        y_index : object;
+    };
 
 	pvariables {
-                PREV(y_index, y_index) : { non-fluent, y_index, default = false };
+        PREV(y_index, y_index) : { non-fluent, y_index, default = false };
 
-		x(x_index)    : { state-fluent,  bool, default = false };
-		y(y_index)    : { state-fluent,  bool, default = false };
-		a(x_index)    : { action-fluent, bool, default = false };
+		x(x_index) : { state-fluent,  bool, default = false };
+		y(y_index) : { state-fluent,  bool, default = false };
+		a(x_index) : { action-fluent, bool, default = false };
 	};
 
 	cpfs {
-                x'(?i) = Bernoulli(0.5);
-                y'(?i) = if (y(?i)) then KronDelta(true)
-                         else if ([forall_{?j : x_index} x(?j) == a(?j)]
-                                  ^ [forall_{?j : y_index} ~PREV(?j, ?i) | y(?j)])
-                         then Bernoulli(0.49)
-                         else KronDelta(false);
+        x'(?i) = Bernoulli(0.5);
+        y'(?i) = if (y(?i)) then KronDelta(true)
+                 else if ([forall_{?j : x_index} x(?j) == a(?j)]
+                          ^ [forall_{?j : y_index} ~PREV(?j, ?i) | y(?j)])
+                 then Bernoulli(0.49)
+                 else KronDelta(false);
 	};
 
 	reward = sum_{?i : y_index} y(?i);
