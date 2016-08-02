@@ -34,14 +34,16 @@ class Solver(object):
         for v in self.problem.variables:
             for k in range(self.num_futures):
                 for t in range(horizon):
-                    lp_var = m.addVar(vtype=GRB.BINARY, name='%s_%d_%d' % (v, k, t))
+                    lp_var = m.addVar(vtype=GRB.BINARY,
+                                      name='%s_%d_%d' % (v, k, t))
                     variables[v, k, t] = lp_var
                     states.append((v, k, t))
 
         for a in self.problem.actions:
             for k in range(self.num_futures):
                 for t in range(horizon):
-                    lp_var = m.addVar(vtype=GRB.BINARY, name='%s_%d_%d' % (a, k, t))
+                    lp_var = m.addVar(vtype=GRB.BINARY,
+                                      name='%s_%d_%d' % (a, k, t))
                     variables[a, k, t] = lp_var
                     actions.append((a, k, t))
 
