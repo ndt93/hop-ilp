@@ -12,9 +12,19 @@ class Solver(object):
         self.m = Model(name)
         self.variables, self.states, self.actions = self.add_variables()
         self.add_hop_action_constraints()
+        self.add_hop_quality_criterion()
 
         if debug:
             self.m.write('model.lp')
+
+    def add_hop_quality_criterion(self):
+        reward_paths = []
+
+        def func(nodes):
+            reward_paths.append(nodes[:])
+
+        self.problem.reward_tree.traverse_paths(func)
+        print(reward_paths)
 
     def add_variables(self):
         """

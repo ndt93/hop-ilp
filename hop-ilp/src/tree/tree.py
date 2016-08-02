@@ -39,3 +39,28 @@ class Tree(object):
         right_str = '\n'.join(right_split)
 
         return '{}\n{}\n{}'.format(self.node, left_str, right_str)
+
+    def traverse_paths(self, func, nodes_on_path=[]):
+        """
+        Traverses all paths of this tree and apply `func` on the list of
+        nodes along a path every time a leaf node is reached
+
+        :param nodes_on_path: nodes along the path up to the parent tree
+        :param func:
+        :return: None
+        """
+        if self.left is None and self.right is None:
+            nodes_on_path.append((self.node.name, self.node.value))
+            func(nodes_on_path)
+            nodes_on_path.pop()
+            return
+
+        if self.left is not None:
+            nodes_on_path.append((self.node.name, 1))
+            self.left.traverse_paths(func, nodes_on_path)
+            nodes_on_path.pop()
+
+        if self.right is not None:
+            nodes_on_path.append((self.node.name, -1))
+            self.right.traverse_paths(func, nodes_on_path)
+            nodes_on_path.pop()
