@@ -45,8 +45,9 @@ class Tree(object):
         Traverses all paths of this tree and apply `func` on the list of
         nodes along a path every time a leaf node is reached
 
-        :param nodes_on_path: nodes along the path up to the parent tree
-        :param func:
+        :param nodes_on_path: nodes along the path up to the parent tree,
+                              each *node* is (Node.name, value)
+        :param func: function to apply of list of nodes a long each path
         :return: None
         """
         if self.left is None and self.right is None:

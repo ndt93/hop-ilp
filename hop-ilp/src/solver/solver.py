@@ -1,6 +1,7 @@
 from gurobipy import *
 
 from logger import logger
+import utils
 
 
 class Solver(object):
@@ -19,12 +20,40 @@ class Solver(object):
 
     def add_hop_quality_criterion(self):
         reward_paths = []
+        num_futures = self.num_futures
+        m = self.m
 
         def func(nodes):
             reward_paths.append(nodes[:])
 
         self.problem.reward_tree.traverse_paths(func)
-        print(reward_paths)
+
+        for k in range(num_futures):
+            for t in range(self.problem.horizon):
+                for p, nodes in enumerate(reward_paths):
+                    coeff = 1./num_futures * nodes[-1][1]
+                    name = 'w_{}_{}_{}'.format(k, t, p)
+                    v = m.addVar(vtype=GRB.BINARY, obj=coeff, name=name)
+                    m.update()
+
+                    signed_vars = self.tree_path_to_signed_vars(nodes, k, t)
+                    utils.add_and_constraints(m, signed_vars, v)
+
+        m.ModelSense = GRB.MAXIMIZE
+        m.update()
+        logger.info('added_hop_quality_criterion')
+
+    def tree_path_to_signed_vars(self, nodes, k, t):
+        """
+        Returns of list of (variable, sign) from a list of nodes along
+        a decision tree path. `sign` has the same value as the value
+        associated with each node
+
+        :param nodes: list of (node name, value) on a decision path
+        :param k: the future index
+        :param t: the horizon index
+        """
+        return [(self.variables[name, k, t], val) for (name, val) in nodes[:-1]]
 
     def add_variables(self):
         """

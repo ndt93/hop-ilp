@@ -51,7 +51,7 @@ instance inst_copycat {
     non-fluents = copycat2x2;
 
     init-state {
-        x(x1) = false; x(x2) = false;
+        x(x1) = true; x(x2) = false;
         y(y1) = false; y(y2) = false;
     };
 

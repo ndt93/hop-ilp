@@ -6,7 +6,7 @@
 )
 
 init [*
-	(x__x1 (true (0.0)) (false (1.0)))
+	(x__x1 (true (1.0)) (false (0.0)))
 	(x__x2 (true (0.0)) (false (1.0)))
 	(y__y1 (true (0.0)) (false (1.0)))
 	(y__y2 (true (0.0)) (false (1.0)))

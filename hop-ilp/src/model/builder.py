@@ -44,7 +44,7 @@ class ModelBuilder(spuddVisitor):
 
     def visitVariablesBlock(self, ctx):
         variables = [self.visit(v) for v in ctx.variable()]
-        return dict((v, 0) for v in variables)
+        return {v: 0 for v in variables}
 
     def visitVariable(self, ctx):
         return ctx.ID().getText()
@@ -84,7 +84,7 @@ class TransitionTreesBuilder(object):
         """
 
         base_tree = utils.create_base_trees(actions)
-        trees = dict((v, deepcopy(base_tree)) for v in variables)
+        trees = {v: deepcopy(base_tree) for v in variables}
 
         for action_block in action_blocks:
             cls.extend_trees_from_action_block(trees, action_block)
