@@ -300,4 +300,4 @@ reward
 	(0.0)
 
 discount 0.9
-horizon 2
+horizon 10
