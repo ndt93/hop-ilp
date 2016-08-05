@@ -13,7 +13,8 @@ class Solver(object):
 
         self.m = Model(name)
         self.variables, self.states, self.actions = self.add_variables()
-        self.init_constrs = self.add_hop_action_constraints()
+        self.init_constrs = self.add_init_states_constraints()
+        self.add_hop_action_constraints()
         self.reward_vars = self.add_hop_quality_criterion()
         self.intermediate_vars = []
         self.transition_constrs = self.add_transition_constraints()
@@ -33,6 +34,14 @@ class Solver(object):
             suggested_actions[a[0]] = self.variables[a].X
 
         return suggested_actions, self.m.objVal
+
+    def init_next_step(self, state_values):
+        """
+        Reinitialize the solver with the new set of initial values for
+        the state variables. This also perform the determinization step again
+        and reset various variables and constraints
+        """
+        pass
 
     def add_transition_constraints(self):
         random.seed()
@@ -154,7 +163,25 @@ class Solver(object):
 
     def add_hop_action_constraints(self):
         """
-        Adds first step constraints on state and action variables
+        Adds first step constraints on action variables
+        """
+        m = self.m
+        variables = self.variables
+        init_constrs = []
+
+        for a in self.problem.actions:
+            first_step_actions = self.actions.select(a, '*', 0)
+            for i in range(len(first_step_actions) - 1):
+                a1 = variables[first_step_actions[i]]
+                a2 = variables[first_step_actions[i + 1]]
+                m.addConstr(a1 == a2)
+
+        logger.info('added_hop_action_constraints')
+        return init_constrs
+
+    def add_init_states_constraints(self):
+        """
+        Adds first step constraints on state variables
         """
         m = self.m
         variables = self.variables
@@ -167,12 +194,4 @@ class Solver(object):
             constr = m.addConstr(variables[v] == init_value)
             init_constrs.append(constr)
 
-        for a in self.problem.actions:
-            first_step_actions = self.actions.select(a, '*', 0)
-            for i in range(len(first_step_actions) - 1):
-                a1 = variables[first_step_actions[i]]
-                a2 = variables[first_step_actions[i + 1]]
-                m.addConstr(a1 == a2)
-
-        logger.info('added_hop_action_constraints')
         return init_constrs
