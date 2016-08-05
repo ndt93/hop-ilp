@@ -15,7 +15,7 @@ class Solver(object):
         self.variables, self.states, self.actions = self.add_variables()
         self.init_constrs = self.add_init_states_constraints()
         self.add_hop_action_constraints()
-        self.reward_vars = self.add_hop_quality_criterion()
+        self.add_hop_quality_criterion()
         self.intermediate_vars = []
         self.transition_constrs = self.add_transition_constraints()
 
@@ -35,13 +35,23 @@ class Solver(object):
 
         return suggested_actions, self.m.objVal
 
-    def init_next_step(self, state_values):
+    def init_next_step(self, states_init_values):
         """
         Reinitialize the solver with the new set of initial values for
         the state variables. This also perform the determinization step again
         and reset various variables and constraints
         """
-        pass
+        for constr in self.init_constrs:
+            self.m.remove(constr)
+        self.problem.variables.update(states_init_values)
+        self.init_constrs = self.add_init_states_constraints()
+
+        for c in self.transition_constrs:
+            self.m.remove(c)
+        for v in self.intermediate_vars:
+            self.m.remove(v)
+        self.add_transition_constraints()
+        logger.info("reinitalized_model")
 
     def add_transition_constraints(self):
         random.seed()
@@ -49,48 +59,59 @@ class Solver(object):
         horizon = self.problem.horizon
         transition_trees = self.problem.transition_trees
         intermediate_vars = self.intermediate_vars
-        constrs = []
+        transition_constrs = []
 
         for k in range(self.num_futures):
             for t in range(horizon - 1):
                 for v in transition_trees:
-                    path_vars = []
-                    p = [0]
+                    path_vars = self.determinize_paths(transition_trees[v],
+                                                       k, t, v,
+                                                       transition_constrs)
+                    intermediate_vars.extend(path_vars)
 
-                    def func(nodes):
-                        if random.random() > nodes[-1][1]:
-                            return
-                        name = 'f_{}_{}_{}_{}'.format(v, k, t, p[0])
-                        i = m.addVar(vtype=GRB.BINARY, name=name)
-                        path_vars.append(i)
-                        m.update()
-
-                        signed_vars = self.tree_path_to_signed_vars(nodes, k, t)
-                        constr = utils.add_and_constraints(m, signed_vars, i)
-                        constrs.append(constr)
-
-                        p[0] += 1
-
-                    transition_tree = transition_trees[v]
-                    transition_tree.traverse_paths(func)
-
-                    name = 'fs_{}_{}_{}'.format(v, k, t)
-                    i = m.addVar(vtype=GRB.BINARY, name=name)
-                    m.update()
-                    constr = utils.add_or_constraints(m, path_vars, i)
-                    constrs.append(constr)
+                    i, constr = self.combine_paths(k, t, v, path_vars)
+                    intermediate_vars.append(i)
+                    transition_constrs.append(constr)
 
                     next_step_var = self.variables[v, k, t + 1]
                     constr = m.addConstr(next_step_var == i)
-                    constrs.append(constr)
+                    transition_constrs.append(constr)
 
-                    intermediate_vars.extend(path_vars)
-                    intermediate_vars.append(i)
+        return transition_constrs
 
-        return constrs
+    def determinize_paths(self, transition_tree, k, t, v, transition_constrs):
+        m = self.m
+        path_vars = []
+        p = [0]
+
+        def determinize_path(nodes):
+            if random.random() > nodes[-1][1]:
+                return
+
+            name = 'f_{}_{}_{}_{}'.format(v, k, t, p[0])
+            i = m.addVar(vtype=GRB.BINARY, name=name)
+            path_vars.append(i)
+            m.update()
+
+            signed_vars = self.tree_path_to_signed_vars(nodes, k, t)
+            constr = utils.add_and_constraints(m, signed_vars, i)
+            transition_constrs.append(constr)
+
+            p[0] += 1
+
+        transition_tree.traverse_paths(determinize_path)
+        return path_vars
+
+    def combine_paths(self, k, t, v, path_vars):
+        name = 'fs_{}_{}_{}'.format(v, k, t)
+        i = self.m.addVar(vtype=GRB.BINARY, name=name)
+        self.m.update()
+
+        constr = utils.add_or_constraints(self.m, path_vars, i)
+
+        return i, constr
 
     def add_hop_quality_criterion(self):
-        reward_vars = []
         num_futures = self.num_futures
         m = self.m
         p = [0]
@@ -101,7 +122,6 @@ class Solver(object):
                     coeff = 1./num_futures * nodes[-1][1]
                     name = 'w_{}_{}_{}'.format(k, t, p[0])
                     v = m.addVar(vtype=GRB.BINARY, obj=coeff, name=name)
-                    reward_vars.append(v)
                     m.update()
 
                     signed_vars = self.tree_path_to_signed_vars(nodes, k, t)
@@ -112,7 +132,6 @@ class Solver(object):
 
         m.ModelSense = GRB.MAXIMIZE
         logger.info('added_hop_quality_criterion')
-        return reward_vars
 
     def tree_path_to_signed_vars(self, nodes, k, t):
         """
