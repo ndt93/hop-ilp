@@ -37,9 +37,8 @@ class Solver(object):
 
     def init_next_step(self, states_init_values):
         """
-        Reinitialize the solver with the new set of initial values for
-        the state variables. This also perform the determinization step again
-        and reset various variables and constraints
+        Reinitialize the solver with a new set of states' values and
+        prepare the transitions determinization for the next time step
         """
         for constr in self.init_constrs:
             self.m.remove(constr)
@@ -48,10 +47,13 @@ class Solver(object):
 
         for c in self.transition_constrs:
             self.m.remove(c)
+            self.transition_constrs = []
         for v in self.intermediate_vars:
             self.m.remove(v)
+            self.intermediate_vars = []
         self.add_transition_constraints()
-        logger.info("reinitalized_model")
+
+        logger.info("reinitialized_model")
 
     def add_transition_constraints(self):
         random.seed()
@@ -69,9 +71,9 @@ class Solver(object):
                                                        transition_constrs)
                     intermediate_vars.extend(path_vars)
 
-                    i, constr = self.combine_paths(k, t, v, path_vars)
+                    i, constrs = self.combine_paths(k, t, v, path_vars)
                     intermediate_vars.append(i)
-                    transition_constrs.append(constr)
+                    transition_constrs.extend(constrs)
 
                     next_step_var = self.variables[v, k, t + 1]
                     constr = m.addConstr(next_step_var == i)
@@ -94,8 +96,8 @@ class Solver(object):
             m.update()
 
             signed_vars = self.tree_path_to_signed_vars(nodes, k, t)
-            constr = utils.add_and_constraints(m, signed_vars, i)
-            transition_constrs.append(constr)
+            constrs = utils.add_and_constraints(m, signed_vars, i)
+            transition_constrs.extend(constrs)
 
             p[0] += 1
 
@@ -107,9 +109,9 @@ class Solver(object):
         i = self.m.addVar(vtype=GRB.BINARY, name=name)
         self.m.update()
 
-        constr = utils.add_or_constraints(self.m, path_vars, i)
+        constrs = utils.add_or_constraints(self.m, path_vars, i)
 
-        return i, constr
+        return i, constrs
 
     def add_hop_quality_criterion(self):
         num_futures = self.num_futures

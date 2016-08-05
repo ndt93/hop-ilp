@@ -22,6 +22,12 @@ def main(argv):
     logger.info('HOP Reward: {}'.format(reward))
     logger.info('Actions:\n{}'.format(actions))
 
+    solver.init_next_step({'x__x1': 0, 'x__x2': 1})
+    actions, reward = solver.solve()
+
+    logger.info('HOP Reward: {}'.format(reward))
+    logger.info('Actions:\n{}'.format(actions))
+
 
 if __name__ == '__main__':
     main(sys.argv)

@@ -18,8 +18,10 @@ def add_and_constraints(model, xs, z, name=""):
     n = len(xs)
     name_lb = "{}_lb".format(name) if name else ""
     name_ub = "{}_ub".format(name) if name else ""
-    model.addConstr(n * z <= sum_expr, name_lb)
-    model.addConstr(sum_expr <= (n - 1) + z, name_ub)
+    lb_cons = model.addConstr(n * z <= sum_expr, name_lb)
+    up_cons = model.addConstr(sum_expr <= (n - 1) + z, name_ub)
+
+    return lb_cons, up_cons
 
 
 def add_or_constraints(model, xs, z, name=""):
@@ -39,8 +41,10 @@ def add_or_constraints(model, xs, z, name=""):
     n = len(xs)
     name_lb = "{}_lb".format(name) if name else ""
     name_ub = "{}_ub".format(name) if name else ""
-    model.addConstr(z <= sum_expr, name_lb)
-    model.addConstr(sum_expr <= n * z, name_ub)
+    lb_cons = model.addConstr(z <= sum_expr, name_lb)
+    ub_cons = model.addConstr(sum_expr <= n * z, name_ub)
+
+    return lb_cons, ub_cons
 
 
 def sum_vars(xs):
