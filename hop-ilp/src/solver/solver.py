@@ -29,9 +29,12 @@ class Solver(object):
         logger.info('optimizing_model')
         self.m.optimize()
 
+        if self.m.Status == GRB.Status.INFEASIBLE or self.m.Status == GRB.Status.INF_OR_UNBD:
+            raise Exception('Failed to find solution')
+
         suggested_actions = {}
         for a in self.actions.select('*', 0, 0):
-            suggested_actions[a[0]] = self.variables[a].X
+            suggested_actions[a[0]] = int(self.variables[a].X)
 
         return suggested_actions, self.m.objVal
 
@@ -51,7 +54,7 @@ class Solver(object):
         for v in self.intermediate_vars:
             self.m.remove(v)
             self.intermediate_vars = []
-        self.add_transition_constraints()
+        self.transition_constrs = self.add_transition_constraints()
 
         logger.info("reinitialized_model")
 
@@ -76,7 +79,8 @@ class Solver(object):
                     transition_constrs.extend(constrs)
 
                     next_step_var = self.variables[v, k, t + 1]
-                    constr = m.addConstr(next_step_var == i)
+                    constr_name = 'trans_{}_{}_{}'.format(v, k, t)
+                    constr = m.addConstr(next_step_var == i, name=constr_name)
                     transition_constrs.append(constr)
 
         return transition_constrs
@@ -96,7 +100,7 @@ class Solver(object):
             m.update()
 
             signed_vars = self.tree_path_to_signed_vars(nodes, k, t)
-            constrs = utils.add_and_constraints(m, signed_vars, i)
+            constrs = utils.add_and_constraints(m, signed_vars, i, name=name)
             transition_constrs.extend(constrs)
 
             p[0] += 1
@@ -109,7 +113,7 @@ class Solver(object):
         i = self.m.addVar(vtype=GRB.BINARY, name=name)
         self.m.update()
 
-        constrs = utils.add_or_constraints(self.m, path_vars, i)
+        constrs = utils.add_or_constraints(self.m, path_vars, i, name=name)
 
         return i, constrs
 
@@ -127,7 +131,9 @@ class Solver(object):
                     m.update()
 
                     signed_vars = self.tree_path_to_signed_vars(nodes, k, t)
-                    utils.add_and_constraints(m, signed_vars, v)
+                    constr_name = 'reward_{}_{}_{}'.format(k, t, p[0])
+                    utils.add_and_constraints(m, signed_vars, v,
+                                              name=constr_name)
             p[0] += 1
 
         self.problem.reward_tree.traverse_paths(func)
@@ -195,7 +201,8 @@ class Solver(object):
             for i in range(len(first_step_actions) - 1):
                 a1 = variables[first_step_actions[i]]
                 a2 = variables[first_step_actions[i + 1]]
-                m.addConstr(a1 == a2)
+                constr_name = 'act_{}_{}'.format(a, i)
+                m.addConstr(a1 == a2, name=constr_name)
 
         logger.info('added_hop_action_constraints')
         return init_constrs
@@ -212,7 +219,8 @@ class Solver(object):
         init_values = self.problem.variables
         for v in first_step_states:
             init_value = init_values[v[0]]
-            constr = m.addConstr(variables[v] == init_value)
+            constr_name = 'init_{}_{}'.format(v[0], v[1])
+            constr = m.addConstr(variables[v] == init_value, name=constr_name)
             init_constrs.append(constr)
 
         return init_constrs

@@ -20,9 +20,12 @@ def main(argv):
 
     solver = Solver(problem_name, problem, int(argv[3]), debug=False)
 
-    copycat = experiment.Copycat(solver)
-    copycat.start()
-
+    experiment_name = argv[1].strip().lower()
+    if experiment_name == 'copycat':
+        copycat = experiment.Copycat(solver)
+        copycat.start()
+    else:
+        print('Experiment {} is not implemented\n'.format(experiment_name))
 
 if __name__ == '__main__':
     main(sys.argv)
