@@ -1,4 +1,4 @@
-# Generated from /Users/ndt/Development/fyp/copycat/res/spudd.g4 by ANTLR 4.5.3
+# Generated from /Users/ndt/Development/fyp/hop-ilp/res/spudd.g4 by ANTLR 4.5.3
 from antlr4 import *
 
 # This class defines a complete generic visitor for a parse tree produced by spuddParser.

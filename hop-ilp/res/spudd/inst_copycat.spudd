@@ -1,4 +1,7 @@
-(variables
+// Automatically produced by rddl.translate.RDDL2Format
+// SPUDD / Symbolic Perseus Format for 'copycat.inst_copycat'
+
+(variables 
 	(x__x1 true false)
 	(x__x2 true false)
 	(y__y1 true false)
@@ -18,66 +21,66 @@ action a__x1
 	x__x2
 		(0.5)
 	y__y1
-		(x__x1
-			(true (x__x2
-				(true (y__y1
-					(true (y__y1'
+		(x__x1 
+			(true (x__x2 
+				(true (y__y1 
+					(true (y__y1' 
 						(true (1.0))
 						(false (0.0))))
-					(false (y__y1'
+					(false (y__y1' 
 						(true (0.0))
 						(false (1.0))))))
-				(false (y__y1
-					(true (y__y1'
+				(false (y__y1 
+					(true (y__y1' 
 						(true (1.0))
 						(false (0.0))))
-					(false (y__y1'
+					(false (y__y1' 
 						(true (0.49))
 						(false (0.51))))))))
-			(false (y__y1
-				(true (y__y1'
+			(false (y__y1 
+				(true (y__y1' 
 					(true (1.0))
 					(false (0.0))))
-				(false (y__y1'
+				(false (y__y1' 
 					(true (0.0))
 					(false (1.0)))))))
 	y__y2
-		(x__x1
-			(true (x__x2
-				(true (y__y2
-					(true (y__y2'
+		(x__x1 
+			(true (x__x2 
+				(true (y__y2 
+					(true (y__y2' 
 						(true (1.0))
 						(false (0.0))))
-					(false (y__y2'
+					(false (y__y2' 
 						(true (0.0))
 						(false (1.0))))))
-				(false (y__y1
-					(true (y__y2
-						(true (y__y2'
+				(false (y__y1 
+					(true (y__y2 
+						(true (y__y2' 
 							(true (1.0))
 							(false (0.0))))
-						(false (y__y2'
+						(false (y__y2' 
 							(true (0.49))
 							(false (0.51))))))
-					(false (y__y2
-						(true (y__y2'
+					(false (y__y2 
+						(true (y__y2' 
 							(true (1.0))
 							(false (0.0))))
-						(false (y__y2'
+						(false (y__y2' 
 							(true (0.0))
 							(false (1.0))))))))))
-			(false (y__y2
-				(true (y__y2'
+			(false (y__y2 
+				(true (y__y2' 
 					(true (1.0))
 					(false (0.0))))
-				(false (y__y2'
+				(false (y__y2' 
 					(true (0.0))
 					(false (1.0)))))))
-	cost [+
-		(y__y1
+	cost [+ 
+		(y__y1 
 			(true (-1.0))
 			(false (0.0)))
-		(y__y2
+		(y__y2 
 			(true (-1.0))
 			(false (0.0)))
 	]
@@ -89,66 +92,66 @@ action a__x1___a__x2
 	x__x2
 		(0.5)
 	y__y1
-		(x__x1
-			(true (x__x2
-				(true (y__y1
-					(true (y__y1'
+		(x__x1 
+			(true (x__x2 
+				(true (y__y1 
+					(true (y__y1' 
 						(true (1.0))
 						(false (0.0))))
-					(false (y__y1'
+					(false (y__y1' 
 						(true (0.49))
 						(false (0.51))))))
-				(false (y__y1
-					(true (y__y1'
+				(false (y__y1 
+					(true (y__y1' 
 						(true (1.0))
 						(false (0.0))))
-					(false (y__y1'
+					(false (y__y1' 
 						(true (0.0))
 						(false (1.0))))))))
-			(false (y__y1
-				(true (y__y1'
+			(false (y__y1 
+				(true (y__y1' 
 					(true (1.0))
 					(false (0.0))))
-				(false (y__y1'
+				(false (y__y1' 
 					(true (0.0))
 					(false (1.0)))))))
 	y__y2
-		(x__x1
-			(true (x__x2
-				(true (y__y1
-					(true (y__y2
-						(true (y__y2'
+		(x__x1 
+			(true (x__x2 
+				(true (y__y1 
+					(true (y__y2 
+						(true (y__y2' 
 							(true (1.0))
 							(false (0.0))))
-						(false (y__y2'
+						(false (y__y2' 
 							(true (0.49))
 							(false (0.51))))))
-					(false (y__y2
-						(true (y__y2'
+					(false (y__y2 
+						(true (y__y2' 
 							(true (1.0))
 							(false (0.0))))
-						(false (y__y2'
+						(false (y__y2' 
 							(true (0.0))
 							(false (1.0))))))))
-				(false (y__y2
-					(true (y__y2'
+				(false (y__y2 
+					(true (y__y2' 
 						(true (1.0))
 						(false (0.0))))
-					(false (y__y2'
+					(false (y__y2' 
 						(true (0.0))
 						(false (1.0))))))))
-			(false (y__y2
-				(true (y__y2'
+			(false (y__y2 
+				(true (y__y2' 
 					(true (1.0))
 					(false (0.0))))
-				(false (y__y2'
+				(false (y__y2' 
 					(true (0.0))
 					(false (1.0)))))))
-	cost [+
-		(y__y1
+	cost [+ 
+		(y__y1 
 			(true (-1.0))
 			(false (0.0)))
-		(y__y2
+		(y__y2 
 			(true (-1.0))
 			(false (0.0)))
 	]
@@ -160,66 +163,66 @@ action a__x2
 	x__x2
 		(0.5)
 	y__y1
-		(x__x1
-			(true (y__y1
-				(true (y__y1'
+		(x__x1 
+			(true (y__y1 
+				(true (y__y1' 
 					(true (1.0))
 					(false (0.0))))
-				(false (y__y1'
+				(false (y__y1' 
 					(true (0.0))
 					(false (1.0))))))
-			(false (x__x2
-				(true (y__y1
-					(true (y__y1'
+			(false (x__x2 
+				(true (y__y1 
+					(true (y__y1' 
 						(true (1.0))
 						(false (0.0))))
-					(false (y__y1'
+					(false (y__y1' 
 						(true (0.49))
 						(false (0.51))))))
-				(false (y__y1
-					(true (y__y1'
+				(false (y__y1 
+					(true (y__y1' 
 						(true (1.0))
 						(false (0.0))))
-					(false (y__y1'
+					(false (y__y1' 
 						(true (0.0))
 						(false (1.0)))))))))
 	y__y2
-		(x__x1
-			(true (y__y2
-				(true (y__y2'
+		(x__x1 
+			(true (y__y2 
+				(true (y__y2' 
 					(true (1.0))
 					(false (0.0))))
-				(false (y__y2'
+				(false (y__y2' 
 					(true (0.0))
 					(false (1.0))))))
-			(false (x__x2
-				(true (y__y1
-					(true (y__y2
-						(true (y__y2'
+			(false (x__x2 
+				(true (y__y1 
+					(true (y__y2 
+						(true (y__y2' 
 							(true (1.0))
 							(false (0.0))))
-						(false (y__y2'
+						(false (y__y2' 
 							(true (0.49))
 							(false (0.51))))))
-					(false (y__y2
-						(true (y__y2'
+					(false (y__y2 
+						(true (y__y2' 
 							(true (1.0))
 							(false (0.0))))
-						(false (y__y2'
+						(false (y__y2' 
 							(true (0.0))
 							(false (1.0))))))))
-				(false (y__y2
-					(true (y__y2'
+				(false (y__y2 
+					(true (y__y2' 
 						(true (1.0))
 						(false (0.0))))
-					(false (y__y2'
+					(false (y__y2' 
 						(true (0.0))
 						(false (1.0)))))))))
-	cost [+
-		(y__y1
+	cost [+ 
+		(y__y1 
 			(true (-1.0))
 			(false (0.0)))
-		(y__y2
+		(y__y2 
 			(true (-1.0))
 			(false (0.0)))
 	]
@@ -231,66 +234,66 @@ action noop
 	x__x2
 		(0.5)
 	y__y1
-		(x__x1
-			(true (y__y1
-				(true (y__y1'
+		(x__x1 
+			(true (y__y1 
+				(true (y__y1' 
 					(true (1.0))
 					(false (0.0))))
-				(false (y__y1'
+				(false (y__y1' 
 					(true (0.0))
 					(false (1.0))))))
-			(false (x__x2
-				(true (y__y1
-					(true (y__y1'
+			(false (x__x2 
+				(true (y__y1 
+					(true (y__y1' 
 						(true (1.0))
 						(false (0.0))))
-					(false (y__y1'
+					(false (y__y1' 
 						(true (0.0))
 						(false (1.0))))))
-				(false (y__y1
-					(true (y__y1'
+				(false (y__y1 
+					(true (y__y1' 
 						(true (1.0))
 						(false (0.0))))
-					(false (y__y1'
+					(false (y__y1' 
 						(true (0.49))
 						(false (0.51)))))))))
 	y__y2
-		(x__x1
-			(true (y__y2
-				(true (y__y2'
+		(x__x1 
+			(true (y__y2 
+				(true (y__y2' 
 					(true (1.0))
 					(false (0.0))))
-				(false (y__y2'
+				(false (y__y2' 
 					(true (0.0))
 					(false (1.0))))))
-			(false (x__x2
-				(true (y__y2
-					(true (y__y2'
+			(false (x__x2 
+				(true (y__y2 
+					(true (y__y2' 
 						(true (1.0))
 						(false (0.0))))
-					(false (y__y2'
+					(false (y__y2' 
 						(true (0.0))
 						(false (1.0))))))
-				(false (y__y1
-					(true (y__y2
-						(true (y__y2'
+				(false (y__y1 
+					(true (y__y2 
+						(true (y__y2' 
 							(true (1.0))
 							(false (0.0))))
-						(false (y__y2'
+						(false (y__y2' 
 							(true (0.49))
 							(false (0.51))))))
-					(false (y__y2
-						(true (y__y2'
+					(false (y__y2 
+						(true (y__y2' 
 							(true (1.0))
 							(false (0.0))))
-						(false (y__y2'
+						(false (y__y2' 
 							(true (0.0))
 							(false (1.0)))))))))))
-	cost [+
-		(y__y1
+	cost [+ 
+		(y__y1 
 			(true (-1.0))
 			(false (0.0)))
-		(y__y2
+		(y__y2 
 			(true (-1.0))
 			(false (0.0)))
 	]

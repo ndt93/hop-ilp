@@ -56,6 +56,6 @@ instance inst_copycat {
     };
 
     max-nondef-actions = 2;
-    horizon  = 20;
+    horizon  = 5;
     discount = 0.9;
 }

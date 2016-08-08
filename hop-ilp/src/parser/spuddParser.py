@@ -1,4 +1,4 @@
-# Generated from /Users/ndt/Development/fyp/copycat/res/spudd.g4 by ANTLR 4.5.3
+# Generated from /Users/ndt/Development/fyp/hop-ilp/res/spudd.g4 by ANTLR 4.5.3
 # encoding: utf-8
 from __future__ import print_function
 from antlr4 import *
@@ -7,7 +7,7 @@ from io import StringIO
 def serializedATN():
     with StringIO() as buf:
         buf.write(u"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3")
-        buf.write(u"\23\u0082\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7")
+        buf.write(u"\24\u0082\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7")
         buf.write(u"\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\4\f\t\f\4\r\t")
         buf.write(u"\r\4\16\t\16\4\17\t\17\3\2\3\2\5\2!\n\2\3\2\6\2$\n\2")
         buf.write(u"\r\2\16\2%\3\2\6\2)\n\2\r\2\16\2*\3\3\3\3\3\3\6\3\60")
@@ -68,7 +68,7 @@ class spuddParser ( Parser ):
                       u"<INVALID>", u"<INVALID>", u"<INVALID>", u"<INVALID>", 
                       u"<INVALID>", u"<INVALID>", u"<INVALID>", u"<INVALID>", 
                       u"<INVALID>", u"<INVALID>", u"ID", u"INT", u"FLOAT", 
-                      u"WS" ]
+                      u"WS", u"COMMENT" ]
 
     RULE_init = 0
     RULE_initBlock = 1
@@ -108,6 +108,7 @@ class spuddParser ( Parser ):
     INT=15
     FLOAT=16
     WS=17
+    COMMENT=18
 
     def __init__(self, input):
         super(spuddParser, self).__init__(input)

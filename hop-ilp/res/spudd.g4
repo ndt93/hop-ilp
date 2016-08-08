@@ -66,3 +66,5 @@ FLOAT : [+-]? DIGIT+ '.' DIGIT+ ;
 fragment DIGIT : ('0'..'9') ;
 
 WS : [ \t\r\n]+ -> skip ;
+
+COMMENT : '//' ~( '\r' | '\n' )* -> skip ;
