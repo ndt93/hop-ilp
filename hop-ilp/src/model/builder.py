@@ -102,8 +102,8 @@ class TransitionTreesBuilder(object):
 
         for ttree in action_block.ttree():
             cls.extend_base_tree(trees[ttree.ID().getText()],
-                                  ttree.dtree(),
-                                  actions)
+                                 ttree.dtree(),
+                                 actions)
 
     @classmethod
     def extend_base_tree(cls, base_tree, dtree, actions):
@@ -114,7 +114,7 @@ class TransitionTreesBuilder(object):
         The base tree will be modified in place
         """
 
-        dtree = cls.create_dtree(dtree)
+        dtree = utils.create_dtree(dtree)
         parent = base_tree
 
         while parent.left is not None and parent.right is not None:
@@ -128,43 +128,14 @@ class TransitionTreesBuilder(object):
         else:
             parent.right = dtree
 
-    @classmethod
-    def create_dtree(cls, dtree):
-        """
-        Creates a state transition tree from a dtree AST
-        """
-
-        if dtree.left is None and dtree.right is None:
-            val = dtree.node().number().getText()
-            return Tree(Node('leaf', float(val)))
-
-        left = cls.create_dtree(dtree.left.left)
-        right = cls.create_dtree(dtree.right.left)
-
-        identifier = dtree.node().ID().getText()
-        if identifier.endswith("'"):
-            if dtree.left.node().getText() == 'true':
-                return left
-            else:
-                return right
-
-        root = Tree(Node(identifier))
-        if dtree.left.node().getText() == 'true':
-            root.left = left
-            root.right = right
-        else:
-            root.right = left
-            root.left = right
-
-        return root
-
 
 class RewardTreeBuilder(object):
 
     @classmethod
     def create_reward_tree(cls, actions, action_blocks):
         """
-        Returns a reward Tree from actionBlock+ AST
+        Returns a reward Tree from actionBlock+ AST. The returned reward tree
+        is an extended Tree whose leaves' values contain a list of multiple subtrees
 
         :param actions: list of all action names
         :param action_blocks: list of actionBlock AST
@@ -174,10 +145,10 @@ class RewardTreeBuilder(object):
 
         for action_block in action_blocks:
             cost_block = action_block.costBlock()
-            states, state_rewards = cls.get_state_rewards(cost_block)
+            reward_trees = []
 
-            extended_tree = utils.create_base_trees(states)
-            RewardTreeBuilder.insert_reward_leaves(extended_tree, state_rewards)
+            for dtree in cost_block.dtree():
+                reward_trees.append(utils.create_dtree(dtree, lambda l: -l))
 
             parent = base_tree
             actions = utils.get_actions(action_block)
@@ -187,50 +158,10 @@ class RewardTreeBuilder(object):
                 else:
                     parent = parent.right
 
+            extended_tree = Tree(Node('branches', reward_trees))
             if parent.node.name in actions:
                 parent.left = extended_tree
             else:
                 parent.right = extended_tree
 
         return base_tree
-
-    @classmethod
-    def insert_reward_leaves(cls, states_tree, state_rewards, accum=0):
-        """
-        Inserts reward values accumulated along each path of a state tree as its
-        leaves. The state tree is consists of state variables as internal nodes.
-
-        :param states_tree:
-        :param state_rewards: dict of states to their corresponding rewards
-        :param accum: reward accumulated from the parents of the given state tree
-        """
-
-        state = states_tree.node.name
-        pos_reward = accum + state_rewards[state][0]
-        neg_reward = accum + state_rewards[state][1]
-
-        if states_tree.left is None and states_tree.right is None:
-            states_tree.left = Tree(Node('leaf', pos_reward))
-            states_tree.right = Tree(Node('leaf', neg_reward))
-            return
-
-        cls.insert_reward_leaves(states_tree.left, state_rewards, pos_reward)
-        cls.insert_reward_leaves(states_tree.right, state_rewards, neg_reward)
-
-    @classmethod
-    def get_state_rewards(cls, cost_block):
-        """
-        Returns the states and their associated rewards from a cost block AST
-        """
-        states = []
-        rewards = {}  # state => (+reward, -reward)
-
-        for dtree in cost_block.dtree():
-            state = dtree.node().ID().getText()
-            pos_reward = -1 * float(dtree.left.left.node().getText())
-            neg_reward = -1 * float(dtree.right.left.node().getText())
-
-            states.append(state)
-            rewards[state] = (pos_reward, neg_reward)
-
-        return states, rewards

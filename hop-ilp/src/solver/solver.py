@@ -111,7 +111,7 @@ class Solver(object):
 
             p[0] += 1
 
-        transition_tree.traverse_paths(determinize_path)
+        transition_tree.traverse_paths(determinize_path, [])
         return path_vars
 
     def combine_paths(self, k, t, v, path_vars):
@@ -128,21 +128,26 @@ class Solver(object):
         m = self.m
         p = [0]
 
-        def func(nodes):
-            for k in range(num_futures):
-                for t in range(self.problem.horizon):
-                    coeff = 1./num_futures * nodes[-1][1]
-                    name = 'w_{}_{}_{}'.format(k, t, p[0])
-                    v = m.addVar(vtype=GRB.BINARY, obj=coeff, name=name)
-                    m.update()
+        def paths_handler(nodes):
+            def subpaths_handler(all_nodes):
+                for k in range(num_futures):
+                    for t in range(self.problem.horizon):
+                        coeff = 1./num_futures * all_nodes[-1][1]
+                        name = 'w_{}_{}_{}'.format(k, t, p[0])
+                        v = m.addVar(vtype=GRB.BINARY, obj=coeff, name=name)
+                        m.update()
 
-                    signed_vars = self.tree_path_to_signed_vars(nodes, k, t)
-                    constr_name = 'reward_{}_{}_{}'.format(k, t, p[0])
-                    utils.add_and_constraints(m, signed_vars, v,
-                                              name=constr_name)
-            p[0] += 1
+                        signed_vars = self.tree_path_to_signed_vars(all_nodes,
+                                                                    k, t)
+                        constr_name = 'reward_{}_{}_{}'.format(k, t, p[0])
+                        utils.add_and_constraints(m, signed_vars, v,
+                                                  name=constr_name)
+                p[0] += 1
 
-        self.problem.reward_tree.traverse_paths(func)
+            for subtree in nodes[-1][1]:
+                subtree.traverse_paths(subpaths_handler, nodes[:-1])
+
+        self.problem.reward_tree.traverse_paths(paths_handler, [])
 
         m.ModelSense = GRB.MAXIMIZE
         logger.info('added_hop_quality_criterion')

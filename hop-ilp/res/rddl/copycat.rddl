@@ -36,13 +36,12 @@ non-fluents copycat2x2 {
     domain = copycat;
 
     objects {
-        x_index : {x1, x2, x3};
-        y_index : {y1, y2, y3};
+        x_index : {x1, x2};
+        y_index : {y1, y2};
     };
 
     non-fluents {
         PREV(y1, y2);
-        PREV(y2, y3);
     };
 }
 
@@ -52,11 +51,11 @@ instance inst_copycat {
     non-fluents = copycat2x2;
 
     init-state {
-        x(x1) = true; x(x2) = false; x(x3) = true;
-        y(y1) = false; y(y2) = false; y(y3) = false;
+        x(x1) = true; x(x2) = false;
+        y(y1) = false; y(y2) = false;
     };
 
-    max-nondef-actions = 3;
+    max-nondef-actions = 2;
     horizon  = 5;
     discount = 0.9;
 }

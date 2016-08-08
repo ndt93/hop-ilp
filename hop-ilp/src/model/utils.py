@@ -31,3 +31,35 @@ def get_actions(action_block):
 
     return actions_str.split('___')
 
+
+def create_dtree(dtree, leaf_transform=None):
+    """
+    Creates a decision tree from a dtree AST
+    """
+
+    if dtree.left is None and dtree.right is None:
+        val = float(dtree.node().number().getText())
+        if leaf_transform:
+            val = leaf_transform(val)
+
+        return Tree(Node('leaf', val))
+
+    left = create_dtree(dtree.left.left, leaf_transform)
+    right = create_dtree(dtree.right.left, leaf_transform)
+
+    identifier = dtree.node().ID().getText()
+    if identifier.endswith("'"):
+        if dtree.left.node().getText() == 'true':
+            return left
+        else:
+            return right
+
+    root = Tree(Node(identifier))
+    if dtree.left.node().getText() == 'true':
+        root.left = left
+        root.right = right
+    else:
+        root.right = left
+        root.left = right
+
+    return root

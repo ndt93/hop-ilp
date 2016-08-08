@@ -8,6 +8,9 @@ class Node(object):
         if self.value is None:
             return self.name
 
+        if self.name == 'branches':
+            return '\n'.join([str(v) for v in self.value])
+
         if self.name == 'leaf':
             return str(self.value)
 
@@ -40,7 +43,7 @@ class Tree(object):
 
         return '{}\n{}\n{}'.format(self.node, left_str, right_str)
 
-    def traverse_paths(self, func, nodes_on_path=[]):
+    def traverse_paths(self, func, nodes_on_path):
         """
         Traverses all paths of this tree and apply `func` on the list of
         nodes along a path every time a leaf node is reached
