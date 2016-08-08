@@ -1,0 +1,62 @@
+////////////////////////////////////////////////////////////////////////
+// Copycat problem domain
+//
+// Author: Nguyen Duc Thien (thien [at] u.nus.edu)
+////////////////////////////////////////////////////////////////////////
+domain copycat {
+
+	requirements = { reward-deterministic };
+
+    types {
+        x_index : object;
+        y_index : object;
+    };
+
+	pvariables {
+        PREV(y_index, y_index) : { non-fluent, y_index, default = false };
+
+		x(x_index) : { state-fluent,  bool, default = false };
+		y(y_index) : { state-fluent,  bool, default = false };
+		a(x_index) : { action-fluent, bool, default = false };
+	};
+
+	cpfs {
+        x'(?i) = Bernoulli(0.5);
+        y'(?i) = if (y(?i)) then KronDelta(true)
+                 else if ([forall_{?j : x_index} x(?j) == a(?j)]
+                          ^ [forall_{?j : y_index} ~PREV(?j, ?i) | y(?j)])
+                 then Bernoulli(0.49)
+                 else KronDelta(false);
+	};
+
+	reward = sum_{?i : y_index} y(?i);
+}
+
+non-fluents copycat2x2 {
+    domain = copycat;
+
+    objects {
+        x_index : {x1, x2, x3};
+        y_index : {y1, y2, y3};
+    };
+
+    non-fluents {
+        PREV(y1, y2);
+        PREV(y2, y3);
+    };
+}
+
+instance inst_copycat {
+    domain = copycat;
+
+    non-fluents = copycat2x2;
+
+    init-state {
+        x(x1) = true; x(x2) = false; x(x3) = true;
+        y(y1) = false; y(y2) = false; y(y3) = false;
+    };
+
+    max-nondef-actions = 3;
+    horizon  = 5;
+    discount = 0.9;
+}
