@@ -23,10 +23,7 @@ class Copycat(Experiment):
         total_reward = 0
         for step in range(self.num_steps):
             actions, _ = self.solver.solve()
-
-            logger.info('{}. X: {}'.format(step, self.x_states))
-            logger.info('{}. Y: {}'.format(step, self.y_states))
-            logger.info('{}. A: {}'.format(step, actions))
+            self.log_results(step, actions)
 
             self.update_states(actions)
             reward = self.get_reward()
@@ -37,6 +34,15 @@ class Copycat(Experiment):
             self.solver.init_next_step(all_states)
 
         logger.info('Total Reward: {}'.format(total_reward))
+
+    def log_results(self, step, actions):
+        x_states_str = Experiment.str_sorted_dict(self.x_states)
+        y_states_str = Experiment.str_sorted_dict(self.y_states)
+        actions_str = Experiment.str_sorted_dict(actions)
+
+        logger.info('{}. X: {}'.format(step, x_states_str))
+        logger.info('{}. Y: {}'.format(step, y_states_str))
+        logger.info('{}. A: {}'.format(step, actions_str))
 
     def update_states(self, actions):
         is_matched = True

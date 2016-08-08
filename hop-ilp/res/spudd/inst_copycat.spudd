@@ -4,21 +4,27 @@
 (variables 
 	(x__x1 true false)
 	(x__x2 true false)
+	(x__x3 true false)
 	(y__y1 true false)
 	(y__y2 true false)
+	(y__y3 true false)
 )
 
 init [*
 	(x__x1 (true (1.0)) (false (0.0)))
 	(x__x2 (true (0.0)) (false (1.0)))
+	(x__x3 (true (1.0)) (false (0.0)))
 	(y__y1 (true (0.0)) (false (1.0)))
 	(y__y2 (true (0.0)) (false (1.0)))
+	(y__y3 (true (0.0)) (false (1.0)))
 ]
 
 action a__x1
 	x__x1
 		(0.5)
 	x__x2
+		(0.5)
+	x__x3
 		(0.5)
 	y__y1
 		(x__x1 
@@ -30,13 +36,21 @@ action a__x1
 					(false (y__y1' 
 						(true (0.0))
 						(false (1.0))))))
-				(false (y__y1 
-					(true (y__y1' 
-						(true (1.0))
-						(false (0.0))))
-					(false (y__y1' 
-						(true (0.49))
-						(false (0.51))))))))
+				(false (x__x3 
+					(true (y__y1 
+						(true (y__y1' 
+							(true (1.0))
+							(false (0.0))))
+						(false (y__y1' 
+							(true (0.0))
+							(false (1.0))))))
+					(false (y__y1 
+						(true (y__y1' 
+							(true (1.0))
+							(false (0.0))))
+						(false (y__y1' 
+							(true (0.49))
+							(false (0.51))))))))))
 			(false (y__y1 
 				(true (y__y1' 
 					(true (1.0))
@@ -54,14 +68,418 @@ action a__x1
 					(false (y__y2' 
 						(true (0.0))
 						(false (1.0))))))
-				(false (y__y1 
+				(false (x__x3 
 					(true (y__y2 
 						(true (y__y2' 
 							(true (1.0))
 							(false (0.0))))
 						(false (y__y2' 
+							(true (0.0))
+							(false (1.0))))))
+					(false (y__y1 
+						(true (y__y2 
+							(true (y__y2' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y2' 
+								(true (0.49))
+								(false (0.51))))))
+						(false (y__y2 
+							(true (y__y2' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y2' 
+								(true (0.0))
+								(false (1.0))))))))))))
+			(false (y__y2 
+				(true (y__y2' 
+					(true (1.0))
+					(false (0.0))))
+				(false (y__y2' 
+					(true (0.0))
+					(false (1.0)))))))
+	y__y3
+		(x__x1 
+			(true (x__x2 
+				(true (y__y3 
+					(true (y__y3' 
+						(true (1.0))
+						(false (0.0))))
+					(false (y__y3' 
+						(true (0.0))
+						(false (1.0))))))
+				(false (x__x3 
+					(true (y__y3 
+						(true (y__y3' 
+							(true (1.0))
+							(false (0.0))))
+						(false (y__y3' 
+							(true (0.0))
+							(false (1.0))))))
+					(false (y__y2 
+						(true (y__y3 
+							(true (y__y3' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y3' 
+								(true (0.49))
+								(false (0.51))))))
+						(false (y__y3 
+							(true (y__y3' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y3' 
+								(true (0.0))
+								(false (1.0))))))))))))
+			(false (y__y3 
+				(true (y__y3' 
+					(true (1.0))
+					(false (0.0))))
+				(false (y__y3' 
+					(true (0.0))
+					(false (1.0)))))))
+	cost [+ 
+		(y__y1 
+			(true (-1.0))
+			(false (0.0)))
+		(y__y2 
+			(true (-1.0))
+			(false (0.0)))
+		(y__y3 
+			(true (-1.0))
+			(false (0.0)))
+	]
+endaction
+
+action a__x1___a__x2
+	x__x1
+		(0.5)
+	x__x2
+		(0.5)
+	x__x3
+		(0.5)
+	y__y1
+		(x__x1 
+			(true (x__x2 
+				(true (x__x3 
+					(true (y__y1 
+						(true (y__y1' 
+							(true (1.0))
+							(false (0.0))))
+						(false (y__y1' 
+							(true (0.0))
+							(false (1.0))))))
+					(false (y__y1 
+						(true (y__y1' 
+							(true (1.0))
+							(false (0.0))))
+						(false (y__y1' 
+							(true (0.49))
+							(false (0.51))))))))
+				(false (y__y1 
+					(true (y__y1' 
+						(true (1.0))
+						(false (0.0))))
+					(false (y__y1' 
+						(true (0.0))
+						(false (1.0))))))))
+			(false (y__y1 
+				(true (y__y1' 
+					(true (1.0))
+					(false (0.0))))
+				(false (y__y1' 
+					(true (0.0))
+					(false (1.0)))))))
+	y__y2
+		(x__x1 
+			(true (x__x2 
+				(true (x__x3 
+					(true (y__y2 
+						(true (y__y2' 
+							(true (1.0))
+							(false (0.0))))
+						(false (y__y2' 
+							(true (0.0))
+							(false (1.0))))))
+					(false (y__y1 
+						(true (y__y2 
+							(true (y__y2' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y2' 
+								(true (0.49))
+								(false (0.51))))))
+						(false (y__y2 
+							(true (y__y2' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y2' 
+								(true (0.0))
+								(false (1.0))))))))))
+				(false (y__y2 
+					(true (y__y2' 
+						(true (1.0))
+						(false (0.0))))
+					(false (y__y2' 
+						(true (0.0))
+						(false (1.0))))))))
+			(false (y__y2 
+				(true (y__y2' 
+					(true (1.0))
+					(false (0.0))))
+				(false (y__y2' 
+					(true (0.0))
+					(false (1.0)))))))
+	y__y3
+		(x__x1 
+			(true (x__x2 
+				(true (x__x3 
+					(true (y__y3 
+						(true (y__y3' 
+							(true (1.0))
+							(false (0.0))))
+						(false (y__y3' 
+							(true (0.0))
+							(false (1.0))))))
+					(false (y__y2 
+						(true (y__y3 
+							(true (y__y3' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y3' 
+								(true (0.49))
+								(false (0.51))))))
+						(false (y__y3 
+							(true (y__y3' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y3' 
+								(true (0.0))
+								(false (1.0))))))))))
+				(false (y__y3 
+					(true (y__y3' 
+						(true (1.0))
+						(false (0.0))))
+					(false (y__y3' 
+						(true (0.0))
+						(false (1.0))))))))
+			(false (y__y3 
+				(true (y__y3' 
+					(true (1.0))
+					(false (0.0))))
+				(false (y__y3' 
+					(true (0.0))
+					(false (1.0)))))))
+	cost [+ 
+		(y__y1 
+			(true (-1.0))
+			(false (0.0)))
+		(y__y2 
+			(true (-1.0))
+			(false (0.0)))
+		(y__y3 
+			(true (-1.0))
+			(false (0.0)))
+	]
+endaction
+
+action a__x1___a__x2___a__x3
+	x__x1
+		(0.5)
+	x__x2
+		(0.5)
+	x__x3
+		(0.5)
+	y__y1
+		(x__x1 
+			(true (x__x2 
+				(true (x__x3 
+					(true (y__y1 
+						(true (y__y1' 
+							(true (1.0))
+							(false (0.0))))
+						(false (y__y1' 
 							(true (0.49))
 							(false (0.51))))))
+					(false (y__y1 
+						(true (y__y1' 
+							(true (1.0))
+							(false (0.0))))
+						(false (y__y1' 
+							(true (0.0))
+							(false (1.0))))))))
+				(false (y__y1 
+					(true (y__y1' 
+						(true (1.0))
+						(false (0.0))))
+					(false (y__y1' 
+						(true (0.0))
+						(false (1.0))))))))
+			(false (y__y1 
+				(true (y__y1' 
+					(true (1.0))
+					(false (0.0))))
+				(false (y__y1' 
+					(true (0.0))
+					(false (1.0)))))))
+	y__y2
+		(x__x1 
+			(true (x__x2 
+				(true (x__x3 
+					(true (y__y1 
+						(true (y__y2 
+							(true (y__y2' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y2' 
+								(true (0.49))
+								(false (0.51))))))
+						(false (y__y2 
+							(true (y__y2' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y2' 
+								(true (0.0))
+								(false (1.0))))))))
+					(false (y__y2 
+						(true (y__y2' 
+							(true (1.0))
+							(false (0.0))))
+						(false (y__y2' 
+							(true (0.0))
+							(false (1.0))))))))
+				(false (y__y2 
+					(true (y__y2' 
+						(true (1.0))
+						(false (0.0))))
+					(false (y__y2' 
+						(true (0.0))
+						(false (1.0))))))))
+			(false (y__y2 
+				(true (y__y2' 
+					(true (1.0))
+					(false (0.0))))
+				(false (y__y2' 
+					(true (0.0))
+					(false (1.0)))))))
+	y__y3
+		(x__x1 
+			(true (x__x2 
+				(true (x__x3 
+					(true (y__y2 
+						(true (y__y3 
+							(true (y__y3' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y3' 
+								(true (0.49))
+								(false (0.51))))))
+						(false (y__y3 
+							(true (y__y3' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y3' 
+								(true (0.0))
+								(false (1.0))))))))
+					(false (y__y3 
+						(true (y__y3' 
+							(true (1.0))
+							(false (0.0))))
+						(false (y__y3' 
+							(true (0.0))
+							(false (1.0))))))))
+				(false (y__y3 
+					(true (y__y3' 
+						(true (1.0))
+						(false (0.0))))
+					(false (y__y3' 
+						(true (0.0))
+						(false (1.0))))))))
+			(false (y__y3 
+				(true (y__y3' 
+					(true (1.0))
+					(false (0.0))))
+				(false (y__y3' 
+					(true (0.0))
+					(false (1.0)))))))
+	cost [+ 
+		(y__y1 
+			(true (-1.0))
+			(false (0.0)))
+		(y__y2 
+			(true (-1.0))
+			(false (0.0)))
+		(y__y3 
+			(true (-1.0))
+			(false (0.0)))
+	]
+endaction
+
+action a__x1___a__x3
+	x__x1
+		(0.5)
+	x__x2
+		(0.5)
+	x__x3
+		(0.5)
+	y__y1
+		(x__x1 
+			(true (x__x2 
+				(true (y__y1 
+					(true (y__y1' 
+						(true (1.0))
+						(false (0.0))))
+					(false (y__y1' 
+						(true (0.0))
+						(false (1.0))))))
+				(false (x__x3 
+					(true (y__y1 
+						(true (y__y1' 
+							(true (1.0))
+							(false (0.0))))
+						(false (y__y1' 
+							(true (0.49))
+							(false (0.51))))))
+					(false (y__y1 
+						(true (y__y1' 
+							(true (1.0))
+							(false (0.0))))
+						(false (y__y1' 
+							(true (0.0))
+							(false (1.0))))))))))
+			(false (y__y1 
+				(true (y__y1' 
+					(true (1.0))
+					(false (0.0))))
+				(false (y__y1' 
+					(true (0.0))
+					(false (1.0)))))))
+	y__y2
+		(x__x1 
+			(true (x__x2 
+				(true (y__y2 
+					(true (y__y2' 
+						(true (1.0))
+						(false (0.0))))
+					(false (y__y2' 
+						(true (0.0))
+						(false (1.0))))))
+				(false (x__x3 
+					(true (y__y1 
+						(true (y__y2 
+							(true (y__y2' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y2' 
+								(true (0.49))
+								(false (0.51))))))
+						(false (y__y2 
+							(true (y__y2' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y2' 
+								(true (0.0))
+								(false (1.0))))))))
 					(false (y__y2 
 						(true (y__y2' 
 							(true (1.0))
@@ -76,75 +494,44 @@ action a__x1
 				(false (y__y2' 
 					(true (0.0))
 					(false (1.0)))))))
-	cost [+ 
-		(y__y1 
-			(true (-1.0))
-			(false (0.0)))
-		(y__y2 
-			(true (-1.0))
-			(false (0.0)))
-	]
-endaction
-
-action a__x1___a__x2
-	x__x1
-		(0.5)
-	x__x2
-		(0.5)
-	y__y1
+	y__y3
 		(x__x1 
 			(true (x__x2 
-				(true (y__y1 
-					(true (y__y1' 
+				(true (y__y3 
+					(true (y__y3' 
 						(true (1.0))
 						(false (0.0))))
-					(false (y__y1' 
-						(true (0.49))
-						(false (0.51))))))
-				(false (y__y1 
-					(true (y__y1' 
-						(true (1.0))
-						(false (0.0))))
-					(false (y__y1' 
+					(false (y__y3' 
 						(true (0.0))
-						(false (1.0))))))))
-			(false (y__y1 
-				(true (y__y1' 
-					(true (1.0))
-					(false (0.0))))
-				(false (y__y1' 
-					(true (0.0))
-					(false (1.0)))))))
-	y__y2
-		(x__x1 
-			(true (x__x2 
-				(true (y__y1 
+						(false (1.0))))))
+				(false (x__x3 
 					(true (y__y2 
-						(true (y__y2' 
+						(true (y__y3 
+							(true (y__y3' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y3' 
+								(true (0.49))
+								(false (0.51))))))
+						(false (y__y3 
+							(true (y__y3' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y3' 
+								(true (0.0))
+								(false (1.0))))))))
+					(false (y__y3 
+						(true (y__y3' 
 							(true (1.0))
 							(false (0.0))))
-						(false (y__y2' 
-							(true (0.49))
-							(false (0.51))))))
-					(false (y__y2 
-						(true (y__y2' 
-							(true (1.0))
-							(false (0.0))))
-						(false (y__y2' 
+						(false (y__y3' 
 							(true (0.0))
-							(false (1.0))))))))
-				(false (y__y2 
-					(true (y__y2' 
-						(true (1.0))
-						(false (0.0))))
-					(false (y__y2' 
-						(true (0.0))
-						(false (1.0))))))))
-			(false (y__y2 
-				(true (y__y2' 
+							(false (1.0))))))))))
+			(false (y__y3 
+				(true (y__y3' 
 					(true (1.0))
 					(false (0.0))))
-				(false (y__y2' 
+				(false (y__y3' 
 					(true (0.0))
 					(false (1.0)))))))
 	cost [+ 
@@ -152,6 +539,9 @@ action a__x1___a__x2
 			(true (-1.0))
 			(false (0.0)))
 		(y__y2 
+			(true (-1.0))
+			(false (0.0)))
+		(y__y3 
 			(true (-1.0))
 			(false (0.0)))
 	]
@@ -161,6 +551,8 @@ action a__x2
 	x__x1
 		(0.5)
 	x__x2
+		(0.5)
+	x__x3
 		(0.5)
 	y__y1
 		(x__x1 
@@ -172,13 +564,21 @@ action a__x2
 					(true (0.0))
 					(false (1.0))))))
 			(false (x__x2 
-				(true (y__y1 
-					(true (y__y1' 
-						(true (1.0))
-						(false (0.0))))
-					(false (y__y1' 
-						(true (0.49))
-						(false (0.51))))))
+				(true (x__x3 
+					(true (y__y1 
+						(true (y__y1' 
+							(true (1.0))
+							(false (0.0))))
+						(false (y__y1' 
+							(true (0.0))
+							(false (1.0))))))
+					(false (y__y1 
+						(true (y__y1' 
+							(true (1.0))
+							(false (0.0))))
+						(false (y__y1' 
+							(true (0.49))
+							(false (0.51))))))))
 				(false (y__y1 
 					(true (y__y1' 
 						(true (1.0))
@@ -196,14 +596,154 @@ action a__x2
 					(true (0.0))
 					(false (1.0))))))
 			(false (x__x2 
-				(true (y__y1 
+				(true (x__x3 
 					(true (y__y2 
 						(true (y__y2' 
 							(true (1.0))
 							(false (0.0))))
 						(false (y__y2' 
+							(true (0.0))
+							(false (1.0))))))
+					(false (y__y1 
+						(true (y__y2 
+							(true (y__y2' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y2' 
+								(true (0.49))
+								(false (0.51))))))
+						(false (y__y2 
+							(true (y__y2' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y2' 
+								(true (0.0))
+								(false (1.0))))))))))
+				(false (y__y2 
+					(true (y__y2' 
+						(true (1.0))
+						(false (0.0))))
+					(false (y__y2' 
+						(true (0.0))
+						(false (1.0)))))))))
+	y__y3
+		(x__x1 
+			(true (y__y3 
+				(true (y__y3' 
+					(true (1.0))
+					(false (0.0))))
+				(false (y__y3' 
+					(true (0.0))
+					(false (1.0))))))
+			(false (x__x2 
+				(true (x__x3 
+					(true (y__y3 
+						(true (y__y3' 
+							(true (1.0))
+							(false (0.0))))
+						(false (y__y3' 
+							(true (0.0))
+							(false (1.0))))))
+					(false (y__y2 
+						(true (y__y3 
+							(true (y__y3' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y3' 
+								(true (0.49))
+								(false (0.51))))))
+						(false (y__y3 
+							(true (y__y3' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y3' 
+								(true (0.0))
+								(false (1.0))))))))))
+				(false (y__y3 
+					(true (y__y3' 
+						(true (1.0))
+						(false (0.0))))
+					(false (y__y3' 
+						(true (0.0))
+						(false (1.0)))))))))
+	cost [+ 
+		(y__y1 
+			(true (-1.0))
+			(false (0.0)))
+		(y__y2 
+			(true (-1.0))
+			(false (0.0)))
+		(y__y3 
+			(true (-1.0))
+			(false (0.0)))
+	]
+endaction
+
+action a__x2___a__x3
+	x__x1
+		(0.5)
+	x__x2
+		(0.5)
+	x__x3
+		(0.5)
+	y__y1
+		(x__x1 
+			(true (y__y1 
+				(true (y__y1' 
+					(true (1.0))
+					(false (0.0))))
+				(false (y__y1' 
+					(true (0.0))
+					(false (1.0))))))
+			(false (x__x2 
+				(true (x__x3 
+					(true (y__y1 
+						(true (y__y1' 
+							(true (1.0))
+							(false (0.0))))
+						(false (y__y1' 
 							(true (0.49))
 							(false (0.51))))))
+					(false (y__y1 
+						(true (y__y1' 
+							(true (1.0))
+							(false (0.0))))
+						(false (y__y1' 
+							(true (0.0))
+							(false (1.0))))))))
+				(false (y__y1 
+					(true (y__y1' 
+						(true (1.0))
+						(false (0.0))))
+					(false (y__y1' 
+						(true (0.0))
+						(false (1.0)))))))))
+	y__y2
+		(x__x1 
+			(true (y__y2 
+				(true (y__y2' 
+					(true (1.0))
+					(false (0.0))))
+				(false (y__y2' 
+					(true (0.0))
+					(false (1.0))))))
+			(false (x__x2 
+				(true (x__x3 
+					(true (y__y1 
+						(true (y__y2 
+							(true (y__y2' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y2' 
+								(true (0.49))
+								(false (0.51))))))
+						(false (y__y2 
+							(true (y__y2' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y2' 
+								(true (0.0))
+								(false (1.0))))))))
 					(false (y__y2 
 						(true (y__y2' 
 							(true (1.0))
@@ -218,6 +758,46 @@ action a__x2
 					(false (y__y2' 
 						(true (0.0))
 						(false (1.0)))))))))
+	y__y3
+		(x__x1 
+			(true (y__y3 
+				(true (y__y3' 
+					(true (1.0))
+					(false (0.0))))
+				(false (y__y3' 
+					(true (0.0))
+					(false (1.0))))))
+			(false (x__x2 
+				(true (x__x3 
+					(true (y__y2 
+						(true (y__y3 
+							(true (y__y3' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y3' 
+								(true (0.49))
+								(false (0.51))))))
+						(false (y__y3 
+							(true (y__y3' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y3' 
+								(true (0.0))
+								(false (1.0))))))))
+					(false (y__y3 
+						(true (y__y3' 
+							(true (1.0))
+							(false (0.0))))
+						(false (y__y3' 
+							(true (0.0))
+							(false (1.0))))))))
+				(false (y__y3 
+					(true (y__y3' 
+						(true (1.0))
+						(false (0.0))))
+					(false (y__y3' 
+						(true (0.0))
+						(false (1.0)))))))))
 	cost [+ 
 		(y__y1 
 			(true (-1.0))
@@ -225,13 +805,18 @@ action a__x2
 		(y__y2 
 			(true (-1.0))
 			(false (0.0)))
+		(y__y3 
+			(true (-1.0))
+			(false (0.0)))
 	]
 endaction
 
-action noop
+action a__x3
 	x__x1
 		(0.5)
 	x__x2
+		(0.5)
+	x__x3
 		(0.5)
 	y__y1
 		(x__x1 
@@ -250,13 +835,21 @@ action noop
 					(false (y__y1' 
 						(true (0.0))
 						(false (1.0))))))
-				(false (y__y1 
-					(true (y__y1' 
-						(true (1.0))
-						(false (0.0))))
-					(false (y__y1' 
-						(true (0.49))
-						(false (0.51)))))))))
+				(false (x__x3 
+					(true (y__y1 
+						(true (y__y1' 
+							(true (1.0))
+							(false (0.0))))
+						(false (y__y1' 
+							(true (0.49))
+							(false (0.51))))))
+					(false (y__y1 
+						(true (y__y1' 
+							(true (1.0))
+							(false (0.0))))
+						(false (y__y1' 
+							(true (0.0))
+							(false (1.0)))))))))))
 	y__y2
 		(x__x1 
 			(true (y__y2 
@@ -274,14 +867,22 @@ action noop
 					(false (y__y2' 
 						(true (0.0))
 						(false (1.0))))))
-				(false (y__y1 
-					(true (y__y2 
-						(true (y__y2' 
-							(true (1.0))
-							(false (0.0))))
-						(false (y__y2' 
-							(true (0.49))
-							(false (0.51))))))
+				(false (x__x3 
+					(true (y__y1 
+						(true (y__y2 
+							(true (y__y2' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y2' 
+								(true (0.49))
+								(false (0.51))))))
+						(false (y__y2 
+							(true (y__y2' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y2' 
+								(true (0.0))
+								(false (1.0))))))))
 					(false (y__y2 
 						(true (y__y2' 
 							(true (1.0))
@@ -289,11 +890,186 @@ action noop
 						(false (y__y2' 
 							(true (0.0))
 							(false (1.0)))))))))))
+	y__y3
+		(x__x1 
+			(true (y__y3 
+				(true (y__y3' 
+					(true (1.0))
+					(false (0.0))))
+				(false (y__y3' 
+					(true (0.0))
+					(false (1.0))))))
+			(false (x__x2 
+				(true (y__y3 
+					(true (y__y3' 
+						(true (1.0))
+						(false (0.0))))
+					(false (y__y3' 
+						(true (0.0))
+						(false (1.0))))))
+				(false (x__x3 
+					(true (y__y2 
+						(true (y__y3 
+							(true (y__y3' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y3' 
+								(true (0.49))
+								(false (0.51))))))
+						(false (y__y3 
+							(true (y__y3' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y3' 
+								(true (0.0))
+								(false (1.0))))))))
+					(false (y__y3 
+						(true (y__y3' 
+							(true (1.0))
+							(false (0.0))))
+						(false (y__y3' 
+							(true (0.0))
+							(false (1.0)))))))))))
 	cost [+ 
 		(y__y1 
 			(true (-1.0))
 			(false (0.0)))
 		(y__y2 
+			(true (-1.0))
+			(false (0.0)))
+		(y__y3 
+			(true (-1.0))
+			(false (0.0)))
+	]
+endaction
+
+action noop
+	x__x1
+		(0.5)
+	x__x2
+		(0.5)
+	x__x3
+		(0.5)
+	y__y1
+		(x__x1 
+			(true (y__y1 
+				(true (y__y1' 
+					(true (1.0))
+					(false (0.0))))
+				(false (y__y1' 
+					(true (0.0))
+					(false (1.0))))))
+			(false (x__x2 
+				(true (y__y1 
+					(true (y__y1' 
+						(true (1.0))
+						(false (0.0))))
+					(false (y__y1' 
+						(true (0.0))
+						(false (1.0))))))
+				(false (x__x3 
+					(true (y__y1 
+						(true (y__y1' 
+							(true (1.0))
+							(false (0.0))))
+						(false (y__y1' 
+							(true (0.0))
+							(false (1.0))))))
+					(false (y__y1 
+						(true (y__y1' 
+							(true (1.0))
+							(false (0.0))))
+						(false (y__y1' 
+							(true (0.49))
+							(false (0.51)))))))))))
+	y__y2
+		(x__x1 
+			(true (y__y2 
+				(true (y__y2' 
+					(true (1.0))
+					(false (0.0))))
+				(false (y__y2' 
+					(true (0.0))
+					(false (1.0))))))
+			(false (x__x2 
+				(true (y__y2 
+					(true (y__y2' 
+						(true (1.0))
+						(false (0.0))))
+					(false (y__y2' 
+						(true (0.0))
+						(false (1.0))))))
+				(false (x__x3 
+					(true (y__y2 
+						(true (y__y2' 
+							(true (1.0))
+							(false (0.0))))
+						(false (y__y2' 
+							(true (0.0))
+							(false (1.0))))))
+					(false (y__y1 
+						(true (y__y2 
+							(true (y__y2' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y2' 
+								(true (0.49))
+								(false (0.51))))))
+						(false (y__y2 
+							(true (y__y2' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y2' 
+								(true (0.0))
+								(false (1.0)))))))))))))
+	y__y3
+		(x__x1 
+			(true (y__y3 
+				(true (y__y3' 
+					(true (1.0))
+					(false (0.0))))
+				(false (y__y3' 
+					(true (0.0))
+					(false (1.0))))))
+			(false (x__x2 
+				(true (y__y3 
+					(true (y__y3' 
+						(true (1.0))
+						(false (0.0))))
+					(false (y__y3' 
+						(true (0.0))
+						(false (1.0))))))
+				(false (x__x3 
+					(true (y__y3 
+						(true (y__y3' 
+							(true (1.0))
+							(false (0.0))))
+						(false (y__y3' 
+							(true (0.0))
+							(false (1.0))))))
+					(false (y__y2 
+						(true (y__y3 
+							(true (y__y3' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y3' 
+								(true (0.49))
+								(false (0.51))))))
+						(false (y__y3 
+							(true (y__y3' 
+								(true (1.0))
+								(false (0.0))))
+							(false (y__y3' 
+								(true (0.0))
+								(false (1.0)))))))))))))
+	cost [+ 
+		(y__y1 
+			(true (-1.0))
+			(false (0.0)))
+		(y__y2 
+			(true (-1.0))
+			(false (0.0)))
+		(y__y3 
 			(true (-1.0))
 			(false (0.0)))
 	]

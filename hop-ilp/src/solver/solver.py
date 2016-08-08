@@ -7,7 +7,7 @@ import utils
 
 class Solver(object):
 
-    def __init__(self, name, problem, num_futures, debug=False):
+    def __init__(self, name, problem, num_futures, time_limit=None, debug=False):
         self.problem = problem
         self.num_futures = num_futures
 
@@ -18,6 +18,9 @@ class Solver(object):
         self.add_hop_quality_criterion()
         self.intermediate_vars = []
         self.transition_constrs = self.add_transition_constraints()
+
+        if time_limit:
+            self.m.params.timeLimit = time_limit
 
         if debug:
             self.m.update()
@@ -31,6 +34,9 @@ class Solver(object):
 
         if self.m.Status == GRB.Status.INFEASIBLE or self.m.Status == GRB.Status.INF_OR_UNBD:
             raise Exception('Failed to find solution')
+
+        if self.m.Status == GRB.Status.TIME_LIMIT:
+            logger.info('time_limit_exceeded')
 
         suggested_actions = {}
         for a in self.actions.select('*', 0, 0):
