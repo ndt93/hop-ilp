@@ -18,8 +18,9 @@ class ModelBuilder(spuddVisitor):
         variables = self.get_variables(ctx)
         model.variables = variables
 
-        actions = self.get_all_actions(ctx)
+        actions, max_concurrency = self.get_all_actions(ctx)
         model.actions = actions
+        model.max_concurrency = max_concurrency
 
         transition_trees = TransitionTreesBuilder.\
             create_transition_trees(variables, actions, ctx.actionBlock())
@@ -31,11 +32,15 @@ class ModelBuilder(spuddVisitor):
         return model
 
     def get_all_actions(self, ctx):
-        actions = chain.from_iterable([utils.get_actions(a)
-                                       for a in ctx.actionBlock()])
+        actions_groups = utils.get_all_actions_groups(ctx.actionBlock())
+
+        actions = chain.from_iterable(actions_groups)
         actions = list(set(actions))
         actions.reverse()
-        return actions
+
+        max_concurrency = max([len(g) for g in actions_groups])
+
+        return actions, max_concurrency
 
     def get_variables(self, ctx):
         variables = self.visit(ctx.variablesBlock())
@@ -151,7 +156,7 @@ class RewardTreeBuilder(object):
                 reward_trees.append(utils.create_dtree(dtree, lambda l: -l))
 
             parent = base_tree
-            actions = utils.get_actions(action_block)
+            actions = utils.get_actions_group(action_block)
             while parent.left is not None and parent.right is not None:
                 if parent.node.name in actions:
                     parent = parent.left

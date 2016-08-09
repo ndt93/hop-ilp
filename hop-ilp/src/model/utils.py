@@ -37,21 +37,6 @@ def create_base_trees(variables, paths):
     return result
 
 
-def get_actions(action_block):
-    """
-    Get actions combination for an actionBlock AST
-
-    :return: list of action names
-    """
-
-    actions_str = action_block.ID().getText()
-
-    if actions_str == 'noop':
-        return ()
-
-    return actions_str.split('___')
-
-
 def create_dtree(dtree, leaf_transform=None):
     """
     Creates a decision tree from a dtree AST

@@ -7,6 +7,7 @@ class Model(object):
     transition_trees = {}
     reward_tree = None
     horizon = None
+    max_concurrency = None
 
     def log_transition_trees(self):
         for v, t in self.transition_trees.items():

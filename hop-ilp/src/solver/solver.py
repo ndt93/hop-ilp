@@ -16,6 +16,7 @@ class Solver(object):
         self.init_constrs = self.add_init_states_constraints()
         self.add_hop_action_constraints()
         self.add_hop_quality_criterion()
+        self.add_concurrency_constraints()
         self.intermediate_vars = []
         self.transition_constrs = self.add_transition_constraints()
 
@@ -235,3 +236,19 @@ class Solver(object):
             init_constrs.append(constr)
 
         return init_constrs
+
+    def add_concurrency_constraints(self):
+        horizon = self.problem.horizon
+        max_concurrency = self.problem.max_concurrency
+
+        if max_concurrency == len(self.problem.actions):
+            return
+
+        for k in range(self.num_futures):
+            for t in range(horizon):
+                s = quicksum([self.variables[a]
+                              for a in self.actions.select('*', k, t)])
+                self.m.addConstr(s <= max_concurrency,
+                                 'maxcon_{}_{}'.format(k, t))
+
+        logger.info('added_max_concurrency_constraints')
