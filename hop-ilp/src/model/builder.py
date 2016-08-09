@@ -83,7 +83,8 @@ class TransitionTreesBuilder(object):
         :param action_blocks: list of all actionBlock AST
         """
 
-        base_tree = utils.create_base_trees(actions)
+        actions_groups = utils.get_all_actions_groups(action_blocks)
+        base_tree = utils.create_base_trees(actions, actions_groups)
         trees = {v: deepcopy(base_tree) for v in variables}
 
         for action_block in action_blocks:
@@ -96,9 +97,7 @@ class TransitionTreesBuilder(object):
         """
         Extends all transitions trees with trees found in an actionBlock AST
         """
-
-        actions_str = action_block.ID().getText()
-        actions = [] if actions_str == 'noop' else actions_str.split('___')
+        actions = utils.get_actions_group(action_block)
 
         for ttree in action_block.ttree():
             cls.extend_base_tree(trees[ttree.ID().getText()],
@@ -141,7 +140,8 @@ class RewardTreeBuilder(object):
         :param action_blocks: list of actionBlock AST
         """
 
-        base_tree = utils.create_base_trees(actions)
+        actions_groups = utils.get_all_actions_groups(action_blocks)
+        base_tree = utils.create_base_trees(actions, actions_groups)
 
         for action_block in action_blocks:
             cost_block = action_block.costBlock()
