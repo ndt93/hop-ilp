@@ -22,13 +22,8 @@ def main(argv):
     solver = Solver(problem_name, problem, int(argv[3]),
                     time_limit=time_limit, debug=False)
 
-    experiment_name = argv[1].strip().lower()
-    if experiment_name == 'copycat':
-        copycat = experiment.Copycat(solver)
-        copycat.start()
-    else:
-        rddl_experiment = experiment.RDDLExperiment(solver)
-        rddl_experiment.start()
+    rddl_experiment = experiment.RDDLExperiment(solver)
+    rddl_experiment.start()
 
 if __name__ == '__main__':
     main(sys.argv)
