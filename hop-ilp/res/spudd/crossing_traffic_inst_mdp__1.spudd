@@ -1,7 +1,7 @@
 // Automatically produced by rddl.translate.RDDL2Format
 // SPUDD / Symbolic Perseus Format for 'crossing_traffic_mdp.crossing_traffic_inst_mdp__1'
 
-(variables 
+(variables
 	(obstacle_at__x1_y1 true false)
 	(obstacle_at__x1_y2 true false)
 	(obstacle_at__x1_y3 true false)
@@ -45,227 +45,227 @@ init [*
 
 action move_east
 	obstacle_at__x1_y1
-		(obstacle_at__x1_y1' 
+		(obstacle_at__x1_y1'
 			(true (0.0))
 			(false (1.0)))
 	obstacle_at__x1_y2
-		(obstacle_at__x2_y2 
-			(true (obstacle_at__x1_y2' 
+		(obstacle_at__x2_y2
+			(true (obstacle_at__x1_y2'
 				(true (1.0))
 				(false (0.0))))
-			(false (obstacle_at__x1_y2' 
+			(false (obstacle_at__x1_y2'
 				(true (0.0))
 				(false (1.0)))))
 	obstacle_at__x1_y3
-		(obstacle_at__x1_y3' 
+		(obstacle_at__x1_y3'
 			(true (0.0))
 			(false (1.0)))
 	obstacle_at__x2_y1
-		(obstacle_at__x2_y1' 
+		(obstacle_at__x2_y1'
 			(true (0.0))
 			(false (1.0)))
 	obstacle_at__x2_y2
-		(obstacle_at__x3_y2 
-			(true (obstacle_at__x2_y2' 
+		(obstacle_at__x3_y2
+			(true (obstacle_at__x2_y2'
 				(true (1.0))
 				(false (0.0))))
-			(false (obstacle_at__x2_y2' 
+			(false (obstacle_at__x2_y2'
 				(true (0.0))
 				(false (1.0)))))
 	obstacle_at__x2_y3
-		(obstacle_at__x2_y3' 
+		(obstacle_at__x2_y3'
 			(true (0.0))
 			(false (1.0)))
 	obstacle_at__x3_y1
-		(obstacle_at__x3_y1' 
+		(obstacle_at__x3_y1'
 			(true (0.0))
 			(false (1.0)))
 	obstacle_at__x3_y2
-		(obstacle_at__x3_y2' 
+		(obstacle_at__x3_y2'
 			(true (0.3))
 			(false (0.7)))
 	obstacle_at__x3_y3
-		(obstacle_at__x3_y3' 
+		(obstacle_at__x3_y3'
 			(true (0.0))
 			(false (1.0)))
 	robot_at__x1_y1
-		(robot_at__x1_y1' 
+		(robot_at__x1_y1'
 			(true (0.0))
 			(false (1.0)))
 	robot_at__x1_y2
-		(robot_at__x1_y2' 
+		(robot_at__x1_y2'
 			(true (0.0))
 			(false (1.0)))
 	robot_at__x1_y3
-		(robot_at__x1_y3' 
+		(robot_at__x1_y3'
 			(true (0.0))
 			(false (1.0)))
 	robot_at__x2_y1
-		(obstacle_at__x1_y1 
-			(true (robot_at__x2_y1' 
+		(obstacle_at__x1_y1
+			(true (robot_at__x2_y1'
 				(true (0.0))
 				(false (1.0))))
-			(false (robot_at__x1_y1 
-				(true (robot_at__x3_y3 
-					(true (robot_at__x2_y1' 
+			(false (robot_at__x1_y1
+				(true (robot_at__x3_y3
+					(true (robot_at__x2_y1'
 						(true (0.0))
 						(false (1.0))))
-					(false (robot_at__x2_y1' 
+					(false (robot_at__x2_y1'
 						(true (1.0))
 						(false (0.0))))))
-				(false (robot_at__x2_y1' 
+				(false (robot_at__x2_y1'
 					(true (0.0))
 					(false (1.0)))))))
 	robot_at__x2_y2
-		(obstacle_at__x1_y2 
-			(true (robot_at__x2_y2' 
+		(obstacle_at__x1_y2
+			(true (robot_at__x2_y2'
 				(true (0.0))
 				(false (1.0))))
-			(false (robot_at__x1_y2 
-				(true (robot_at__x3_y3 
-					(true (robot_at__x2_y2' 
+			(false (robot_at__x1_y2
+				(true (robot_at__x3_y3
+					(true (robot_at__x2_y2'
 						(true (0.0))
 						(false (1.0))))
-					(false (robot_at__x2_y2' 
+					(false (robot_at__x2_y2'
 						(true (1.0))
 						(false (0.0))))))
-				(false (robot_at__x2_y2' 
+				(false (robot_at__x2_y2'
 					(true (0.0))
 					(false (1.0)))))))
 	robot_at__x2_y3
-		(obstacle_at__x1_y3 
-			(true (robot_at__x2_y3' 
+		(obstacle_at__x1_y3
+			(true (robot_at__x2_y3'
 				(true (0.0))
 				(false (1.0))))
-			(false (robot_at__x1_y3 
-				(true (robot_at__x3_y3 
-					(true (robot_at__x2_y3' 
+			(false (robot_at__x1_y3
+				(true (robot_at__x3_y3
+					(true (robot_at__x2_y3'
 						(true (0.0))
 						(false (1.0))))
-					(false (robot_at__x2_y3' 
+					(false (robot_at__x2_y3'
 						(true (1.0))
 						(false (0.0))))))
-				(false (robot_at__x2_y3' 
+				(false (robot_at__x2_y3'
 					(true (0.0))
 					(false (1.0)))))))
 	robot_at__x3_y1
-		(obstacle_at__x2_y1 
-			(true (obstacle_at__x3_y1 
-				(true (robot_at__x3_y1' 
+		(obstacle_at__x2_y1
+			(true (obstacle_at__x3_y1
+				(true (robot_at__x3_y1'
 					(true (0.0))
 					(false (1.0))))
-				(false (robot_at__x3_y1 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x3_y1' 
+				(false (robot_at__x3_y1
+					(true (robot_at__x3_y3
+						(true (robot_at__x3_y1'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x3_y1' 
+						(false (robot_at__x3_y1'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x3_y1' 
+					(false (robot_at__x3_y1'
 						(true (0.0))
 						(false (1.0))))))))
-			(false (obstacle_at__x3_y1 
-				(true (robot_at__x2_y1 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x3_y1' 
+			(false (obstacle_at__x3_y1
+				(true (robot_at__x2_y1
+					(true (robot_at__x3_y3
+						(true (robot_at__x3_y1'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x3_y1' 
+						(false (robot_at__x3_y1'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x3_y1' 
+					(false (robot_at__x3_y1'
 						(true (0.0))
 						(false (1.0))))))
-				(false (robot_at__x2_y1 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x3_y1' 
+				(false (robot_at__x2_y1
+					(true (robot_at__x3_y3
+						(true (robot_at__x3_y1'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x3_y1' 
+						(false (robot_at__x3_y1'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x3_y1 
-						(true (robot_at__x3_y3 
-							(true (robot_at__x3_y1' 
+					(false (robot_at__x3_y1
+						(true (robot_at__x3_y3
+							(true (robot_at__x3_y1'
 								(true (0.0))
 								(false (1.0))))
-							(false (robot_at__x3_y1' 
+							(false (robot_at__x3_y1'
 								(true (1.0))
 								(false (0.0))))))
-						(false (robot_at__x3_y1' 
+						(false (robot_at__x3_y1'
 							(true (0.0))
 							(false (1.0)))))))))))
 	robot_at__x3_y2
-		(obstacle_at__x2_y2 
-			(true (obstacle_at__x3_y2 
-				(true (robot_at__x3_y2' 
+		(obstacle_at__x2_y2
+			(true (obstacle_at__x3_y2
+				(true (robot_at__x3_y2'
 					(true (0.0))
 					(false (1.0))))
-				(false (robot_at__x3_y2 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x3_y2' 
+				(false (robot_at__x3_y2
+					(true (robot_at__x3_y3
+						(true (robot_at__x3_y2'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x3_y2' 
+						(false (robot_at__x3_y2'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x3_y2' 
+					(false (robot_at__x3_y2'
 						(true (0.0))
 						(false (1.0))))))))
-			(false (obstacle_at__x3_y2 
-				(true (robot_at__x2_y2 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x3_y2' 
+			(false (obstacle_at__x3_y2
+				(true (robot_at__x2_y2
+					(true (robot_at__x3_y3
+						(true (robot_at__x3_y2'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x3_y2' 
+						(false (robot_at__x3_y2'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x3_y2' 
+					(false (robot_at__x3_y2'
 						(true (0.0))
 						(false (1.0))))))
-				(false (robot_at__x2_y2 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x3_y2' 
+				(false (robot_at__x2_y2
+					(true (robot_at__x3_y3
+						(true (robot_at__x3_y2'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x3_y2' 
+						(false (robot_at__x3_y2'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x3_y2 
-						(true (robot_at__x3_y3 
-							(true (robot_at__x3_y2' 
+					(false (robot_at__x3_y2
+						(true (robot_at__x3_y3
+							(true (robot_at__x3_y2'
 								(true (0.0))
 								(false (1.0))))
-							(false (robot_at__x3_y2' 
+							(false (robot_at__x3_y2'
 								(true (1.0))
 								(false (0.0))))))
-						(false (robot_at__x3_y2' 
+						(false (robot_at__x3_y2'
 							(true (0.0))
 							(false (1.0)))))))))))
 	robot_at__x3_y3
-		(obstacle_at__x2_y3 
-			(true (robot_at__x3_y3 
-				(true (robot_at__x3_y3' 
+		(obstacle_at__x2_y3
+			(true (robot_at__x3_y3
+				(true (robot_at__x3_y3'
 					(true (1.0))
 					(false (0.0))))
-				(false (robot_at__x3_y3' 
+				(false (robot_at__x3_y3'
 					(true (0.0))
 					(false (1.0))))))
-			(false (robot_at__x2_y3 
-				(true (robot_at__x3_y3' 
+			(false (robot_at__x2_y3
+				(true (robot_at__x3_y3'
 					(true (1.0))
 					(false (0.0))))
-				(false (robot_at__x3_y3 
-					(true (robot_at__x3_y3' 
+				(false (robot_at__x3_y3
+					(true (robot_at__x3_y3'
 						(true (1.0))
 						(false (0.0))))
-					(false (robot_at__x3_y3' 
+					(false (robot_at__x3_y3'
 						(true (0.0))
 						(false (1.0)))))))))
-	cost [+ 
-		(robot_at__x3_y3 
+	cost [+
+		(robot_at__x3_y3
 			(true (0.0))
 			(false (1.0)))
 	]
@@ -273,227 +273,227 @@ endaction
 
 action move_north
 	obstacle_at__x1_y1
-		(obstacle_at__x1_y1' 
+		(obstacle_at__x1_y1'
 			(true (0.0))
 			(false (1.0)))
 	obstacle_at__x1_y2
-		(obstacle_at__x2_y2 
-			(true (obstacle_at__x1_y2' 
+		(obstacle_at__x2_y2
+			(true (obstacle_at__x1_y2'
 				(true (1.0))
 				(false (0.0))))
-			(false (obstacle_at__x1_y2' 
+			(false (obstacle_at__x1_y2'
 				(true (0.0))
 				(false (1.0)))))
 	obstacle_at__x1_y3
-		(obstacle_at__x1_y3' 
+		(obstacle_at__x1_y3'
 			(true (0.0))
 			(false (1.0)))
 	obstacle_at__x2_y1
-		(obstacle_at__x2_y1' 
+		(obstacle_at__x2_y1'
 			(true (0.0))
 			(false (1.0)))
 	obstacle_at__x2_y2
-		(obstacle_at__x3_y2 
-			(true (obstacle_at__x2_y2' 
+		(obstacle_at__x3_y2
+			(true (obstacle_at__x2_y2'
 				(true (1.0))
 				(false (0.0))))
-			(false (obstacle_at__x2_y2' 
+			(false (obstacle_at__x2_y2'
 				(true (0.0))
 				(false (1.0)))))
 	obstacle_at__x2_y3
-		(obstacle_at__x2_y3' 
+		(obstacle_at__x2_y3'
 			(true (0.0))
 			(false (1.0)))
 	obstacle_at__x3_y1
-		(obstacle_at__x3_y1' 
+		(obstacle_at__x3_y1'
 			(true (0.0))
 			(false (1.0)))
 	obstacle_at__x3_y2
-		(obstacle_at__x3_y2' 
+		(obstacle_at__x3_y2'
 			(true (0.3))
 			(false (0.7)))
 	obstacle_at__x3_y3
-		(obstacle_at__x3_y3' 
+		(obstacle_at__x3_y3'
 			(true (0.0))
 			(false (1.0)))
 	robot_at__x1_y1
-		(robot_at__x1_y1' 
+		(robot_at__x1_y1'
 			(true (0.0))
 			(false (1.0)))
 	robot_at__x1_y2
-		(obstacle_at__x1_y1 
-			(true (robot_at__x1_y2' 
+		(obstacle_at__x1_y1
+			(true (robot_at__x1_y2'
 				(true (0.0))
 				(false (1.0))))
-			(false (robot_at__x1_y1 
-				(true (robot_at__x3_y3 
-					(true (robot_at__x1_y2' 
+			(false (robot_at__x1_y1
+				(true (robot_at__x3_y3
+					(true (robot_at__x1_y2'
 						(true (0.0))
 						(false (1.0))))
-					(false (robot_at__x1_y2' 
+					(false (robot_at__x1_y2'
 						(true (1.0))
 						(false (0.0))))))
-				(false (robot_at__x1_y2' 
+				(false (robot_at__x1_y2'
 					(true (0.0))
 					(false (1.0)))))))
 	robot_at__x1_y3
-		(obstacle_at__x1_y2 
-			(true (obstacle_at__x1_y3 
-				(true (robot_at__x1_y3' 
+		(obstacle_at__x1_y2
+			(true (obstacle_at__x1_y3
+				(true (robot_at__x1_y3'
 					(true (0.0))
 					(false (1.0))))
-				(false (robot_at__x1_y3 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x1_y3' 
+				(false (robot_at__x1_y3
+					(true (robot_at__x3_y3
+						(true (robot_at__x1_y3'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x1_y3' 
+						(false (robot_at__x1_y3'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x1_y3' 
+					(false (robot_at__x1_y3'
 						(true (0.0))
 						(false (1.0))))))))
-			(false (obstacle_at__x1_y3 
-				(true (robot_at__x1_y2 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x1_y3' 
+			(false (obstacle_at__x1_y3
+				(true (robot_at__x1_y2
+					(true (robot_at__x3_y3
+						(true (robot_at__x1_y3'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x1_y3' 
+						(false (robot_at__x1_y3'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x1_y3' 
+					(false (robot_at__x1_y3'
 						(true (0.0))
 						(false (1.0))))))
-				(false (robot_at__x1_y2 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x1_y3' 
+				(false (robot_at__x1_y2
+					(true (robot_at__x3_y3
+						(true (robot_at__x1_y3'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x1_y3' 
+						(false (robot_at__x1_y3'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x1_y3 
-						(true (robot_at__x3_y3 
-							(true (robot_at__x1_y3' 
+					(false (robot_at__x1_y3
+						(true (robot_at__x3_y3
+							(true (robot_at__x1_y3'
 								(true (0.0))
 								(false (1.0))))
-							(false (robot_at__x1_y3' 
+							(false (robot_at__x1_y3'
 								(true (1.0))
 								(false (0.0))))))
-						(false (robot_at__x1_y3' 
+						(false (robot_at__x1_y3'
 							(true (0.0))
 							(false (1.0)))))))))))
 	robot_at__x2_y1
-		(robot_at__x2_y1' 
+		(robot_at__x2_y1'
 			(true (0.0))
 			(false (1.0)))
 	robot_at__x2_y2
-		(obstacle_at__x2_y1 
-			(true (robot_at__x2_y2' 
+		(obstacle_at__x2_y1
+			(true (robot_at__x2_y2'
 				(true (0.0))
 				(false (1.0))))
-			(false (robot_at__x2_y1 
-				(true (robot_at__x3_y3 
-					(true (robot_at__x2_y2' 
+			(false (robot_at__x2_y1
+				(true (robot_at__x3_y3
+					(true (robot_at__x2_y2'
 						(true (0.0))
 						(false (1.0))))
-					(false (robot_at__x2_y2' 
+					(false (robot_at__x2_y2'
 						(true (1.0))
 						(false (0.0))))))
-				(false (robot_at__x2_y2' 
+				(false (robot_at__x2_y2'
 					(true (0.0))
 					(false (1.0)))))))
 	robot_at__x2_y3
-		(obstacle_at__x2_y2 
-			(true (obstacle_at__x2_y3 
-				(true (robot_at__x2_y3' 
+		(obstacle_at__x2_y2
+			(true (obstacle_at__x2_y3
+				(true (robot_at__x2_y3'
 					(true (0.0))
 					(false (1.0))))
-				(false (robot_at__x2_y3 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x2_y3' 
+				(false (robot_at__x2_y3
+					(true (robot_at__x3_y3
+						(true (robot_at__x2_y3'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x2_y3' 
+						(false (robot_at__x2_y3'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x2_y3' 
+					(false (robot_at__x2_y3'
 						(true (0.0))
 						(false (1.0))))))))
-			(false (obstacle_at__x2_y3 
-				(true (robot_at__x2_y2 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x2_y3' 
+			(false (obstacle_at__x2_y3
+				(true (robot_at__x2_y2
+					(true (robot_at__x3_y3
+						(true (robot_at__x2_y3'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x2_y3' 
+						(false (robot_at__x2_y3'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x2_y3' 
+					(false (robot_at__x2_y3'
 						(true (0.0))
 						(false (1.0))))))
-				(false (robot_at__x2_y2 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x2_y3' 
+				(false (robot_at__x2_y2
+					(true (robot_at__x3_y3
+						(true (robot_at__x2_y3'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x2_y3' 
+						(false (robot_at__x2_y3'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x2_y3 
-						(true (robot_at__x3_y3 
-							(true (robot_at__x2_y3' 
+					(false (robot_at__x2_y3
+						(true (robot_at__x3_y3
+							(true (robot_at__x2_y3'
 								(true (0.0))
 								(false (1.0))))
-							(false (robot_at__x2_y3' 
+							(false (robot_at__x2_y3'
 								(true (1.0))
 								(false (0.0))))))
-						(false (robot_at__x2_y3' 
+						(false (robot_at__x2_y3'
 							(true (0.0))
 							(false (1.0)))))))))))
 	robot_at__x3_y1
-		(robot_at__x3_y1' 
+		(robot_at__x3_y1'
 			(true (0.0))
 			(false (1.0)))
 	robot_at__x3_y2
-		(obstacle_at__x3_y1 
-			(true (robot_at__x3_y2' 
+		(obstacle_at__x3_y1
+			(true (robot_at__x3_y2'
 				(true (0.0))
 				(false (1.0))))
-			(false (robot_at__x3_y1 
-				(true (robot_at__x3_y3 
-					(true (robot_at__x3_y2' 
+			(false (robot_at__x3_y1
+				(true (robot_at__x3_y3
+					(true (robot_at__x3_y2'
 						(true (0.0))
 						(false (1.0))))
-					(false (robot_at__x3_y2' 
+					(false (robot_at__x3_y2'
 						(true (1.0))
 						(false (0.0))))))
-				(false (robot_at__x3_y2' 
+				(false (robot_at__x3_y2'
 					(true (0.0))
 					(false (1.0)))))))
 	robot_at__x3_y3
-		(obstacle_at__x3_y2 
-			(true (robot_at__x3_y3 
-				(true (robot_at__x3_y3' 
+		(obstacle_at__x3_y2
+			(true (robot_at__x3_y3
+				(true (robot_at__x3_y3'
 					(true (1.0))
 					(false (0.0))))
-				(false (robot_at__x3_y3' 
+				(false (robot_at__x3_y3'
 					(true (0.0))
 					(false (1.0))))))
-			(false (robot_at__x3_y2 
-				(true (robot_at__x3_y3' 
+			(false (robot_at__x3_y2
+				(true (robot_at__x3_y3'
 					(true (1.0))
 					(false (0.0))))
-				(false (robot_at__x3_y3 
-					(true (robot_at__x3_y3' 
+				(false (robot_at__x3_y3
+					(true (robot_at__x3_y3'
 						(true (1.0))
 						(false (0.0))))
-					(false (robot_at__x3_y3' 
+					(false (robot_at__x3_y3'
 						(true (0.0))
 						(false (1.0)))))))))
-	cost [+ 
-		(robot_at__x3_y3 
+	cost [+
+		(robot_at__x3_y3
 			(true (0.0))
 			(false (1.0)))
 	]
@@ -501,247 +501,247 @@ endaction
 
 action move_south
 	obstacle_at__x1_y1
-		(obstacle_at__x1_y1' 
+		(obstacle_at__x1_y1'
 			(true (0.0))
 			(false (1.0)))
 	obstacle_at__x1_y2
-		(obstacle_at__x2_y2 
-			(true (obstacle_at__x1_y2' 
+		(obstacle_at__x2_y2
+			(true (obstacle_at__x1_y2'
 				(true (1.0))
 				(false (0.0))))
-			(false (obstacle_at__x1_y2' 
+			(false (obstacle_at__x1_y2'
 				(true (0.0))
 				(false (1.0)))))
 	obstacle_at__x1_y3
-		(obstacle_at__x1_y3' 
+		(obstacle_at__x1_y3'
 			(true (0.0))
 			(false (1.0)))
 	obstacle_at__x2_y1
-		(obstacle_at__x2_y1' 
+		(obstacle_at__x2_y1'
 			(true (0.0))
 			(false (1.0)))
 	obstacle_at__x2_y2
-		(obstacle_at__x3_y2 
-			(true (obstacle_at__x2_y2' 
+		(obstacle_at__x3_y2
+			(true (obstacle_at__x2_y2'
 				(true (1.0))
 				(false (0.0))))
-			(false (obstacle_at__x2_y2' 
+			(false (obstacle_at__x2_y2'
 				(true (0.0))
 				(false (1.0)))))
 	obstacle_at__x2_y3
-		(obstacle_at__x2_y3' 
+		(obstacle_at__x2_y3'
 			(true (0.0))
 			(false (1.0)))
 	obstacle_at__x3_y1
-		(obstacle_at__x3_y1' 
+		(obstacle_at__x3_y1'
 			(true (0.0))
 			(false (1.0)))
 	obstacle_at__x3_y2
-		(obstacle_at__x3_y2' 
+		(obstacle_at__x3_y2'
 			(true (0.3))
 			(false (0.7)))
 	obstacle_at__x3_y3
-		(obstacle_at__x3_y3' 
+		(obstacle_at__x3_y3'
 			(true (0.0))
 			(false (1.0)))
 	robot_at__x1_y1
-		(obstacle_at__x1_y1 
-			(true (obstacle_at__x1_y2 
-				(true (robot_at__x1_y1' 
+		(obstacle_at__x1_y1
+			(true (obstacle_at__x1_y2
+				(true (robot_at__x1_y1'
 					(true (0.0))
 					(false (1.0))))
-				(false (robot_at__x1_y2 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x1_y1' 
+				(false (robot_at__x1_y2
+					(true (robot_at__x3_y3
+						(true (robot_at__x1_y1'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x1_y1' 
+						(false (robot_at__x1_y1'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x1_y1' 
+					(false (robot_at__x1_y1'
 						(true (0.0))
 						(false (1.0))))))))
-			(false (obstacle_at__x1_y2 
-				(true (robot_at__x1_y1 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x1_y1' 
+			(false (obstacle_at__x1_y2
+				(true (robot_at__x1_y1
+					(true (robot_at__x3_y3
+						(true (robot_at__x1_y1'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x1_y1' 
+						(false (robot_at__x1_y1'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x1_y1' 
+					(false (robot_at__x1_y1'
 						(true (0.0))
 						(false (1.0))))))
-				(false (robot_at__x1_y1 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x1_y1' 
+				(false (robot_at__x1_y1
+					(true (robot_at__x3_y3
+						(true (robot_at__x1_y1'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x1_y1' 
+						(false (robot_at__x1_y1'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x1_y2 
-						(true (robot_at__x3_y3 
-							(true (robot_at__x1_y1' 
+					(false (robot_at__x1_y2
+						(true (robot_at__x3_y3
+							(true (robot_at__x1_y1'
 								(true (0.0))
 								(false (1.0))))
-							(false (robot_at__x1_y1' 
+							(false (robot_at__x1_y1'
 								(true (1.0))
 								(false (0.0))))))
-						(false (robot_at__x1_y1' 
+						(false (robot_at__x1_y1'
 							(true (0.0))
 							(false (1.0)))))))))))
 	robot_at__x1_y2
-		(obstacle_at__x1_y3 
-			(true (robot_at__x1_y2' 
+		(obstacle_at__x1_y3
+			(true (robot_at__x1_y2'
 				(true (0.0))
 				(false (1.0))))
-			(false (robot_at__x1_y3 
-				(true (robot_at__x3_y3 
-					(true (robot_at__x1_y2' 
+			(false (robot_at__x1_y3
+				(true (robot_at__x3_y3
+					(true (robot_at__x1_y2'
 						(true (0.0))
 						(false (1.0))))
-					(false (robot_at__x1_y2' 
+					(false (robot_at__x1_y2'
 						(true (1.0))
 						(false (0.0))))))
-				(false (robot_at__x1_y2' 
+				(false (robot_at__x1_y2'
 					(true (0.0))
 					(false (1.0)))))))
 	robot_at__x1_y3
-		(robot_at__x1_y3' 
+		(robot_at__x1_y3'
 			(true (0.0))
 			(false (1.0)))
 	robot_at__x2_y1
-		(obstacle_at__x2_y1 
-			(true (obstacle_at__x2_y2 
-				(true (robot_at__x2_y1' 
+		(obstacle_at__x2_y1
+			(true (obstacle_at__x2_y2
+				(true (robot_at__x2_y1'
 					(true (0.0))
 					(false (1.0))))
-				(false (robot_at__x2_y2 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x2_y1' 
+				(false (robot_at__x2_y2
+					(true (robot_at__x3_y3
+						(true (robot_at__x2_y1'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x2_y1' 
+						(false (robot_at__x2_y1'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x2_y1' 
+					(false (robot_at__x2_y1'
 						(true (0.0))
 						(false (1.0))))))))
-			(false (obstacle_at__x2_y2 
-				(true (robot_at__x2_y1 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x2_y1' 
+			(false (obstacle_at__x2_y2
+				(true (robot_at__x2_y1
+					(true (robot_at__x3_y3
+						(true (robot_at__x2_y1'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x2_y1' 
+						(false (robot_at__x2_y1'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x2_y1' 
+					(false (robot_at__x2_y1'
 						(true (0.0))
 						(false (1.0))))))
-				(false (robot_at__x2_y1 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x2_y1' 
+				(false (robot_at__x2_y1
+					(true (robot_at__x3_y3
+						(true (robot_at__x2_y1'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x2_y1' 
+						(false (robot_at__x2_y1'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x2_y2 
-						(true (robot_at__x3_y3 
-							(true (robot_at__x2_y1' 
+					(false (robot_at__x2_y2
+						(true (robot_at__x3_y3
+							(true (robot_at__x2_y1'
 								(true (0.0))
 								(false (1.0))))
-							(false (robot_at__x2_y1' 
+							(false (robot_at__x2_y1'
 								(true (1.0))
 								(false (0.0))))))
-						(false (robot_at__x2_y1' 
+						(false (robot_at__x2_y1'
 							(true (0.0))
 							(false (1.0)))))))))))
 	robot_at__x2_y2
-		(obstacle_at__x2_y3 
-			(true (robot_at__x2_y2' 
+		(obstacle_at__x2_y3
+			(true (robot_at__x2_y2'
 				(true (0.0))
 				(false (1.0))))
-			(false (robot_at__x2_y3 
-				(true (robot_at__x3_y3 
-					(true (robot_at__x2_y2' 
+			(false (robot_at__x2_y3
+				(true (robot_at__x3_y3
+					(true (robot_at__x2_y2'
 						(true (0.0))
 						(false (1.0))))
-					(false (robot_at__x2_y2' 
+					(false (robot_at__x2_y2'
 						(true (1.0))
 						(false (0.0))))))
-				(false (robot_at__x2_y2' 
+				(false (robot_at__x2_y2'
 					(true (0.0))
 					(false (1.0)))))))
 	robot_at__x2_y3
-		(robot_at__x2_y3' 
+		(robot_at__x2_y3'
 			(true (0.0))
 			(false (1.0)))
 	robot_at__x3_y1
-		(obstacle_at__x3_y1 
-			(true (obstacle_at__x3_y2 
-				(true (robot_at__x3_y1' 
+		(obstacle_at__x3_y1
+			(true (obstacle_at__x3_y2
+				(true (robot_at__x3_y1'
 					(true (0.0))
 					(false (1.0))))
-				(false (robot_at__x3_y2 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x3_y1' 
+				(false (robot_at__x3_y2
+					(true (robot_at__x3_y3
+						(true (robot_at__x3_y1'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x3_y1' 
+						(false (robot_at__x3_y1'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x3_y1' 
+					(false (robot_at__x3_y1'
 						(true (0.0))
 						(false (1.0))))))))
-			(false (obstacle_at__x3_y2 
-				(true (robot_at__x3_y1 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x3_y1' 
+			(false (obstacle_at__x3_y2
+				(true (robot_at__x3_y1
+					(true (robot_at__x3_y3
+						(true (robot_at__x3_y1'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x3_y1' 
+						(false (robot_at__x3_y1'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x3_y1' 
+					(false (robot_at__x3_y1'
 						(true (0.0))
 						(false (1.0))))))
-				(false (robot_at__x3_y1 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x3_y1' 
+				(false (robot_at__x3_y1
+					(true (robot_at__x3_y3
+						(true (robot_at__x3_y1'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x3_y1' 
+						(false (robot_at__x3_y1'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x3_y2 
-						(true (robot_at__x3_y3 
-							(true (robot_at__x3_y1' 
+					(false (robot_at__x3_y2
+						(true (robot_at__x3_y3
+							(true (robot_at__x3_y1'
 								(true (0.0))
 								(false (1.0))))
-							(false (robot_at__x3_y1' 
+							(false (robot_at__x3_y1'
 								(true (1.0))
 								(false (0.0))))))
-						(false (robot_at__x3_y1' 
+						(false (robot_at__x3_y1'
 							(true (0.0))
 							(false (1.0)))))))))))
 	robot_at__x3_y2
-		(robot_at__x3_y2' 
+		(robot_at__x3_y2'
 			(true (0.0))
 			(false (1.0)))
 	robot_at__x3_y3
-		(robot_at__x3_y3 
-			(true (robot_at__x3_y3' 
+		(robot_at__x3_y3
+			(true (robot_at__x3_y3'
 				(true (1.0))
 				(false (0.0))))
-			(false (robot_at__x3_y3' 
+			(false (robot_at__x3_y3'
 				(true (0.0))
 				(false (1.0)))))
-	cost [+ 
-		(robot_at__x3_y3 
+	cost [+
+		(robot_at__x3_y3
 			(true (0.0))
 			(false (1.0)))
 	]
@@ -749,247 +749,247 @@ endaction
 
 action move_west
 	obstacle_at__x1_y1
-		(obstacle_at__x1_y1' 
+		(obstacle_at__x1_y1'
 			(true (0.0))
 			(false (1.0)))
 	obstacle_at__x1_y2
-		(obstacle_at__x2_y2 
-			(true (obstacle_at__x1_y2' 
+		(obstacle_at__x2_y2
+			(true (obstacle_at__x1_y2'
 				(true (1.0))
 				(false (0.0))))
-			(false (obstacle_at__x1_y2' 
+			(false (obstacle_at__x1_y2'
 				(true (0.0))
 				(false (1.0)))))
 	obstacle_at__x1_y3
-		(obstacle_at__x1_y3' 
+		(obstacle_at__x1_y3'
 			(true (0.0))
 			(false (1.0)))
 	obstacle_at__x2_y1
-		(obstacle_at__x2_y1' 
+		(obstacle_at__x2_y1'
 			(true (0.0))
 			(false (1.0)))
 	obstacle_at__x2_y2
-		(obstacle_at__x3_y2 
-			(true (obstacle_at__x2_y2' 
+		(obstacle_at__x3_y2
+			(true (obstacle_at__x2_y2'
 				(true (1.0))
 				(false (0.0))))
-			(false (obstacle_at__x2_y2' 
+			(false (obstacle_at__x2_y2'
 				(true (0.0))
 				(false (1.0)))))
 	obstacle_at__x2_y3
-		(obstacle_at__x2_y3' 
+		(obstacle_at__x2_y3'
 			(true (0.0))
 			(false (1.0)))
 	obstacle_at__x3_y1
-		(obstacle_at__x3_y1' 
+		(obstacle_at__x3_y1'
 			(true (0.0))
 			(false (1.0)))
 	obstacle_at__x3_y2
-		(obstacle_at__x3_y2' 
+		(obstacle_at__x3_y2'
 			(true (0.3))
 			(false (0.7)))
 	obstacle_at__x3_y3
-		(obstacle_at__x3_y3' 
+		(obstacle_at__x3_y3'
 			(true (0.0))
 			(false (1.0)))
 	robot_at__x1_y1
-		(obstacle_at__x1_y1 
-			(true (obstacle_at__x2_y1 
-				(true (robot_at__x1_y1' 
+		(obstacle_at__x1_y1
+			(true (obstacle_at__x2_y1
+				(true (robot_at__x1_y1'
 					(true (0.0))
 					(false (1.0))))
-				(false (robot_at__x2_y1 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x1_y1' 
+				(false (robot_at__x2_y1
+					(true (robot_at__x3_y3
+						(true (robot_at__x1_y1'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x1_y1' 
+						(false (robot_at__x1_y1'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x1_y1' 
+					(false (robot_at__x1_y1'
 						(true (0.0))
 						(false (1.0))))))))
-			(false (obstacle_at__x2_y1 
-				(true (robot_at__x1_y1 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x1_y1' 
+			(false (obstacle_at__x2_y1
+				(true (robot_at__x1_y1
+					(true (robot_at__x3_y3
+						(true (robot_at__x1_y1'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x1_y1' 
+						(false (robot_at__x1_y1'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x1_y1' 
+					(false (robot_at__x1_y1'
 						(true (0.0))
 						(false (1.0))))))
-				(false (robot_at__x1_y1 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x1_y1' 
+				(false (robot_at__x1_y1
+					(true (robot_at__x3_y3
+						(true (robot_at__x1_y1'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x1_y1' 
+						(false (robot_at__x1_y1'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x2_y1 
-						(true (robot_at__x3_y3 
-							(true (robot_at__x1_y1' 
+					(false (robot_at__x2_y1
+						(true (robot_at__x3_y3
+							(true (robot_at__x1_y1'
 								(true (0.0))
 								(false (1.0))))
-							(false (robot_at__x1_y1' 
+							(false (robot_at__x1_y1'
 								(true (1.0))
 								(false (0.0))))))
-						(false (robot_at__x1_y1' 
+						(false (robot_at__x1_y1'
 							(true (0.0))
 							(false (1.0)))))))))))
 	robot_at__x1_y2
-		(obstacle_at__x1_y2 
-			(true (obstacle_at__x2_y2 
-				(true (robot_at__x1_y2' 
+		(obstacle_at__x1_y2
+			(true (obstacle_at__x2_y2
+				(true (robot_at__x1_y2'
 					(true (0.0))
 					(false (1.0))))
-				(false (robot_at__x2_y2 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x1_y2' 
+				(false (robot_at__x2_y2
+					(true (robot_at__x3_y3
+						(true (robot_at__x1_y2'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x1_y2' 
+						(false (robot_at__x1_y2'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x1_y2' 
+					(false (robot_at__x1_y2'
 						(true (0.0))
 						(false (1.0))))))))
-			(false (obstacle_at__x2_y2 
-				(true (robot_at__x1_y2 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x1_y2' 
+			(false (obstacle_at__x2_y2
+				(true (robot_at__x1_y2
+					(true (robot_at__x3_y3
+						(true (robot_at__x1_y2'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x1_y2' 
+						(false (robot_at__x1_y2'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x1_y2' 
+					(false (robot_at__x1_y2'
 						(true (0.0))
 						(false (1.0))))))
-				(false (robot_at__x1_y2 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x1_y2' 
+				(false (robot_at__x1_y2
+					(true (robot_at__x3_y3
+						(true (robot_at__x1_y2'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x1_y2' 
+						(false (robot_at__x1_y2'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x2_y2 
-						(true (robot_at__x3_y3 
-							(true (robot_at__x1_y2' 
+					(false (robot_at__x2_y2
+						(true (robot_at__x3_y3
+							(true (robot_at__x1_y2'
 								(true (0.0))
 								(false (1.0))))
-							(false (robot_at__x1_y2' 
+							(false (robot_at__x1_y2'
 								(true (1.0))
 								(false (0.0))))))
-						(false (robot_at__x1_y2' 
+						(false (robot_at__x1_y2'
 							(true (0.0))
 							(false (1.0)))))))))))
 	robot_at__x1_y3
-		(obstacle_at__x1_y3 
-			(true (obstacle_at__x2_y3 
-				(true (robot_at__x1_y3' 
+		(obstacle_at__x1_y3
+			(true (obstacle_at__x2_y3
+				(true (robot_at__x1_y3'
 					(true (0.0))
 					(false (1.0))))
-				(false (robot_at__x2_y3 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x1_y3' 
+				(false (robot_at__x2_y3
+					(true (robot_at__x3_y3
+						(true (robot_at__x1_y3'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x1_y3' 
+						(false (robot_at__x1_y3'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x1_y3' 
+					(false (robot_at__x1_y3'
 						(true (0.0))
 						(false (1.0))))))))
-			(false (obstacle_at__x2_y3 
-				(true (robot_at__x1_y3 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x1_y3' 
+			(false (obstacle_at__x2_y3
+				(true (robot_at__x1_y3
+					(true (robot_at__x3_y3
+						(true (robot_at__x1_y3'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x1_y3' 
+						(false (robot_at__x1_y3'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x1_y3' 
+					(false (robot_at__x1_y3'
 						(true (0.0))
 						(false (1.0))))))
-				(false (robot_at__x1_y3 
-					(true (robot_at__x3_y3 
-						(true (robot_at__x1_y3' 
+				(false (robot_at__x1_y3
+					(true (robot_at__x3_y3
+						(true (robot_at__x1_y3'
 							(true (0.0))
 							(false (1.0))))
-						(false (robot_at__x1_y3' 
+						(false (robot_at__x1_y3'
 							(true (1.0))
 							(false (0.0))))))
-					(false (robot_at__x2_y3 
-						(true (robot_at__x3_y3 
-							(true (robot_at__x1_y3' 
+					(false (robot_at__x2_y3
+						(true (robot_at__x3_y3
+							(true (robot_at__x1_y3'
 								(true (0.0))
 								(false (1.0))))
-							(false (robot_at__x1_y3' 
+							(false (robot_at__x1_y3'
 								(true (1.0))
 								(false (0.0))))))
-						(false (robot_at__x1_y3' 
+						(false (robot_at__x1_y3'
 							(true (0.0))
 							(false (1.0)))))))))))
 	robot_at__x2_y1
-		(obstacle_at__x3_y1 
-			(true (robot_at__x2_y1' 
+		(obstacle_at__x3_y1
+			(true (robot_at__x2_y1'
 				(true (0.0))
 				(false (1.0))))
-			(false (robot_at__x3_y1 
-				(true (robot_at__x3_y3 
-					(true (robot_at__x2_y1' 
+			(false (robot_at__x3_y1
+				(true (robot_at__x3_y3
+					(true (robot_at__x2_y1'
 						(true (0.0))
 						(false (1.0))))
-					(false (robot_at__x2_y1' 
+					(false (robot_at__x2_y1'
 						(true (1.0))
 						(false (0.0))))))
-				(false (robot_at__x2_y1' 
+				(false (robot_at__x2_y1'
 					(true (0.0))
 					(false (1.0)))))))
 	robot_at__x2_y2
-		(obstacle_at__x3_y2 
-			(true (robot_at__x2_y2' 
+		(obstacle_at__x3_y2
+			(true (robot_at__x2_y2'
 				(true (0.0))
 				(false (1.0))))
-			(false (robot_at__x3_y2 
-				(true (robot_at__x3_y3 
-					(true (robot_at__x2_y2' 
+			(false (robot_at__x3_y2
+				(true (robot_at__x3_y3
+					(true (robot_at__x2_y2'
 						(true (0.0))
 						(false (1.0))))
-					(false (robot_at__x2_y2' 
+					(false (robot_at__x2_y2'
 						(true (1.0))
 						(false (0.0))))))
-				(false (robot_at__x2_y2' 
+				(false (robot_at__x2_y2'
 					(true (0.0))
 					(false (1.0)))))))
 	robot_at__x2_y3
-		(robot_at__x2_y3' 
+		(robot_at__x2_y3'
 			(true (0.0))
 			(false (1.0)))
 	robot_at__x3_y1
-		(robot_at__x3_y1' 
+		(robot_at__x3_y1'
 			(true (0.0))
 			(false (1.0)))
 	robot_at__x3_y2
-		(robot_at__x3_y2' 
+		(robot_at__x3_y2'
 			(true (0.0))
 			(false (1.0)))
 	robot_at__x3_y3
-		(robot_at__x3_y3 
-			(true (robot_at__x3_y3' 
+		(robot_at__x3_y3
+			(true (robot_at__x3_y3'
 				(true (1.0))
 				(false (0.0))))
-			(false (robot_at__x3_y3' 
+			(false (robot_at__x3_y3'
 				(true (0.0))
 				(false (1.0)))))
-	cost [+ 
-		(robot_at__x3_y3 
+	cost [+
+		(robot_at__x3_y3
 			(true (0.0))
 			(false (1.0)))
 	]
@@ -997,187 +997,187 @@ endaction
 
 action noop
 	obstacle_at__x1_y1
-		(obstacle_at__x1_y1' 
+		(obstacle_at__x1_y1'
 			(true (0.0))
 			(false (1.0)))
 	obstacle_at__x1_y2
-		(obstacle_at__x2_y2 
-			(true (obstacle_at__x1_y2' 
+		(obstacle_at__x2_y2
+			(true (obstacle_at__x1_y2'
 				(true (1.0))
 				(false (0.0))))
-			(false (obstacle_at__x1_y2' 
+			(false (obstacle_at__x1_y2'
 				(true (0.0))
 				(false (1.0)))))
 	obstacle_at__x1_y3
-		(obstacle_at__x1_y3' 
+		(obstacle_at__x1_y3'
 			(true (0.0))
 			(false (1.0)))
 	obstacle_at__x2_y1
-		(obstacle_at__x2_y1' 
+		(obstacle_at__x2_y1'
 			(true (0.0))
 			(false (1.0)))
 	obstacle_at__x2_y2
-		(obstacle_at__x3_y2 
-			(true (obstacle_at__x2_y2' 
+		(obstacle_at__x3_y2
+			(true (obstacle_at__x2_y2'
 				(true (1.0))
 				(false (0.0))))
-			(false (obstacle_at__x2_y2' 
+			(false (obstacle_at__x2_y2'
 				(true (0.0))
 				(false (1.0)))))
 	obstacle_at__x2_y3
-		(obstacle_at__x2_y3' 
+		(obstacle_at__x2_y3'
 			(true (0.0))
 			(false (1.0)))
 	obstacle_at__x3_y1
-		(obstacle_at__x3_y1' 
+		(obstacle_at__x3_y1'
 			(true (0.0))
 			(false (1.0)))
 	obstacle_at__x3_y2
-		(obstacle_at__x3_y2' 
+		(obstacle_at__x3_y2'
 			(true (0.3))
 			(false (0.7)))
 	obstacle_at__x3_y3
-		(obstacle_at__x3_y3' 
+		(obstacle_at__x3_y3'
 			(true (0.0))
 			(false (1.0)))
 	robot_at__x1_y1
-		(obstacle_at__x1_y1 
-			(true (robot_at__x1_y1' 
+		(obstacle_at__x1_y1
+			(true (robot_at__x1_y1'
 				(true (0.0))
 				(false (1.0))))
-			(false (robot_at__x1_y1 
-				(true (robot_at__x3_y3 
-					(true (robot_at__x1_y1' 
+			(false (robot_at__x1_y1
+				(true (robot_at__x3_y3
+					(true (robot_at__x1_y1'
 						(true (0.0))
 						(false (1.0))))
-					(false (robot_at__x1_y1' 
+					(false (robot_at__x1_y1'
 						(true (1.0))
 						(false (0.0))))))
-				(false (robot_at__x1_y1' 
+				(false (robot_at__x1_y1'
 					(true (0.0))
 					(false (1.0)))))))
 	robot_at__x1_y2
-		(obstacle_at__x1_y2 
-			(true (robot_at__x1_y2' 
+		(obstacle_at__x1_y2
+			(true (robot_at__x1_y2'
 				(true (0.0))
 				(false (1.0))))
-			(false (robot_at__x1_y2 
-				(true (robot_at__x3_y3 
-					(true (robot_at__x1_y2' 
+			(false (robot_at__x1_y2
+				(true (robot_at__x3_y3
+					(true (robot_at__x1_y2'
 						(true (0.0))
 						(false (1.0))))
-					(false (robot_at__x1_y2' 
+					(false (robot_at__x1_y2'
 						(true (1.0))
 						(false (0.0))))))
-				(false (robot_at__x1_y2' 
+				(false (robot_at__x1_y2'
 					(true (0.0))
 					(false (1.0)))))))
 	robot_at__x1_y3
-		(obstacle_at__x1_y3 
-			(true (robot_at__x1_y3' 
+		(obstacle_at__x1_y3
+			(true (robot_at__x1_y3'
 				(true (0.0))
 				(false (1.0))))
-			(false (robot_at__x1_y3 
-				(true (robot_at__x3_y3 
-					(true (robot_at__x1_y3' 
+			(false (robot_at__x1_y3
+				(true (robot_at__x3_y3
+					(true (robot_at__x1_y3'
 						(true (0.0))
 						(false (1.0))))
-					(false (robot_at__x1_y3' 
+					(false (robot_at__x1_y3'
 						(true (1.0))
 						(false (0.0))))))
-				(false (robot_at__x1_y3' 
+				(false (robot_at__x1_y3'
 					(true (0.0))
 					(false (1.0)))))))
 	robot_at__x2_y1
-		(obstacle_at__x2_y1 
-			(true (robot_at__x2_y1' 
+		(obstacle_at__x2_y1
+			(true (robot_at__x2_y1'
 				(true (0.0))
 				(false (1.0))))
-			(false (robot_at__x2_y1 
-				(true (robot_at__x3_y3 
-					(true (robot_at__x2_y1' 
+			(false (robot_at__x2_y1
+				(true (robot_at__x3_y3
+					(true (robot_at__x2_y1'
 						(true (0.0))
 						(false (1.0))))
-					(false (robot_at__x2_y1' 
+					(false (robot_at__x2_y1'
 						(true (1.0))
 						(false (0.0))))))
-				(false (robot_at__x2_y1' 
+				(false (robot_at__x2_y1'
 					(true (0.0))
 					(false (1.0)))))))
 	robot_at__x2_y2
-		(obstacle_at__x2_y2 
-			(true (robot_at__x2_y2' 
+		(obstacle_at__x2_y2
+			(true (robot_at__x2_y2'
 				(true (0.0))
 				(false (1.0))))
-			(false (robot_at__x2_y2 
-				(true (robot_at__x3_y3 
-					(true (robot_at__x2_y2' 
+			(false (robot_at__x2_y2
+				(true (robot_at__x3_y3
+					(true (robot_at__x2_y2'
 						(true (0.0))
 						(false (1.0))))
-					(false (robot_at__x2_y2' 
+					(false (robot_at__x2_y2'
 						(true (1.0))
 						(false (0.0))))))
-				(false (robot_at__x2_y2' 
+				(false (robot_at__x2_y2'
 					(true (0.0))
 					(false (1.0)))))))
 	robot_at__x2_y3
-		(obstacle_at__x2_y3 
-			(true (robot_at__x2_y3' 
+		(obstacle_at__x2_y3
+			(true (robot_at__x2_y3'
 				(true (0.0))
 				(false (1.0))))
-			(false (robot_at__x2_y3 
-				(true (robot_at__x3_y3 
-					(true (robot_at__x2_y3' 
+			(false (robot_at__x2_y3
+				(true (robot_at__x3_y3
+					(true (robot_at__x2_y3'
 						(true (0.0))
 						(false (1.0))))
-					(false (robot_at__x2_y3' 
+					(false (robot_at__x2_y3'
 						(true (1.0))
 						(false (0.0))))))
-				(false (robot_at__x2_y3' 
+				(false (robot_at__x2_y3'
 					(true (0.0))
 					(false (1.0)))))))
 	robot_at__x3_y1
-		(obstacle_at__x3_y1 
-			(true (robot_at__x3_y1' 
+		(obstacle_at__x3_y1
+			(true (robot_at__x3_y1'
 				(true (0.0))
 				(false (1.0))))
-			(false (robot_at__x3_y1 
-				(true (robot_at__x3_y3 
-					(true (robot_at__x3_y1' 
+			(false (robot_at__x3_y1
+				(true (robot_at__x3_y3
+					(true (robot_at__x3_y1'
 						(true (0.0))
 						(false (1.0))))
-					(false (robot_at__x3_y1' 
+					(false (robot_at__x3_y1'
 						(true (1.0))
 						(false (0.0))))))
-				(false (robot_at__x3_y1' 
+				(false (robot_at__x3_y1'
 					(true (0.0))
 					(false (1.0)))))))
 	robot_at__x3_y2
-		(obstacle_at__x3_y2 
-			(true (robot_at__x3_y2' 
+		(obstacle_at__x3_y2
+			(true (robot_at__x3_y2'
 				(true (0.0))
 				(false (1.0))))
-			(false (robot_at__x3_y2 
-				(true (robot_at__x3_y3 
-					(true (robot_at__x3_y2' 
+			(false (robot_at__x3_y2
+				(true (robot_at__x3_y3
+					(true (robot_at__x3_y2'
 						(true (0.0))
 						(false (1.0))))
-					(false (robot_at__x3_y2' 
+					(false (robot_at__x3_y2'
 						(true (1.0))
 						(false (0.0))))))
-				(false (robot_at__x3_y2' 
+				(false (robot_at__x3_y2'
 					(true (0.0))
 					(false (1.0)))))))
 	robot_at__x3_y3
-		(robot_at__x3_y3 
-			(true (robot_at__x3_y3' 
+		(robot_at__x3_y3
+			(true (robot_at__x3_y3'
 				(true (1.0))
 				(false (0.0))))
-			(false (robot_at__x3_y3' 
+			(false (robot_at__x3_y3'
 				(true (0.0))
 				(false (1.0)))))
-	cost [+ 
-		(robot_at__x3_y3 
+	cost [+
+		(robot_at__x3_y3
 			(true (0.0))
 			(false (1.0)))
 	]

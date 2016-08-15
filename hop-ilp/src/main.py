@@ -27,7 +27,8 @@ def main(argv):
         copycat = experiment.Copycat(solver)
         copycat.start()
     else:
-        print('Experiment {} is not implemented\n'.format(experiment_name))
+        rddl_experiment = experiment.RDDLExperiment(solver)
+        rddl_experiment.start()
 
 if __name__ == '__main__':
     main(sys.argv)

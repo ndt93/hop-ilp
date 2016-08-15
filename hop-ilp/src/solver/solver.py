@@ -8,6 +8,7 @@ import utils
 class Solver(object):
 
     def __init__(self, name, problem, num_futures, time_limit=None, debug=False):
+        self.problem_name = name
         self.problem = problem
         self.num_futures = num_futures
 
