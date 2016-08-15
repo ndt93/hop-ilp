@@ -32,7 +32,68 @@ class RDDLExperiment(Experiment):
             if t != 'turn':
                 return t, data
 
-            states = self.get_states_from_turn(data)
+            logger.info('turn|num={},time_left={},im_reward={}'
+                        .format(data['turn-num'], data['time-left'], data['immediate-reward']))
+            states = RDDLExperiment.get_states_from_turn(data)
+            logger.debug('states={}'.format(states))
+            self.solver.init_next_step(states)
+            actions, _ = self.solver.solve()
+            self.client.send_actions(RDDLExperiment.format_actions(actions))
 
-    def get_states_from_turn(self, turn):
-        pass
+    @staticmethod
+    def format_actions(actions):
+        result = {}
+        action_blks = [RDDLExperiment.format_action(a)
+                       for a, v in actions.items() if v == 1]
+
+        if len(action_blks) == 0:
+            result['actions'] = None
+        elif len(action_blks) == 1:
+            result['actions'] = {'action': action_blks[0]}
+        else:
+            result['actions'] = {'action': action_blks}
+
+        return result
+
+    @staticmethod
+    def format_action(a):
+        action_blk = {}
+        parts = a.split('__')
+
+        action_blk['action-name'] = parts[0]
+
+        if len(parts) == 2:
+            action_blk['action-arg'] = parts[1]
+        elif len(parts) > 2:
+            action_blk['action-arg'] = parts[1:]
+
+        action_blk['action-value'] = 'true'
+
+        return action_blk
+
+    @staticmethod
+    def get_states_from_turn(turn):
+        if 'no-observed-fluents' in turn:
+            return {}
+
+        result = {}
+        for fluent in turn['observed-fluent']:
+            state_name = RDDLExperiment.get_compound_fluent_name(fluent)
+            state_val = 1 if fluent['fluent-value'] == 'true' else 0
+            result[state_name] = state_val
+
+        return result
+
+    @staticmethod
+    def get_compound_fluent_name(fluent):
+        fluent_name = fluent['fluent-name'].replace('-', '_')
+        if 'fluent-arg' not in fluent:
+            return fluent_name
+        fluent_arg = fluent['fluent-arg']
+
+        if isinstance(fluent_arg, list):
+            l = ['{}_'.format(fluent_name)]
+            l.extend(fluent_arg)
+            return '_'.join(l)
+        else:
+            return '{}__{}'.format(fluent_name, fluent_arg)

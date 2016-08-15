@@ -11,6 +11,10 @@ class Client(object):
         self.client_name = client_name
         self.sock = self.connect(hostname, port)
 
+    def send_actions(self, actions):
+        logger.debug('actions={}'.format(actions))
+        self.send_request(actions)
+
     def receive_turn(self):
         resp = self.receive_response(end_tags=['</turn>', '</round-end>', '</session-end>'])
 
