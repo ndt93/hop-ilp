@@ -51,13 +51,15 @@ def create_dtree(dtree, leaf_transform=None):
 
     left = create_dtree(dtree.left.left, leaf_transform)
     right = create_dtree(dtree.right.left, leaf_transform)
+    if left is None and right is None:
+        return None
 
     identifier = dtree.node().ID().getText()
     if identifier.endswith("'"):
         if dtree.left.node().getText() == 'true':
-            return left
+            return left if left.node.value >= 1e-6 else None
         else:
-            return right
+            return right if right.node.value >= 1e-6 else None
 
     root = Tree(Node(identifier))
     if dtree.left.node().getText() == 'true':

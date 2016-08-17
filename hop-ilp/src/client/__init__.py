@@ -12,7 +12,6 @@ class Client(object):
         self.sock = self.connect(hostname, port)
 
     def send_actions(self, actions):
-        logger.debug('actions={}'.format(actions))
         self.send_request(actions)
 
     def receive_turn(self):

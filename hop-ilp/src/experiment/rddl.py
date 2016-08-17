@@ -36,8 +36,11 @@ class RDDLExperiment(Experiment):
                         .format(data['turn-num'], data['time-left'], data['immediate-reward']))
             states = RDDLExperiment.get_states_from_turn(data)
             logger.debug('states={}'.format(states))
+
             self.solver.init_next_step(states)
             actions, _ = self.solver.solve()
+            logger.debug('actions={}'.format(actions))
+
             self.client.send_actions(RDDLExperiment.format_actions(actions))
 
     @staticmethod
