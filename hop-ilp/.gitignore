@@ -43,6 +43,14 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
+# Eclipse Pydev
+.project
+.pydevproject
+.ropeproject
+
 # Misc
 *.tokens
 *.pyc
+*.c
+*.so
+build
