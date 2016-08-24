@@ -14,6 +14,10 @@ class Client(object):
     def send_actions(self, actions):
         self.send_request(actions)
 
+    def receive_session_end(self):
+        resp = self.receive_response(end_tags=['</session-end>'])
+        return resp['session-end']
+
     def receive_turn(self):
         resp = self.receive_response(end_tags=['</turn>', '</round-end>', '</session-end>'])
 

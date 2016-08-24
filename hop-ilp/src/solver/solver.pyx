@@ -74,6 +74,7 @@ class Solver(object):
         cdef dict transition_trees = self.problem.transition_trees
         cdef list intermediate_vars = self.intermediate_vars
         cdef list transition_constrs = []
+        cdef int k, t
         cdef unicode v
 
         for k in range(num_futures):
@@ -128,12 +129,13 @@ class Solver(object):
         return i, constrs
 
     def add_hop_quality_criterion(self):
-        num_futures = self.num_futures
+        cdef int num_futures = self.num_futures
         m = self.m
         p = [0]
 
         def paths_handler(nodes):
             def subpaths_handler(all_nodes):
+                cdef int k, t
                 for k in range(num_futures):
                     for t in range(self.problem.horizon):
                         coeff = 1./num_futures * all_nodes[-1][1]

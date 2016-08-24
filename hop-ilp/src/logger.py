@@ -9,4 +9,9 @@ handler = logging.StreamHandler()
 handler.setLevel(logging.DEBUG)
 handler.setFormatter(formatter)
 
+fileHandler = logging.FileHandler('log/log.log', mode='w')
+fileHandler.setLevel(logging.DEBUG)
+fileHandler.setFormatter(formatter)
+
 logger.addHandler(handler)
+logger.addHandler(fileHandler)

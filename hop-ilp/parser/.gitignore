@@ -42,17 +42,3 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
-
-# Eclipse Pydev
-.project
-.pydevproject
-.ropeproject
-
-# Misc
-*.tokens
-*.pyc
-*.c
-*.so
-build
-*.swp
-log

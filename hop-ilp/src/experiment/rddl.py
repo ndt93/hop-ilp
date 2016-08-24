@@ -24,6 +24,10 @@ class RDDLExperiment(Experiment):
             t, end_info = self.loop_turns()
             if t != 'round':
                 return end_info
+            elif int(end_info['time-left']) <= 0:
+                logger.info('round_end|info={}'.format(end_info))
+                return self.client.receive_session_end()
+
             logger.info('round_end|info={}'.format(end_info))
 
     def loop_turns(self):
