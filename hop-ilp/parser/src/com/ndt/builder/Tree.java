@@ -12,6 +12,14 @@ public class Tree {
         public Node() {
         }
 
+        /**
+         * Copy constructor
+         * @param sourceNode
+         */
+        public Node(Node sourceNode) {
+            this(sourceNode.name, sourceNode.value);
+        }
+
         public Node(String name) {
             this.name = name;
         }
@@ -28,6 +36,20 @@ public class Tree {
 
     public Tree() {
         this.node = new Node();
+    }
+
+    /**
+     * Copy constructor. This methods deep copy the source Tree
+     * @param sourceTree
+     */
+    public Tree(Tree sourceTree) {
+        this.node = new Node(sourceTree.node);
+        if (sourceTree.left != null) {
+            this.left = new Tree(sourceTree.left);
+        }
+        if (sourceTree.right != null) {
+            this.right = new Tree(sourceTree.right);
+        }
     }
 
     public Tree(Node node) {
