@@ -1,4 +1,7 @@
-package com.ndt;
+package com.ndt.builder;
+
+import com.ndt.parser.spuddBaseVisitor;
+import com.ndt.parser.spuddParser;
 
 public class Builder extends spuddBaseVisitor<Model> {
     private Model model;
@@ -6,14 +9,13 @@ public class Builder extends spuddBaseVisitor<Model> {
     @Override
     public Model visitInit(spuddParser.InitContext ctx) {
         model = new Model();
+        super.visitInit(ctx);
+        return model;
+    }
 
-        for (spuddParser.ConfigContext config : ctx.config()) {
-            visit(config);
-        }
-
-        visitVariablesBlock(ctx.variablesBlock());
-        visitInitBlock(ctx.initBlock());
-
+    @Override
+    public Model visitActionBlock(spuddParser.ActionBlockContext ctx) {
+        model.addActionsGroup(Utils.getActionsGroup(ctx));
         return model;
     }
 

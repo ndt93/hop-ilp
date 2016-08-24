@@ -1,5 +1,5 @@
 // Generated from /Users/ndt/Development/fyp/hop-ilp/res/spudd.g4 by ANTLR 4.5.3
-package com.ndt;
+package com.ndt.parser;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;

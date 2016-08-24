@@ -1,4 +1,4 @@
-package com.ndt;
+package com.ndt.builder;
 
 public class Tree {
     public Node node;
