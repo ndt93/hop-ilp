@@ -1,7 +1,6 @@
 package com.ndt;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.ndt.builder.Model;
 import com.ndt.builder.ModelBuilder;
 import com.ndt.parser.spuddLexer;
@@ -22,15 +21,15 @@ public class Main {
             return;
         }
         try {
-            System.out.println("Parsing input file");
             String inputPath = args[0];
+            System.out.println("Parsing " + inputPath);
             ANTLRInputStream inputStream = new ANTLRFileStream(inputPath);
             spuddLexer lexer = new spuddLexer(inputStream);
             CommonTokenStream tokenStream = new CommonTokenStream(lexer);
             spuddParser parser = new spuddParser(tokenStream);
             spuddParser.InitContext init = parser.init();
 
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            Gson gson = new Gson();
             ModelBuilder modelBuilder = new ModelBuilder();
             Model model = modelBuilder.visit(init);
 
@@ -48,6 +47,7 @@ public class Main {
             System.out.println("Writing to " + outputFile.getAbsolutePath());
             FileWriter fileWriter = new FileWriter(outputFile);
             gson.toJson(model, fileWriter);
+            fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
