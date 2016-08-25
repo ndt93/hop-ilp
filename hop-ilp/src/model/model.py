@@ -2,7 +2,7 @@ from logger import logger
 
 
 class Model(object):
-    variables = []
+    variables = {}
     actions = []
     transition_trees = {}
     reward_tree = None

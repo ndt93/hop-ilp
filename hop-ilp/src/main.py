@@ -1,7 +1,6 @@
 import sys
 from os import path
 
-from logger import logger
 import model
 from solver import Solver
 import experiment
@@ -13,10 +12,9 @@ def main(argv):
               .format('Supported experiments are: copycat'))
         return
 
-    logger.info('Bulding problem instance from file')
     file_path = argv[2]
     problem_name = path.splitext(path.basename(file_path))[0]
-    problem = model.from_file(file_path)
+    problem = model.from_json_file(file_path)
 
     time_limit = float(argv[4]) if len(argv) > 4 else None
     solver = Solver(problem_name, problem, int(argv[3]),
