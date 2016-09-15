@@ -22,34 +22,46 @@ public class Main {
         }
         try {
             String inputPath = args[0];
-            System.out.println("Parsing " + inputPath);
-            ANTLRInputStream inputStream = new ANTLRFileStream(inputPath);
-            spuddLexer lexer = new spuddLexer(inputStream);
-            CommonTokenStream tokenStream = new CommonTokenStream(lexer);
-            spuddParser parser = new spuddParser(tokenStream);
-            spuddParser.InitContext init = parser.init();
-
-            Gson gson = new Gson();
-            ModelBuilder modelBuilder = new ModelBuilder();
-            Model model = modelBuilder.visit(init);
-
-            String inputFileName;
-            int index = inputPath.lastIndexOf('.');
-            if (index == -1) {
-                inputFileName = inputPath.substring(inputPath.lastIndexOf('/') + 1);
-            } else {
-                inputFileName = inputPath.substring(inputPath.lastIndexOf('/') + 1, index);
-            }
-            File outputFile = new File(args[1]);
-            if (outputFile.isDirectory()) {
-                outputFile = new File(outputFile.getCanonicalPath() + "/" +  inputFileName + ".json");
-            }
-            System.out.println("Writing to " + outputFile.getAbsolutePath());
-            FileWriter fileWriter = new FileWriter(outputFile);
-            gson.toJson(model, fileWriter);
-            fileWriter.close();
+            Model model = parseModel(inputPath);
+            File outputFile = getOutputFile(args[1], inputPath);
+            writeToJson(model, outputFile);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void writeToJson(Model model, File outputFile) throws IOException {
+        System.out.println("Writing to " + outputFile.getAbsolutePath());
+        FileWriter fileWriter = new FileWriter(outputFile);
+        Gson gson = new Gson();
+        gson.toJson(model, fileWriter);
+        fileWriter.close();
+    }
+
+    private static File getOutputFile(String outputPath, String inputPath) throws IOException {
+        String inputFileName;
+        int index = inputPath.lastIndexOf('.');
+        if (index == -1) {
+            inputFileName = inputPath.substring(inputPath.lastIndexOf('/') + 1);
+        } else {
+            inputFileName = inputPath.substring(inputPath.lastIndexOf('/') + 1, index);
+        }
+        File outputFile = new File(outputPath);
+        if (outputFile.isDirectory()) {
+            outputFile = new File(outputFile.getCanonicalPath() + "/" +  inputFileName + ".json");
+        }
+        return outputFile;
+    }
+
+    private static Model parseModel(String inputPath) throws IOException {
+        System.out.println("Parsing " + inputPath);
+        ANTLRInputStream inputStream = new ANTLRFileStream(inputPath);
+        spuddLexer lexer = new spuddLexer(inputStream);
+        CommonTokenStream tokenStream = new CommonTokenStream(lexer);
+        spuddParser parser = new spuddParser(tokenStream);
+        spuddParser.InitContext init = parser.init();
+
+        ModelBuilder modelBuilder = new ModelBuilder();
+        return modelBuilder.visit(init);
     }
 }
