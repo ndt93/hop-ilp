@@ -2,7 +2,7 @@ import sys
 from os import path
 
 import model
-from solver import Solver
+from solver import Solver, MRFSolver
 import experiment
 
 
@@ -15,13 +15,19 @@ def main(argv):
     file_path = argv[2]
     problem_name = path.splitext(path.basename(file_path))[0]
     problem = model.from_json_file(file_path)
-
     time_limit = float(argv[4]) if len(argv) > 4 else None
-    solver = Solver(problem_name, problem, int(argv[3]),
-                    time_limit=time_limit, debug=False)
 
-    rddl_experiment = experiment.RDDLExperiment(solver)
-    rddl_experiment.start()
+    if argv[1] == 'ilp':
+        solver = Solver(problem_name, problem, int(argv[3]),
+                        time_limit=time_limit, debug=False)
+        rddl_experiment = experiment.RDDLExperiment(solver)
+        rddl_experiment.start()
+    elif argv[1] == 'mrf':
+        solver = MRFSolver(problem_name, problem, int(argv[3]),
+                           time_limit=time_limit, debug=False)
+        solver.solve()
+    else:
+        print('Use "ilp" or "mrf" as experiment')
 
 if __name__ == '__main__':
     main(sys.argv)

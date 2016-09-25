@@ -1,5 +1,5 @@
 // Automatically produced by rddl.translate.RDDL2Format
-// SPUDD / Symbolic Perseus Format for 'copycat.inst_copycat'
+// SPUDD / Symbolic Perseus Format for 'copycat.inst_3x3_copycat'
 
 (variables 
 	(x__x1 true false)

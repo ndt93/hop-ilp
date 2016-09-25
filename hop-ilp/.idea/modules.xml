@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$USER_HOME$/Development/fyp/hop-ilp/.idea/copycat.iml" filepath="$USER_HOME$/Development/fyp/hop-ilp/.idea/copycat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/copycat.iml" filepath="$PROJECT_DIR$/.idea/copycat.iml" />
     </modules>
   </component>
 </project>
