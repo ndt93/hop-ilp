@@ -1,15 +1,43 @@
+import random
 from logger import logger
 
 
 class MRFSolver(object):
     def __init__(self, name, problem, num_futures, time_limit=None, debug=False):
         logger.info('model_info|num_futures={},horizon={}'.format(num_futures, problem.horizon))
-        self.mrf_model = MRFModel(num_futures, problem.horizon)
-        self.mrf_model.map_vars_to_indices(problem)
-        print(self.mrf_model.vars_to_local_indices)
+        self.num_futures = num_futures
+        self.problem = problem
+        self.mrf_model = MRFModel(num_futures, problem)
 
     def solve(self):
+        self.build_states_cliques()
+        self.build_reward_cliques()
         self.mrf_model.to_file('mrfmodel.txt')
+
+    def build_states_cliques(self):
+        transition_trees = self.problem.transition_trees
+
+        for k in range(self.num_futures):
+            for t in range(self.problem.horizon - 1):
+                for v in transition_trees:
+                    self.determinize_paths(transition_trees[v], k, t, v)
+
+    def determinize_paths(self, transition_tree, k, t, v):
+        def determinize_path(nodes):
+            if random.random() > nodes[-1][1]:
+                self.mrf_model.add_states_clique(k, t, v, nodes, 0)
+            else:
+                self.mrf_model.add_states_clique(k, t, v, nodes, 1)
+
+        transition_tree.traverse_paths(determinize_path, [])
+
+    def build_reward_cliques(self):
+        def build_reward_clique(nodes):
+            for k in range(self.num_futures):
+                for t in range(self.problem.horizon):
+                    self.mrf_model.add_reward_clique(k, t, nodes)
+
+        self.problem.reward_tree.traverse_paths(build_reward_clique, [])
 
 
 class MRFModel(object):
@@ -32,8 +60,15 @@ class MRFModel(object):
     cliques = []
     preamble = 'MARKOV'
 
-    def __init__(self, num_futures, horizon):
-        self.vars_group_size = num_futures * horizon
+    def __init__(self, num_futures, problem):
+        self.vars_group_size = num_futures * problem.horizon
+        self.map_vars_to_indices(problem)
+
+    def add_states_clique(self, k, t, v, nodes, value):
+        pass
+
+    def add_reward_clique(self, k, t, nodes):
+        pass
 
     def map_vars_to_indices(self, problem):
         self.num_state_vars = len(problem.variables)
