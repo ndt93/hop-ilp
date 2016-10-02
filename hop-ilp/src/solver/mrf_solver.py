@@ -20,24 +20,37 @@ class MRFSolver(object):
         for k in range(self.num_futures):
             for t in range(self.problem.horizon - 1):
                 for v in transition_trees:
-                    self.determinize_paths(transition_trees[v], k, t, v)
+                    transition_tree = transition_trees[v]
+                    tree_vars = self.determinize_tree(transition_tree)
+                    tree_vars.add(v)
+                    self.mrf_model.add_states_clique(transition_tree, list(tree_vars), k, t, v)
 
-    def determinize_paths(self, transition_tree, k, t, v):
-        def determinize_path(nodes):
-            if random.random() > nodes[-1][1]:
-                self.mrf_model.add_states_clique(k, t, v, nodes, 0)
-            else:
-                self.mrf_model.add_states_clique(k, t, v, nodes, 1)
+    def determinize_tree(self, transition_tree):
+        """
+        Determinizes a transition tree and returns the list of all variables in the tree.
+        The determinized value will be injected to the leaf node as the `dvalue` attribute.
+        """
+        vars_in_tree = set()
 
-        transition_tree.traverse_paths(determinize_path, [])
+        def determinize_subtree(subtree):
+            if subtree.left is None and subtree.right is None:
+                if random.random() > subtree.node.value:
+                    subtree.node.__dict__['dvalue'] = 0
+                else:
+                    subtree.node.__dict__['dvalue'] = 1
+                return
+
+            vars_in_tree.add(subtree.node.name)
+            if subtree.left is not None:
+                determinize_subtree(subtree.left)
+            if subtree.right is not None:
+                determinize_subtree(subtree.right)
+
+        determinize_subtree(transition_tree)
+        return vars_in_tree
 
     def build_reward_cliques(self):
-        def build_reward_clique(nodes):
-            for k in range(self.num_futures):
-                for t in range(self.problem.horizon):
-                    self.mrf_model.add_reward_clique(k, t, nodes)
-
-        self.problem.reward_tree.traverse_paths(build_reward_clique, [])
+        pass
 
 
 class MRFModel(object):
@@ -64,11 +77,11 @@ class MRFModel(object):
         self.vars_group_size = num_futures * problem.horizon
         self.map_vars_to_indices(problem)
 
-    def add_states_clique(self, k, t, v, nodes, value):
-        pass
-
-    def add_reward_clique(self, k, t, nodes):
-        pass
+    def add_states_clique(self, determinized_tree, tree_vars, k, t, v):
+        var_indices = [self.get_state_var_index(var, k, t) for var in tree_vars]
+        clique = MRFClique(var_indices)
+        clique.generate_states_function_table(determinized_tree, tree_vars, v)
+        self.cliques.append(clique)
 
     def map_vars_to_indices(self, problem):
         self.num_state_vars = len(problem.variables)
@@ -77,7 +90,7 @@ class MRFModel(object):
         for i, v in enumerate(problem.variables):
             self.vars_to_local_indices[v] = i
         for i, a in enumerate(problem.actions):
-            self.vars_to_local_indices[a] = i
+            self.vars_to_local_indices[a] = i + self.num_state_vars
         self.map_reward_vars_indices(problem.reward_tree, 0)
 
     def map_reward_vars_indices(self, reward_tree, start_index):
@@ -104,11 +117,6 @@ class MRFModel(object):
         local_index = self.vars_to_local_indices[var_name]
         return local_index * self.vars_group_size + future * horizon + horizon
 
-    def get_action_var_index(self, action_name, future, horizon):
-        local_index = self.vars_to_local_indices[action_name]
-        extended_local_index = local_index * self.vars_group_size + future * horizon + horizon
-        return self.num_state_vars * self.vars_group_size + extended_local_index
-
     def get_global_reward_var_index(self, local_index, future, horizon):
         extended_local_index = local_index * self.vars_group_size + future * horizon + horizon
         # TODO: DRY
@@ -131,6 +139,31 @@ class MRFModel(object):
 class MRFClique(object):
     vars = []
     function_table = []
+
+    def __init__(self, vars):
+        self.vars = vars
+
+    def generate_states_function_table(self, determinized_tree, tree_vars, v):
+        vars_values_gen = self.vars_values_generator(tree_vars)
+        for vars_values in vars_values_gen:
+            print(vars_values)
+
+    @staticmethod
+    def vars_values_generator(tree_vars):
+        result = {}
+        vals = 0
+        end = 2**len(tree_vars)
+
+        while vals < end:
+            for i in range(len(tree_vars)):
+                if vals & (1 << i) > 0:
+                    result[tree_vars[i]] = 1
+                else:
+                    result[tree_vars[i]] = 0
+
+            yield result
+            vals += 1
+
 
 
 def write_line(f, l):
