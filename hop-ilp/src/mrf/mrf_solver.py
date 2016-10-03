@@ -14,7 +14,7 @@ class MRFSolver(object):
     def solve(self):
         self.build_states_cliques()
         self.build_reward_cliques()
-        self.build_initial_conditions_cliques()
+        self.build_init_conditions_cliques()
         self.mrf_model.to_file('mrfmodel.txt')
 
     def build_states_cliques(self):
@@ -74,5 +74,6 @@ class MRFSolver(object):
         self.mrf_model.add_reward_cliques(self.problem.reward_tree, list(tree_vars))
         logger.info('added_reward_cliques|cur_num_cliques={}'.format(len(self.mrf_model.cliques)))
 
-    def build_initial_conditions_cliques(self):
-        pass
+    def build_init_conditions_cliques(self):
+        self.mrf_model.add_init_actions_constrs_cliques()
+        self.mrf_model.add_init_states_constrs_cliques()

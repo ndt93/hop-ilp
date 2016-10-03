@@ -63,6 +63,27 @@ class MRFModel(object):
                 clique.function_table = clique_proto.function_table
                 self.cliques.append(clique)
 
+    def add_init_states_constrs_cliques(self):
+        vars_list = list(self.problem.variables)
+        vars_vals_bitset = 0
+        for i, v in enumerate(vars_list):
+            vars_vals_bitset |= (int(self.problem.variables[v]) << i)
+
+        for k in range(self.num_futures):
+            vars_indices = self.state_vars_to_indices(vars_list, k, 0)
+            clique = MRFClique(vars_indices)
+            for i in range(2**len(vars_list)):
+                if i == vars_vals_bitset:
+                    clique.function_table.append(1)
+                else:
+                    clique.function_table.append(0)
+
+            self.cliques.append(clique)
+        logger.info('added_init_states_cliques|cur_num_cliques={}'.format(len(self.cliques)))
+
+    def add_init_actions_constrs_cliques(self):
+        pass
+
     def state_vars_to_indices(self, vars, k, t):
         return [self.get_state_var_index(var, k, t) for var in vars]
 
