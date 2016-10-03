@@ -14,6 +14,7 @@ class MRFSolver(object):
     def solve(self):
         self.build_states_cliques()
         self.build_reward_cliques()
+        self.build_initial_conditions_cliques()
         self.mrf_model.to_file('mrfmodel.txt')
 
     def build_states_cliques(self):
@@ -26,6 +27,8 @@ class MRFSolver(object):
                     tree_vars = self.determinize_tree(transition_tree)
                     tree_vars.add(v)
                     self.mrf_model.add_states_clique(transition_tree, list(tree_vars), k, t, v)
+
+        logger.info('added_states_cliques|cur_num_cliques={}'.format(len(self.mrf_model.cliques)))
 
     def determinize_tree(self, transition_tree):
         """
@@ -52,4 +55,24 @@ class MRFSolver(object):
         return vars_in_tree
 
     def build_reward_cliques(self):
+        tree_vars = set()
+
+        def collect_tree_vars(subtree):
+            if subtree is None:
+                return
+            if subtree.node.name == 'branches':
+                for branch in subtree.node.value:
+                    collect_tree_vars(branch)
+                return
+            if subtree.left is None and subtree.right is None:
+                return
+            tree_vars.add(subtree.node.name)
+            collect_tree_vars(subtree.left)
+            collect_tree_vars(subtree.right)
+
+        collect_tree_vars(self.problem.reward_tree)
+        self.mrf_model.add_reward_cliques(self.problem.reward_tree, list(tree_vars))
+        logger.info('added_reward_cliques|cur_num_cliques={}'.format(len(self.mrf_model.cliques)))
+
+    def build_initial_conditions_cliques(self):
         pass

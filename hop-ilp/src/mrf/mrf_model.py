@@ -17,13 +17,16 @@ class MRFModel(object):
     # Dict of variable names to local indices. These indices are locally
     # offset for each group of variables: states, actions. Rewards variables
     # indices are injected directly into the nodes of the reward tree
-    vars_to_local_indices = {}
+    vars_local_indices = {}
 
     cliques = []
     preamble = 'MARKOV'
 
     def __init__(self, num_futures, problem):
+        self.num_futures = num_futures
+        self.problem = problem
         self.vars_group_size = num_futures * problem.horizon
+        self.num_reward_vars = self.vars_group_size
         self.map_vars_to_indices(problem)
 
     def add_states_clique(self, determinized_tree, tree_vars, k, t, v):
@@ -37,49 +40,48 @@ class MRFModel(object):
         :param t: the horizon step
         :param v: name of state variable to make the transition to
         """
-        var_indices = [self.get_state_var_index(var, k, t) for var in tree_vars]
+        var_indices = self.state_vars_to_indices(tree_vars, k, t)
         clique = MRFClique(var_indices)
         clique.generate_states_function_table(determinized_tree, tree_vars, v)
         self.cliques.append(clique)
+
+    def add_reward_cliques(self, reward_tree, tree_vars):
+        assert(self.num_futures > 0 and self.problem.horizon > 0)
+        var_indices = self.state_vars_to_indices(tree_vars, 0, 0)
+        var_indices.append(self.get_reward_var_index(0, 0))
+        clique_proto = MRFClique(var_indices)
+        clique_proto.generate_reward_function_table(reward_tree, tree_vars)
+        self.cliques.append(clique_proto)
+
+        for k in range(self.num_futures):
+            for t in range(self.problem.horizon):
+                if k == 0 and t == 0:
+                    continue
+                var_indices = self.state_vars_to_indices(tree_vars, k, t)
+                var_indices.append(self.get_reward_var_index(k, t))
+                clique = MRFClique(var_indices)
+                clique.function_table = clique_proto.function_table
+                self.cliques.append(clique)
+
+    def state_vars_to_indices(self, vars, k, t):
+        return [self.get_state_var_index(var, k, t) for var in vars]
 
     def map_vars_to_indices(self, problem):
         self.num_state_vars = len(problem.variables)
         self.num_action_vars = len(problem.actions)
 
         for i, v in enumerate(problem.variables):
-            self.vars_to_local_indices[v] = i
+            self.vars_local_indices[v] = i
         for i, a in enumerate(problem.actions):
-            self.vars_to_local_indices[a] = i + self.num_state_vars
-        self.map_reward_vars_indices(problem.reward_tree, 0)
-
-    def map_reward_vars_indices(self, reward_tree, start_index):
-        """
-        Traverses the reward tree in order and inject incrementing indices
-         to the leaves. This method also update the num_reward_vars field
-         :param reward_tree
-         :param start_index the smallest index in this tree
-         :return the largest index for in this tree
-        """
-        if reward_tree.left is None and reward_tree.right is None:
-            reward_tree.node.__dict__['index'] = start_index
-            self.num_reward_vars += 1
-            return start_index
-
-        if reward_tree.left is not None:
-            start_index = self.map_reward_vars_indices(reward_tree.left, start_index) + 1
-        if reward_tree.right is not None:
-            start_index = self.map_reward_vars_indices(reward_tree.right, start_index)
-
-        return start_index
+            self.vars_local_indices[a] = i + self.num_state_vars
 
     def get_state_var_index(self, var_name, future, horizon):
-        local_index = self.vars_to_local_indices[var_name]
-        return local_index * self.vars_group_size + future * horizon + horizon
+        local_index = self.vars_local_indices[var_name]
+        return local_index * self.vars_group_size + future * self.problem.horizon + horizon
 
-    def get_global_reward_var_index(self, local_index, future, horizon):
-        extended_local_index = local_index * self.vars_group_size + future * horizon + horizon
-        # TODO: DRY
-        return (self.num_state_vars + self.num_action_vars) * self.vars_group_size + extended_local_index
+    def get_reward_var_index(self, future, horizon):
+        local_index = future * self.problem.horizon + horizon
+        return (self.num_state_vars + self.num_action_vars) * self.vars_group_size + local_index
 
     def to_file(self, filename):
         # TODO: DRY

@@ -1,9 +1,11 @@
+import math
+
+
 class MRFClique(object):
-    vars = []  # Variables (indices) from least to most significant
-    function_table = []
 
     def __init__(self, vars):
         self.vars = vars
+        self.function_table = []
 
     def generate_states_function_table(self, determinized_tree, tree_vars, v):
         vars_values_gen = self.vars_values_generator(tree_vars)
@@ -21,10 +23,37 @@ class MRFClique(object):
                         self.function_table.append(0)
                     break
 
-                if vars_values[curtree.node.name] == 0:
+                if vars_values[curtree.node.name] == 1:
                     curtree = curtree.left
                 else:
                     curtree = curtree.right
+
+    def generate_reward_function_table(self, reward_tree, tree_vars):
+        vars_values_gen = self.vars_values_generator(tree_vars)
+        for vars_values in vars_values_gen:
+            reward = self.get_reward(vars_values, reward_tree)
+            self.function_table.append(math.exp(reward))
+
+    def get_reward(self, vars_values, reward_tree):
+        """
+        Recursively accumulates the rewards for a set of variable values along the reward tree
+        """
+        if reward_tree is None:
+            return 0
+
+        reward = 0.
+        if reward_tree.node.name == 'branches':
+            for subtree in reward_tree.node.value:
+                reward += self.get_reward(vars_values, subtree)
+            return reward
+
+        if reward_tree.left is None and reward_tree.right is None:
+            return reward_tree.node.value
+
+        if vars_values[reward_tree.node.name] == 1:
+            return self.get_reward(vars_values, reward_tree.left)
+        return self.get_reward(vars_values, reward_tree.right)
+
 
     @staticmethod
     def vars_values_generator(tree_vars):
