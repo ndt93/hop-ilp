@@ -82,7 +82,20 @@ class MRFModel(object):
         logger.info('added_init_states_cliques|cur_num_cliques={}'.format(len(self.cliques)))
 
     def add_init_actions_constrs_cliques(self):
-        pass
+        function_table = []
+        allset = 2**self.num_futures - 1
+        for i in range(2**self.num_futures):
+            if i == 0 or i == allset:
+                function_table.append(1)
+            else:
+                function_table.append(0)
+
+        for action in self.problem.actions:
+            vars_indices = [self.get_state_var_index(action, k, 0) for k in range(self.num_futures)]
+            clique = MRFClique(vars_indices)
+            clique.function_table = function_table
+            self.cliques.append(clique)
+        logger.info('added_init_actions_cliques|cur_num_cliques={}'.format(len(self.cliques)))
 
     def state_vars_to_indices(self, vars, k, t):
         return [self.get_state_var_index(var, k, t) for var in vars]

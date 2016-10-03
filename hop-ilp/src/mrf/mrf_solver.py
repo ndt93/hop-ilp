@@ -75,5 +75,5 @@ class MRFSolver(object):
         logger.info('added_reward_cliques|cur_num_cliques={}'.format(len(self.mrf_model.cliques)))
 
     def build_init_conditions_cliques(self):
-        self.mrf_model.add_init_actions_constrs_cliques()
         self.mrf_model.add_init_states_constrs_cliques()
+        self.mrf_model.add_init_actions_constrs_cliques()
