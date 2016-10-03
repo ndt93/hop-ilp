@@ -2,7 +2,8 @@ import sys
 from os import path
 
 import model
-from solver import Solver, MRFSolver
+from solver import Solver
+from mrf import MRFSolver
 import experiment
 
 

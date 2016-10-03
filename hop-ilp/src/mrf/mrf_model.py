@@ -1,56 +1,5 @@
-import random
 from logger import logger
-
-
-class MRFSolver(object):
-    def __init__(self, name, problem, num_futures, time_limit=None, debug=False):
-        logger.info('model_info|num_futures={},horizon={}'.format(num_futures, problem.horizon))
-        self.num_futures = num_futures
-        self.problem = problem
-        self.mrf_model = MRFModel(num_futures, problem)
-
-    def solve(self):
-        self.build_states_cliques()
-        self.build_reward_cliques()
-        self.mrf_model.to_file('mrfmodel.txt')
-
-    def build_states_cliques(self):
-        transition_trees = self.problem.transition_trees
-
-        for k in range(self.num_futures):
-            for t in range(self.problem.horizon - 1):
-                for v in transition_trees:
-                    transition_tree = transition_trees[v]
-                    tree_vars = self.determinize_tree(transition_tree)
-                    tree_vars.add(v)
-                    self.mrf_model.add_states_clique(transition_tree, list(tree_vars), k, t, v)
-
-    def determinize_tree(self, transition_tree):
-        """
-        Determinizes a transition tree and returns the list of all variables in the tree.
-        The determinized value will be injected to the leaf node as the `dvalue` attribute.
-        """
-        vars_in_tree = set()
-
-        def determinize_subtree(subtree):
-            if subtree.left is None and subtree.right is None:
-                if random.random() > subtree.node.value:
-                    subtree.node.__dict__['dvalue'] = 0
-                else:
-                    subtree.node.__dict__['dvalue'] = 1
-                return
-
-            vars_in_tree.add(subtree.node.name)
-            if subtree.left is not None:
-                determinize_subtree(subtree.left)
-            if subtree.right is not None:
-                determinize_subtree(subtree.right)
-
-        determinize_subtree(transition_tree)
-        return vars_in_tree
-
-    def build_reward_cliques(self):
-        pass
+from mrf.mrf_clique import MRFClique
 
 
 class MRFModel(object):
@@ -78,6 +27,16 @@ class MRFModel(object):
         self.map_vars_to_indices(problem)
 
     def add_states_clique(self, determinized_tree, tree_vars, k, t, v):
+        """
+        Adds a clique i.e. a potential function that represents a determinized transition tree.
+        The function maps to 1 or 0 whether the values assigned to the variables in the tree
+        satisfies the determinized value or not respectively
+        :param determinized_tree: a determinized transition tree
+        :param tree_vars: all variables in the transition tree
+        :param k: the future value
+        :param t: the horizon step
+        :param v: name of state variable to make the transition to
+        """
         var_indices = [self.get_state_var_index(var, k, t) for var in tree_vars]
         clique = MRFClique(var_indices)
         clique.generate_states_function_table(determinized_tree, tree_vars, v)
@@ -133,37 +92,15 @@ class MRFModel(object):
             write_line(f, ' '.join(['2'] * num_state_action_vars + ['1'] * num_reward_vars))
 
             write_line(f, (len(self.cliques)))
+            for clique in self.cliques:
+                write_line(f, ' '.join(stringify(clique.vars[::-1])))
+                write_line(f, ' '.join(stringify(clique.function_table)))
+
             logger.info('write_model_to_file|f={}'.format(filename))
 
 
-class MRFClique(object):
-    vars = []
-    function_table = []
-
-    def __init__(self, vars):
-        self.vars = vars
-
-    def generate_states_function_table(self, determinized_tree, tree_vars, v):
-        vars_values_gen = self.vars_values_generator(tree_vars)
-        for vars_values in vars_values_gen:
-            print(vars_values)
-
-    @staticmethod
-    def vars_values_generator(tree_vars):
-        result = {}
-        vals = 0
-        end = 2**len(tree_vars)
-
-        while vals < end:
-            for i in range(len(tree_vars)):
-                if vals & (1 << i) > 0:
-                    result[tree_vars[i]] = 1
-                else:
-                    result[tree_vars[i]] = 0
-
-            yield result
-            vals += 1
-
+def stringify(l):
+    return [str(x) for x in l]
 
 
 def write_line(f, l):
