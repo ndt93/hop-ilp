@@ -1,5 +1,8 @@
 import math
 
+# Potential function value for an invalid variables values assignment
+INVALID_POTENTIAL_VAL = 0.0001
+
 
 class MRFClique(object):
 
@@ -20,7 +23,7 @@ class MRFClique(object):
                     if curtree.node.dvalue == vars_values[v]:
                         self.function_table.append(1)
                     else:
-                        self.function_table.append(0)
+                        self.function_table.append(INVALID_POTENTIAL_VAL)
                     break
 
                 if vars_values[curtree.node.name] == 1:

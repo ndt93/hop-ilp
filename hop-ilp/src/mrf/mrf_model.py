@@ -1,5 +1,5 @@
 from logger import logger
-from mrf.mrf_clique import MRFClique
+from mrf.mrf_clique import MRFClique, INVALID_POTENTIAL_VAL
 
 
 class MRFModel(object):
@@ -76,7 +76,7 @@ class MRFModel(object):
                 if i == vars_vals_bitset:
                     clique.function_table.append(1)
                 else:
-                    clique.function_table.append(0)
+                    clique.function_table.append(INVALID_POTENTIAL_VAL)
 
             self.cliques.append(clique)
         logger.info('added_init_states_cliques|cur_num_cliques={}'.format(len(self.cliques)))
@@ -88,7 +88,7 @@ class MRFModel(object):
             if i == 0 or i == allset:
                 function_table.append(1)
             else:
-                function_table.append(0)
+                function_table.append(INVALID_POTENTIAL_VAL)
 
         for action in self.problem.actions:
             vars_indices = [self.get_state_var_index(action, k, 0) for k in range(self.num_futures)]
@@ -108,6 +108,7 @@ class MRFModel(object):
             self.vars_local_indices[v] = i
         for i, a in enumerate(problem.actions):
             self.vars_local_indices[a] = i + self.num_state_vars
+        logger.info('mapped_variables_to_indices|mapping=\n{}'.format(self.vars_local_indices))
 
     def get_state_var_index(self, var_name, future, horizon):
         local_index = self.vars_local_indices[var_name]
