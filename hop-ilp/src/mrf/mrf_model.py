@@ -129,8 +129,11 @@ class MRFModel(object):
 
             write_line(f, (len(self.cliques)))
             for clique in self.cliques:
-                write_line(f, ' '.join(stringify(clique.vars[::-1])))
-                write_line(f, ' '.join(stringify(clique.function_table)))
+                f.write('{} {}\n'.format(len(clique.vars),
+                                         ' '.join(stringify(clique.vars[::-1]))))
+            for clique in self.cliques:
+                f.write('{}\n{}\n'.format(len(clique.function_table),
+                                          ' '.join(stringify(clique.function_table))))
 
             logger.info('write_model_to_file|f={}'.format(filename))
 

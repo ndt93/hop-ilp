@@ -15,7 +15,7 @@ class MRFSolver(object):
         self.build_states_cliques()
         self.build_reward_cliques()
         self.build_init_conditions_cliques()
-        self.mrf_model.to_file('mrfmodel.txt')
+        self.mrf_model.to_file('mrfmodel.uai')
 
     def build_states_cliques(self):
         transition_trees = self.problem.transition_trees
