@@ -1,6 +1,7 @@
 import random
 import subprocess
 import os
+import sys
 
 from logger import logger
 from mrf.mrf_model import MRFModel
@@ -9,6 +10,7 @@ from mrf.mrf_model import MRFModel
 class MRFSolver(object):
     MPLP_EXEC = './map_solver'
     OUTPUT_FILE = 'mrfmodel.uai'
+    RESULT_FILE = OUTPUT_FILE + '.MPE'
 
     def __init__(self, name, problem, num_futures, time_limit=None, debug=False):
         logger.info('model_info|num_futures={},horizon={}'.format(num_futures, problem.horizon))
@@ -22,22 +24,40 @@ class MRFSolver(object):
         self.build_reward_cliques()
         self.build_init_conditions_cliques()
         self.mrf_model.to_file(self.OUTPUT_FILE)
-        self.run_mplp()
-        return self.get_next_actions()
-
-    def get_next_actions(self):
-        pass
+        map_assignments = self.run_mplp()
+        next_actions = self.get_next_actions(map_assignments)
+        logger.info('next_action|states={},actions={}'.format(self.problem.variables, next_actions))
 
     def run_mplp(self):
         logger.info('executing_mplp_solver|exec=%s' % self.MPLP_EXEC)
         mplp_env = os.environ.copy()
         mplp_env['INF_TIME'] = str(self.time_limit)
 
-        mplp_proc = subprocess.Popen([self.MPLP_EXEC, self.OUTPUT_FILE],
-                                     env=mplp_env, stdout=subprocess.PIPE)
+        fdevnull = open(os.devnull, 'w')
+        mplp_proc = subprocess.Popen([self.MPLP_EXEC, self.OUTPUT_FILE], env=mplp_env, stdout=fdevnull)
         mplp_proc.wait()
+        fdevnull.close()
         logger.info('execution_completed|returncode=%s' % mplp_proc.returncode)
-        return mplp_proc.returncode
+        return self.get_map_assignments()
+
+    def get_next_actions(self, map_assignments):
+        result = {}
+        for action in self.problem.actions:
+            result[action] = map_assignments[(action, 0, 0)]
+        return result
+
+    def get_map_assignments(self):
+        map_assignments = {}
+
+        with open(self.RESULT_FILE, 'r') as outfile:
+            for l in outfile:
+                pass
+            l = l.rstrip().split(' ')
+
+            for i, v in enumerate(l[1:self.mrf_model.num_mrf_state_vars+1]):
+                map_assignments[self.mrf_model.get_state_from_index(i)] = v
+
+        return map_assignments
 
     def build_states_cliques(self):
         transition_trees = self.problem.transition_trees

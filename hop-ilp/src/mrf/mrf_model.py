@@ -7,17 +7,21 @@ class MRFModel(object):
     MRF Model variables' indices order:
         states[future, time step],
         actions[future, time step],
-        rewards[future, time step, path index]
+        rewards[future, time step]
     """
     vars_group_size = 0
 
-    num_state_vars = 0
-    num_action_vars = 0
-    num_reward_vars = 0
+    # Number of variables, ignoring future and horizon
+    num_mdp_state_vars = 0
+    num_mdp_action_vars = 0
+    # Number of variables, considering future and horizon
+    num_mrf_state_vars = 0  # Both MDP states and actions are MRF states
+    num_mrf_reward_vars = 0
     # Dict of variable names to local indices. These indices are locally
-    # offset for each group of variables: states, actions. Rewards variables
-    # indices are injected directly into the nodes of the reward tree
+    # offset for each group of variables: states, actions.
     vars_local_indices = {}
+    # Variables (states and actions) local indices to variable names
+    local_indices_to_vars = {}
 
     cliques = []
     preamble = 'MARKOV'
@@ -25,8 +29,14 @@ class MRFModel(object):
     def __init__(self, num_futures, problem):
         self.num_futures = num_futures
         self.problem = problem
+
+        self.num_mdp_state_vars = len(problem.variables)
+        self.num_mdp_action_vars = len(problem.actions)
+
         self.vars_group_size = num_futures * problem.horizon
-        self.num_reward_vars = self.vars_group_size
+        self.num_mrf_state_vars = (self.num_mdp_state_vars + self.num_mdp_action_vars) * self.vars_group_size
+        self.num_mrf_reward_vars = self.vars_group_size
+
         self.map_vars_to_indices(problem)
 
     def add_states_clique(self, determinized_tree, tree_vars, k, t, v):
@@ -101,32 +111,36 @@ class MRFModel(object):
         return [self.get_state_var_index(var, k, t) for var in vars]
 
     def map_vars_to_indices(self, problem):
-        self.num_state_vars = len(problem.variables)
-        self.num_action_vars = len(problem.actions)
-
         for i, v in enumerate(problem.variables):
             self.vars_local_indices[v] = i
+            self.local_indices_to_vars[i] = v
         for i, a in enumerate(problem.actions):
-            self.vars_local_indices[a] = i + self.num_state_vars
+            self.vars_local_indices[a] = i + self.num_mdp_state_vars
+            self.local_indices_to_vars[i + self.num_mdp_state_vars] = a
         logger.info('mapped_variables_to_indices|mapping=\n{}'.format(self.vars_local_indices))
 
     def get_state_var_index(self, var_name, future, horizon):
         local_index = self.vars_local_indices[var_name]
-        return local_index * self.vars_group_size + future * self.problem.horizon + horizon
+        return local_index*self.vars_group_size + future*self.problem.horizon + horizon
 
     def get_reward_var_index(self, future, horizon):
         local_index = future * self.problem.horizon + horizon
-        return (self.num_state_vars + self.num_action_vars) * self.vars_group_size + local_index
+        return self.num_mrf_state_vars + local_index
+
+    def get_state_from_index(self, index):
+        """
+        Returns (variable name, future, horizon) from global index
+        """
+        local_index = index / self.vars_group_size
+        future = (index % self.vars_group_size) / self.problem.horizon
+        horizon = (index % self.vars_group_size) % self.problem.horizon
+        return self.local_indices_to_vars[local_index], future, horizon
 
     def to_file(self, filename):
-        # TODO: DRY
-        num_state_action_vars = (self.num_state_vars + self.num_action_vars) * self.vars_group_size
-        num_reward_vars = self.num_reward_vars * self.vars_group_size
-
         with open(filename, 'w') as f:
             write_line(f, self.preamble)
-            write_line(f, num_state_action_vars + num_reward_vars)
-            write_line(f, ' '.join(['2'] * num_state_action_vars + ['1'] * num_reward_vars))
+            write_line(f, self.num_mrf_state_vars + self.num_mrf_reward_vars)
+            write_line(f, ' '.join(['2'] * self.num_mrf_state_vars + ['1'] * self.num_mrf_reward_vars))
 
             write_line(f, (len(self.cliques)))
             for clique in self.cliques:
