@@ -1,21 +1,43 @@
 import random
+import subprocess
+import os
 
 from logger import logger
 from mrf.mrf_model import MRFModel
 
 
 class MRFSolver(object):
+    MPLP_EXEC = './map_solver'
+    OUTPUT_FILE = 'mrfmodel.uai'
+
     def __init__(self, name, problem, num_futures, time_limit=None, debug=False):
         logger.info('model_info|num_futures={},horizon={}'.format(num_futures, problem.horizon))
         self.num_futures = num_futures
         self.problem = problem
+        self.time_limit = time_limit
         self.mrf_model = MRFModel(num_futures, problem)
 
     def solve(self):
         self.build_states_cliques()
         self.build_reward_cliques()
         self.build_init_conditions_cliques()
-        self.mrf_model.to_file('mrfmodel.uai')
+        self.mrf_model.to_file(self.OUTPUT_FILE)
+        self.run_mplp()
+        return self.get_next_actions()
+
+    def get_next_actions(self):
+        pass
+
+    def run_mplp(self):
+        logger.info('executing_mplp_solver|exec=%s' % self.MPLP_EXEC)
+        mplp_env = os.environ.copy()
+        mplp_env['INF_TIME'] = str(self.time_limit)
+
+        mplp_proc = subprocess.Popen([self.MPLP_EXEC, self.OUTPUT_FILE],
+                                     env=mplp_env, stdout=subprocess.PIPE)
+        mplp_proc.wait()
+        logger.info('execution_completed|returncode=%s' % mplp_proc.returncode)
+        return mplp_proc.returncode
 
     def build_states_cliques(self):
         transition_trees = self.problem.transition_trees
