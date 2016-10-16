@@ -1,7 +1,6 @@
 import random
 import subprocess
 import os
-import sys
 
 from logger import logger
 from mrf.mrf_model import MRFModel
@@ -26,7 +25,23 @@ class MRFSolver(object):
         self.mrf_model.to_file(self.OUTPUT_FILE)
         map_assignments = self.run_mplp()
         next_actions = self.get_next_actions(map_assignments)
+        self.print_MAP(map_assignments)
         logger.info('next_action|states={},actions={}'.format(self.problem.variables, next_actions))
+
+    def print_MAP(self, map_assignments):
+        mdp_states = list(self.problem.variables)
+        mdp_actions = list(self.problem.actions)
+        mdp_states.sort()
+        mdp_actions.sort()
+
+        for k in range(self.num_futures):
+            print('Future %d' % k)
+            for t in range(self.problem.horizon):
+                print(' Horizon: %d' % t)
+                for s in mdp_states:
+                    print('  %s: %d' % (s, map_assignments[(s, k, t)]))
+                for a in mdp_actions:
+                    print('  %s: %d' % (a, map_assignments[(a, k, t)]))
 
     def run_mplp(self):
         logger.info('executing_mplp_solver|exec=%s' % self.MPLP_EXEC)
@@ -38,7 +53,7 @@ class MRFSolver(object):
         mplp_proc.wait()
         fdevnull.close()
         logger.info('execution_completed|returncode=%s' % mplp_proc.returncode)
-        return self.get_map_assignments()
+        return self.get_MAP_assignments()
 
     def get_next_actions(self, map_assignments):
         result = {}
@@ -46,7 +61,7 @@ class MRFSolver(object):
             result[action] = map_assignments[(action, 0, 0)]
         return result
 
-    def get_map_assignments(self):
+    def get_MAP_assignments(self):
         map_assignments = {}
 
         with open(self.RESULT_FILE, 'r') as outfile:
@@ -55,7 +70,7 @@ class MRFSolver(object):
             l = l.rstrip().split(' ')
 
             for i, v in enumerate(l[1:self.mrf_model.num_mrf_state_vars+1]):
-                map_assignments[self.mrf_model.get_state_from_index(i)] = v
+                map_assignments[self.mrf_model.get_state_from_index(i)] = int(v)
 
         return map_assignments
 

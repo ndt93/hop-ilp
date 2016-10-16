@@ -1,13 +1,13 @@
 import math
 
 # Potential function value for an invalid variables values assignment
-INVALID_POTENTIAL_VAL = 0.0001
+INVALID_POTENTIAL_VAL = 0.00001
 
 
 class MRFClique(object):
 
     def __init__(self, vars):
-        self.vars = vars
+        self.vars = vars  # List of variables from least to most significant
         self.function_table = []
 
     def generate_states_function_table(self, determinized_tree, tree_vars, v):

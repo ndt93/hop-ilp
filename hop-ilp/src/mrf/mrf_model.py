@@ -89,6 +89,8 @@ class MRFModel(object):
                     clique.function_table.append(INVALID_POTENTIAL_VAL)
 
             self.cliques.append(clique)
+            # print('--- Future %d ---' % k)
+            # self.print_clique(clique)
         logger.info('added_init_states_cliques|cur_num_cliques={}'.format(len(self.cliques)))
 
     def add_init_actions_constrs_cliques(self):
@@ -151,6 +153,12 @@ class MRFModel(object):
                                           ' '.join(stringify(clique.function_table))))
 
             logger.info('write_model_to_file|f={}'.format(filename))
+
+    def print_clique(self, clique):
+        mdp_vars = [str(self.get_state_from_index(i)) for i in clique.vars]
+        print(','.join(mdp_vars[::-1]))
+        for i, v in enumerate(clique.function_table):
+            print('{i:0{width}b}: {v}'.format(i=i, v=v, width=len(mdp_vars)))
 
 
 def stringify(l):
