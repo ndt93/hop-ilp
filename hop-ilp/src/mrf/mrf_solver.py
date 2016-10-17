@@ -25,7 +25,7 @@ class MRFSolver(object):
         self.mrf_model.to_file(self.OUTPUT_FILE)
         map_assignments = self.run_mplp()
         next_actions = self.get_next_actions(map_assignments)
-        self.print_MAP(map_assignments)
+        # self.print_MAP(map_assignments)
         logger.info('next_action|states={},actions={}'.format(self.problem.variables, next_actions))
 
     def print_MAP(self, map_assignments):

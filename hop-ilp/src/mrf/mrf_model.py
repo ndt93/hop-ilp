@@ -55,6 +55,8 @@ class MRFModel(object):
         clique = MRFClique(var_indices)
         clique.generate_states_function_table(determinized_tree, tree_vars)
         self.cliques.append(clique)
+        # print('--- Future %d Horizon %d ---' % (k, t))
+        # self.print_clique(clique)
 
     def add_reward_cliques(self, reward_tree, tree_vars):
         assert(self.num_futures > 0 and self.problem.horizon > 0)
@@ -90,8 +92,6 @@ class MRFModel(object):
                     clique.function_table.append(INVALID_POTENTIAL_VAL)
 
             self.cliques.append(clique)
-            # print('--- Future %d ---' % k)
-            # self.print_clique(clique)
         logger.info('added_init_states_cliques|cur_num_cliques={}'.format(len(self.cliques)))
 
     def add_init_actions_constrs_cliques(self):
