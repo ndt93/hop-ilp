@@ -50,9 +50,10 @@ class MRFModel(object):
         :param t: the horizon step
         :param v: name of state variable to make the transition to
         """
-        var_indices = self.state_vars_to_indices(tree_vars, k, t)
+        var_indices = [self.get_state_var_index(v, k, t + 1)]
+        var_indices.extend(self.state_vars_to_indices(tree_vars, k, t))
         clique = MRFClique(var_indices)
-        clique.generate_states_function_table(determinized_tree, tree_vars, v)
+        clique.generate_states_function_table(determinized_tree, tree_vars)
         self.cliques.append(clique)
 
     def add_reward_cliques(self, reward_tree, tree_vars):

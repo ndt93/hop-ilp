@@ -10,26 +10,30 @@ class MRFClique(object):
         self.vars = vars  # List of variables from least to most significant
         self.function_table = []
 
-    def generate_states_function_table(self, determinized_tree, tree_vars, v):
+    def generate_states_function_table(self, determinized_tree, tree_vars):
         vars_values_gen = self.vars_values_generator(tree_vars)
         for vars_values in vars_values_gen:
-            curtree = determinized_tree
-            while True:
-                if curtree is None:
-                    self.function_table.append(1 - vars_values[v])
-                    break
+            for expected_v in range(0, 2):
+                curtree = determinized_tree
+                while True:
+                    if curtree is None:
+                        if expected_v == 0:
+                            self.function_table.append(1)
+                        else:
+                            self.function_table.append(INVALID_POTENTIAL_VAL)
+                        break
 
-                if curtree.left is None and curtree.right is None:
-                    if curtree.node.dvalue == vars_values[v]:
-                        self.function_table.append(1)
+                    if curtree.left is None and curtree.right is None:
+                        if curtree.node.dvalue == expected_v:
+                            self.function_table.append(1)
+                        else:
+                            self.function_table.append(INVALID_POTENTIAL_VAL)
+                        break
+
+                    if vars_values[curtree.node.name] == 1:
+                        curtree = curtree.left
                     else:
-                        self.function_table.append(INVALID_POTENTIAL_VAL)
-                    break
-
-                if vars_values[curtree.node.name] == 1:
-                    curtree = curtree.left
-                else:
-                    curtree = curtree.right
+                        curtree = curtree.right
 
     def generate_reward_function_table(self, reward_tree, tree_vars):
         vars_values_gen = self.vars_values_generator(tree_vars)

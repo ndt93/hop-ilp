@@ -82,7 +82,6 @@ class MRFSolver(object):
                 for v in transition_trees:
                     transition_tree = transition_trees[v]
                     tree_vars = self.determinize_tree(transition_tree)
-                    tree_vars.add(v)
                     self.mrf_model.add_states_clique(transition_tree, list(tree_vars), k, t, v)
 
         logger.info('added_states_cliques|cur_num_cliques={}'.format(len(self.mrf_model.cliques)))
