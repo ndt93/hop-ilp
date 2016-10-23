@@ -23,7 +23,7 @@ class MRFModel(object):
     # Variables (states and actions) local indices to variable names
     local_indices_to_vars = {}
 
-    cliques = []
+    cliques = {'states': [], 'reward': [], 'init_states': [], 'init_actions': []}
     preamble = 'MARKOV'
 
     def __init__(self, num_futures, problem):
@@ -54,9 +54,12 @@ class MRFModel(object):
         var_indices.extend(self.state_vars_to_indices(tree_vars, k, t))
         clique = MRFClique(var_indices)
         clique.generate_states_function_table(determinized_tree, tree_vars)
-        self.cliques.append(clique)
+        self.cliques['states'].append(clique)
         # print('--- Future %d Horizon %d ---' % (k, t))
         # self.print_clique(clique)
+
+    def reset_states_clique(self):
+        self.cliques['states'] = []
 
     def add_reward_cliques(self, reward_tree, tree_vars):
         assert(self.num_futures > 0 and self.problem.horizon > 0)
@@ -64,7 +67,7 @@ class MRFModel(object):
         var_indices.append(self.get_reward_var_index(0, 0))
         clique_proto = MRFClique(var_indices)
         clique_proto.generate_reward_function_table(reward_tree, tree_vars)
-        self.cliques.append(clique_proto)
+        self.cliques['reward'].append(clique_proto)
 
         for k in range(self.num_futures):
             for t in range(self.problem.horizon):
@@ -74,9 +77,9 @@ class MRFModel(object):
                 var_indices.append(self.get_reward_var_index(k, t))
                 clique = MRFClique(var_indices)
                 clique.function_table = clique_proto.function_table
-                self.cliques.append(clique)
+                self.cliques['reward'].append(clique)
 
-    def add_init_states_constrs_cliques(self):
+    def add_init_states_cliques(self):
         vars_list = list(self.problem.variables)
         vars_vals_bitset = 0
         for i, v in enumerate(vars_list):
@@ -91,10 +94,14 @@ class MRFModel(object):
                 else:
                     clique.function_table.append(INVALID_POTENTIAL_VAL)
 
-            self.cliques.append(clique)
-        logger.info('added_init_states_cliques|cur_num_cliques={}'.format(len(self.cliques)))
+            self.cliques['init_states'].append(clique)
+        logger.info('added_init_states_cliques|#init_states_cliques={}'
+                    .format(len(self.cliques['init_states'])))
 
-    def add_init_actions_constrs_cliques(self):
+    def reset_init_states_cliques(self):
+        self.cliques['init_states'] = []
+
+    def add_init_actions_cliques(self):
         function_table = []
         allset = 2**self.num_futures - 1
         for i in range(2**self.num_futures):
@@ -107,8 +114,9 @@ class MRFModel(object):
             vars_indices = [self.get_state_var_index(action, k, 0) for k in range(self.num_futures)]
             clique = MRFClique(vars_indices)
             clique.function_table = function_table
-            self.cliques.append(clique)
-        logger.info('added_init_actions_cliques|cur_num_cliques={}'.format(len(self.cliques)))
+            self.cliques['init_actions'].append(clique)
+        logger.info('added_init_actions_cliques|#init_actions_cliques={}'
+                    .format(len(self.cliques['init_actions'])))
 
     def state_vars_to_indices(self, vars, k, t):
         return [self.get_state_var_index(var, k, t) for var in vars]
@@ -139,17 +147,26 @@ class MRFModel(object):
         horizon = (index % self.vars_group_size) % self.problem.horizon
         return self.local_indices_to_vars[local_index], future, horizon
 
+    @staticmethod
+    def merge_cliques(cliques_groups):
+        cliques = []
+        for _, cliques_group in cliques_groups.items():
+            cliques.extend(cliques_group)
+        return cliques
+
     def to_file(self, filename):
         with open(filename, 'w') as f:
             write_line(f, self.preamble)
             write_line(f, self.num_mrf_state_vars + self.num_mrf_reward_vars)
             write_line(f, ' '.join(['2'] * self.num_mrf_state_vars + ['1'] * self.num_mrf_reward_vars))
 
-            write_line(f, (len(self.cliques)))
-            for clique in self.cliques:
+            cliques = self.merge_cliques(self.cliques)
+
+            write_line(f, len(cliques))
+            for clique in cliques:
                 f.write('{} {}\n'.format(len(clique.vars),
                                          ' '.join(stringify(clique.vars[::-1]))))
-            for clique in self.cliques:
+            for clique in cliques:
                 f.write('{}\n{}\n'.format(len(clique.function_table),
                                           ' '.join(stringify(clique.function_table))))
 

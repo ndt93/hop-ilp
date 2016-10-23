@@ -18,15 +18,24 @@ class MRFSolver(object):
         self.time_limit = time_limit
         self.mrf_model = MRFModel(num_futures, problem)
 
+        self.build_reward_cliques()
+        self.mrf_model.add_init_actions_cliques()
+
     def solve(self):
         self.build_states_cliques()
-        self.build_reward_cliques()
-        self.build_init_conditions_cliques()
+        self.mrf_model.add_init_states_cliques()
         self.mrf_model.to_file(self.OUTPUT_FILE)
+
         map_assignments = self.run_mplp()
         next_actions = self.get_next_actions(map_assignments)
         # self.print_MAP(map_assignments)
         logger.info('next_action|states={},actions={}'.format(self.problem.variables, next_actions))
+        return next_actions, None
+
+    def init_next_step(self, states):
+        self.problem.variables.update(states)
+        self.mrf_model.reset_states_clique()
+        self.mrf_model.reset_init_states_cliques()
 
     def print_MAP(self, map_assignments):
         mdp_states = list(self.problem.variables)
@@ -84,7 +93,8 @@ class MRFSolver(object):
                     tree_vars = self.determinize_tree(transition_tree)
                     self.mrf_model.add_states_clique(transition_tree, list(tree_vars), k, t, v)
 
-        logger.info('added_states_cliques|cur_num_cliques={}'.format(len(self.mrf_model.cliques)))
+        logger.info('added_states_cliques|#states_cliques={}'
+                    .format(len(self.mrf_model.cliques['states'])))
 
     def determinize_tree(self, transition_tree):
         """
@@ -128,8 +138,5 @@ class MRFSolver(object):
 
         collect_tree_vars(self.problem.reward_tree)
         self.mrf_model.add_reward_cliques(self.problem.reward_tree, list(tree_vars))
-        logger.info('added_reward_cliques|cur_num_cliques={}'.format(len(self.mrf_model.cliques)))
-
-    def build_init_conditions_cliques(self):
-        self.mrf_model.add_init_states_constrs_cliques()
-        self.mrf_model.add_init_actions_constrs_cliques()
+        logger.info('added_reward_cliques|#reward_cliques={}'
+                    .format(len(self.mrf_model.cliques['reward'])))

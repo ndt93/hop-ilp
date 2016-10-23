@@ -8,7 +8,7 @@ class RDDLExperiment(Experiment):
     session_info = {}
 
     def start(self):
-        self.solver.solve()
+        # self.solver.solve()
         self.client = Client('python-client')
         self.session_info = self.client.request_session(self.solver.problem_name)
         logger.info('session_start|session={}'.format(self.session_info));
