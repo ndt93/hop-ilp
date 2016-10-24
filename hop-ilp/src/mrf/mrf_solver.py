@@ -13,6 +13,7 @@ class MRFSolver(object):
 
     def __init__(self, name, problem, num_futures, time_limit=None, debug=False):
         logger.info('model_info|num_futures={},horizon={}'.format(num_futures, problem.horizon))
+        self.problem_name = name
         self.num_futures = num_futures
         self.problem = problem
         self.time_limit = time_limit
@@ -20,6 +21,7 @@ class MRFSolver(object):
 
         self.build_reward_cliques()
         self.mrf_model.add_init_actions_cliques()
+        self.mrf_model.add_concurrency_constrs()
 
     def solve(self):
         self.build_states_cliques()

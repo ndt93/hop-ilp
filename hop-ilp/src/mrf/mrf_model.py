@@ -23,7 +23,7 @@ class MRFModel(object):
     # Variables (states and actions) local indices to variable names
     local_indices_to_vars = {}
 
-    cliques = {'states': [], 'reward': [], 'init_states': [], 'init_actions': []}
+    cliques = {'states': [], 'reward': [], 'init_states': [], 'init_actions': [], 'concurrency': []}
     preamble = 'MARKOV'
 
     def __init__(self, num_futures, problem):
@@ -115,8 +115,36 @@ class MRFModel(object):
             clique = MRFClique(vars_indices)
             clique.function_table = function_table
             self.cliques['init_actions'].append(clique)
+
         logger.info('added_init_actions_cliques|#init_actions_cliques={}'
                     .format(len(self.cliques['init_actions'])))
+
+    @staticmethod
+    def count_set_bits(n):
+        count = 0
+        while n != 0:
+            count += 1
+            n &= n - 1
+        return count
+
+    def add_concurrency_constrs(self):
+        function_table = []
+
+        for i in range(2**len(self.problem.actions)):
+            if self.count_set_bits(i) > self.problem.max_concurrency:
+                function_table.append(INVALID_POTENTIAL_VAL)
+            else:
+                function_table.append(1)
+
+        for k in range(self.num_futures):
+            for t in range(self.problem.horizon):
+                vars_indices = self.state_vars_to_indices(self.problem.actions, k, t)
+                clique = MRFClique(vars_indices)
+                clique.function_table = function_table
+                self.cliques['concurrency'].append(clique)
+
+        logger.info('added_concurrency_constrs|#concurrency_constrs_cliques={}'
+                    .format(len(self.cliques['concurrency'])))
 
     def state_vars_to_indices(self, vars, k, t):
         return [self.get_state_var_index(var, k, t) for var in vars]
