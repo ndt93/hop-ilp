@@ -59,10 +59,12 @@ class MRFSolver(object):
         mplp_env = os.environ.copy()
         mplp_env['INF_TIME'] = str(self.time_limit)
 
-        fdevnull = open(os.devnull, 'w')
+        #fdevnull = open(os.devnull, 'w')
+        fdevnull = None
         mplp_proc = subprocess.Popen([self.MPLP_EXEC, self.OUTPUT_FILE], env=mplp_env, stdout=fdevnull)
         mplp_proc.wait()
-        fdevnull.close()
+        if fdevnull is not None:
+            fdevnull.close()
         logger.info('execution_completed|returncode=%s' % mplp_proc.returncode)
         return self.get_MAP_assignments()
 
