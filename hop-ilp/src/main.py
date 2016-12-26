@@ -4,6 +4,7 @@ from os import path
 import model
 from solver import Solver
 from mrf import MRFSolver
+from mrf.spec.mrf_sysadmin import SysAdminMRF
 import experiment
 
 
@@ -21,13 +22,15 @@ def main(argv):
     if argv[1] == 'ilp':
         solver = Solver(problem_name, problem, int(argv[3]), time_limit=time_limit, debug=False)
     elif argv[1] == 'mrf':
-        solver = MRFSolver(problem_name, problem, int(argv[3]), time_limit=time_limit, debug=False)
+        # solver = MRFSolver(problem_name, problem, int(argv[3]), time_limit=time_limit, debug=False)
+        if problem_name.startswith('sysadmin'):
+            solver = SysAdminMRF(problem, int(argv[3]), time_limit=time_limit, debug=True)
     else:
         print('Use "ilp" or "mrf" as experiment')
         return
 
-    rddl_experiment = experiment.RDDLExperiment(solver)
-    rddl_experiment.start()
+    # rddl_experiment = experiment.RDDLExperiment(solver)
+    # rddl_experiment.start()
 
 if __name__ == '__main__':
     main(sys.argv)
