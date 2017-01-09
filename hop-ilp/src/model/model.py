@@ -8,6 +8,7 @@ class Model(object):
     reward_tree = None
     horizon = None
     max_concurrency = None
+    file = ""
 
     def log_transition_trees(self):
         for v, t in self.transition_trees.items():

@@ -1,5 +1,6 @@
 from logger import logger
 from mrf.mrf_clique import MRFClique, INVALID_POTENTIAL_VAL
+from mrf import utils
 
 
 class MRFModel(object):
@@ -119,19 +120,11 @@ class MRFModel(object):
         logger.info('added_init_actions_cliques|#init_actions_cliques={}'
                     .format(len(self.cliques['init_actions'])))
 
-    @staticmethod
-    def count_set_bits(n):
-        count = 0
-        while n != 0:
-            count += 1
-            n &= n - 1
-        return count
-
     def add_concurrency_constrs(self):
         function_table = []
 
         for i in range(2**len(self.problem.actions)):
-            if self.count_set_bits(i) > self.problem.max_concurrency:
+            if utils.count_set_bits(i) > self.problem.max_concurrency:
                 function_table.append(INVALID_POTENTIAL_VAL)
             else:
                 function_table.append(1)

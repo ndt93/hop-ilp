@@ -10,8 +10,11 @@ def from_json_file(filepath):
         model_data = json.load(f)
         
     if model_data:
-        return build_model(model_data)
-    return Model()
+        m = build_model(model_data)
+    else:
+        m = Model()
+    m.file = filepath
+    return m
     
 
 def build_model(model_data):
