@@ -3,10 +3,13 @@ import mrf
 from mrf.mrf_clique import MRFClique
 from mrf import utils
 import math
+import re
 
 
 class SysAdminMRF(object):
     REBOOT_PENALTY = 0.75
+    REBOOT_PROB = 0.1
+    topology = {}
 
     var_to_idx = {}  # Var is a tuple (name, future, horizon)
     idx_to_var = []
@@ -26,6 +29,9 @@ class SysAdminMRF(object):
         self.debug = debug
 
         self.map_vars_to_indices(problem, num_futures)
+        self.get_network_params()
+        print('TOPOLOGY:\n%s\n' % self.topology)
+        print('REBOOT-PROB: %s\n' % self.REBOOT_PROB)
         self.add_fixed_constrs()
         logger.info('Done initializing!')
 
@@ -135,3 +141,38 @@ class SysAdminMRF(object):
     @staticmethod
     def find_matching_action(state):
         return 'reboot%s' % (state[state.rindex('__'):],)
+
+    def get_network_params(self):
+        rddl_file = self.problem.file.replace('json', 'rddl')
+
+        with open(rddl_file, 'r') as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith('computer'):
+                    self.topology = self.init_computers_list(line)
+                elif line.startswith('REBOOT-PROB'):
+                    self.REBOOT_PROB = self.get_rddl_assignment_val(line, float)
+                elif line.startswith('CONNECTED'):
+                    computers = self.get_rddl_function_params(line, 'CONNECTED')
+                    assert(len(computers) == 2)
+                    self.topology[computers[1]].append(computers[0])
+        logger.info('Read network parameters')
+
+    @staticmethod
+    def init_computers_list(list_str):
+        list_start = list_str.index('{') + 1
+        list_end = list_str.rindex('}')
+        computers = list_str[list_start:list_end].split(',')
+        return {computer: [] for computer in computers}
+
+    @staticmethod
+    def get_rddl_assignment_val(rddl_str, t):
+        val_start = rddl_str.index('=') + 1
+        val_end = rddl_str.rindex(';')
+        return t(rddl_str[val_start:val_end])
+
+    @staticmethod
+    def get_rddl_function_params(rddl_str, func_name):
+        params_match = re.search(r'%s\s*\((.*)\)' % (func_name,), rddl_str)
+        params_str = params_match.group(1)
+        return params_str.split(',')
