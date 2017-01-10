@@ -5,3 +5,10 @@ def count_set_bits(n):
         n &= n - 1
     return count
 
+
+def stringify(l):
+    return [str(x) for x in l]
+
+
+def write_line(f, l):
+    f.write('{}\n'.format(l))

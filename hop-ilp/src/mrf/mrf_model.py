@@ -1,6 +1,6 @@
 from logger import logger
-from mrf.mrf_clique import MRFClique, INVALID_POTENTIAL_VAL
 from mrf import utils
+from mrf.mrf_clique import MRFClique, INVALID_POTENTIAL_VAL
 
 
 class MRFModel(object):
@@ -177,19 +177,19 @@ class MRFModel(object):
 
     def to_file(self, filename):
         with open(filename, 'w') as f:
-            write_line(f, self.preamble)
-            write_line(f, self.num_mrf_state_vars + self.num_mrf_reward_vars)
-            write_line(f, ' '.join(['2'] * self.num_mrf_state_vars + ['1'] * self.num_mrf_reward_vars))
+            utils.write_line(f, self.preamble)
+            utils.write_line(f, self.num_mrf_state_vars + self.num_mrf_reward_vars)
+            utils.write_line(f, ' '.join(['2'] * self.num_mrf_state_vars + ['1'] * self.num_mrf_reward_vars))
 
             cliques = self.merge_cliques(self.cliques)
 
-            write_line(f, len(cliques))
+            utils.write_line(f, len(cliques))
             for clique in cliques:
                 f.write('{} {}\n'.format(len(clique.vars),
-                                         ' '.join(stringify(clique.vars[::-1]))))
+                                         ' '.join(utils.stringify(clique.vars[::-1]))))
             for clique in cliques:
                 f.write('{}\n{}\n'.format(len(clique.function_table),
-                                          ' '.join(stringify(clique.function_table))))
+                                          ' '.join(utils.stringify(clique.function_table))))
 
             logger.info('write_model_to_file|f={}'.format(filename))
 
@@ -198,11 +198,3 @@ class MRFModel(object):
         print(','.join(mdp_vars[::-1]))
         for i, v in enumerate(clique.function_table):
             print('{i:0{width}b}: {v}'.format(i=i, v=v, width=len(mdp_vars)))
-
-
-def stringify(l):
-    return [str(x) for x in l]
-
-
-def write_line(f, l):
-    f.write('{}\n'.format(l))

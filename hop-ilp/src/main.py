@@ -25,6 +25,7 @@ def main(argv):
         # solver = MRFSolver(problem_name, problem, int(argv[3]), time_limit=time_limit, debug=False)
         if problem_name.startswith('sysadmin'):
             solver = SysAdminMRF(problem, int(argv[3]), time_limit=time_limit, debug=True)
+            solver.solve()
     else:
         print('Use "ilp" or "mrf" as experiment')
         return
