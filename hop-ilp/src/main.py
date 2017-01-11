@@ -24,14 +24,14 @@ def main(argv):
     elif argv[1] == 'mrf':
         # solver = MRFSolver(problem_name, problem, int(argv[3]), time_limit=time_limit, debug=False)
         if problem_name.startswith('sysadmin'):
-            solver = SysAdminMRF(problem, int(argv[3]), time_limit=time_limit, debug=True)
+            solver = SysAdminMRF(problem_name, problem, int(argv[3]), time_limit=time_limit, debug=False)
             solver.solve()
     else:
         print('Use "ilp" or "mrf" as experiment')
         return
 
-    # rddl_experiment = experiment.RDDLExperiment(solver)
-    # rddl_experiment.start()
+    rddl_experiment = experiment.RDDLExperiment(solver)
+    rddl_experiment.start()
 
 if __name__ == '__main__':
     main(sys.argv)

@@ -2,6 +2,7 @@ from logger import logger
 import mrf
 from mrf.mrf_clique import MRFClique
 from mrf.mplp_runner import MPLPRunner
+import mrf.utils as utils
 from mrf.utils import count_set_bits, stringify, write_line
 import math
 import re
@@ -18,8 +19,9 @@ class SysAdminMRF(object):
     constr_cats = ['init_states', 'init_actions', 'concurrency', 'transition', 'reward']
     constrs = {}
 
-    def __init__(self, problem, num_futures, time_limit=None, debug=False):
+    def __init__(self, problem_name, problem, num_futures, time_limit=None, debug=False):
         logger.info('Initializing problem...')
+        self.problem_name = problem_name
         self.problem = problem
         self.num_futures = num_futures
         self.time_limit = time_limit
@@ -29,23 +31,26 @@ class SysAdminMRF(object):
         self.mplp_runner = MPLPRunner(self.problem.actions, self.idx_to_var, time_limit)
         self.constrs = {cat: [] for cat in self.constr_cats}
         self.get_network_params()
-        print('TOPOLOGY:\n%s\n' % self.topology)
-        print('REBOOT-PROB: %s\n' % self.REBOOT_PROB)
+        if self.debug:
+            print('TOPOLOGY:\n%s\n' % self.topology)
+            print('REBOOT-PROB: %s\n' % self.REBOOT_PROB)
         self.add_fixed_constrs()
         logger.info('Done initializing!')
 
-    def solve(self, init_state_vals=None):
-        if init_state_vals is None:
-            init_state_vals = self.problem.variables
-        self.set_init_states_constrs(init_state_vals)
+    def solve(self):
+        self.set_init_states_constrs(self.problem.variables)
         self.set_transition_constrs()
 
         self.write_mrf(mrf.OUTPUT_FILE)
         map_assignments = self.mplp_runner.run_mplp()
+        #utils.print_MAP(map_assignments, self.problem, self.num_futures)
         next_actions = self.mplp_runner.get_next_actions(map_assignments)
 
         logger.info('next_action|states={},actions={}'.format(self.problem.variables, next_actions))
         return next_actions, None
+
+    def init_next_step(self, states):
+        self.problem.variables.update(states)
 
     def write_mrf(self, filename):
         with open(filename, 'w') as f:
@@ -56,17 +61,17 @@ class SysAdminMRF(object):
             num_cliques = sum([len(self.constrs[cliques]) for cliques in self.constrs])
             write_line(f, num_cliques)
 
-            for _, cliques in self.constrs.items():
+            for cat, cliques in self.constrs.items():
+                #write_line(f, '<%s>' % cat)
                 for clique in cliques:
                     self.write_clique_vars_list(f, clique)
+                #write_line(f, '</%s>' % cat)
 
-            for _, cliques in self.constrs.items():
-                for clique in cliques:
-                    self.write_clique_vars_list(f, clique)
-
-            for _, cliques in self.constrs.items():
+            for cat, cliques in self.constrs.items():
+                #write_line(f, '<%s>' % cat)
                 for clique in cliques:
                     self.write_clique_function_table(f, clique)
+                #write_line(f, '</%s>' % cat)
 
         logger.info('write_model_to_file|f={}'.format(filename))
 
@@ -106,11 +111,6 @@ class SysAdminMRF(object):
         self.idx_to_var.append(var)
         self.var_to_idx[var] = len(self.idx_to_var) - 1
 
-    def add_fixed_constrs(self):
-        self.add_concurrency_constrs()
-        self.add_init_actions_constrs()
-        self.add_reward_constrs()
-
     def add_variable_constrs(self, init_state_vals):
         self.set_init_states_constrs(init_state_vals)
         self.set_transition_constrs()
@@ -139,10 +139,10 @@ class SysAdminMRF(object):
         for k in range(self.num_futures):
             for h in range(1, self.problem.horizon):
                 for v in self.problem.variables:
-                    # Clique: MSB[n1(h-1), n2(h-1),..., v(h), reboot(v)]LSB
+                    # Clique: MSB[n1(h-1), n2(h-1),..., v(h-1), v(h), reboot(v, h-1)]LSB
                     neighbours = self.topology[v]
-                    var_indices = [self.var_to_idx[(self.find_matching_action(v), k, h)],
-                                   self.var_to_idx[(v, k, h)]]
+                    var_indices = [self.var_to_idx[(self.find_matching_action(v), k, h - 1)],
+                                   self.var_to_idx[(v, k, h)], self.var_to_idx[(v, k, h - 1)]]
                     var_indices.extend([self.var_to_idx[(n, k, h - 1)] for n in neighbours])
                     num_vars = len(var_indices)
                     determinized_transition = {}
@@ -151,28 +151,35 @@ class SysAdminMRF(object):
                     clique.function_table = []
 
                     for clique_bitmask in range(2**num_vars):
-                        if clique_bitmask & 1 == 1:
-                            if clique_bitmask & 2 == 1:
+                        if clique_bitmask & 1 != 0:
+                            if clique_bitmask & 2 != 0:
                                 clique.function_table.append(1)
                             else:
                                 clique.function_table.append(mrf.INVALID_POTENTIAL_VAL)
                         else:
-                            neighbours_bitmask = clique_bitmask >> 2
+                            dependencies_bitmask = clique_bitmask >> 2
 
-                            if neighbours_bitmask in determinized_transition:
-                                determinized_val = determinized_transition[neighbours_bitmask]
+                            if dependencies_bitmask in determinized_transition:
+                                determinized_val = determinized_transition[dependencies_bitmask]
                             else:
-                                running_neighbours = self.count_set_neighbours(clique_bitmask, num_vars - 2)
-                                running_prob = 0.45 + 0.5*(1 + running_neighbours)/(1 + len(neighbours))
+                                if clique_bitmask & 4 != 0:
+                                    running_neighbours = self.count_set_neighbours(clique_bitmask,
+                                                                                   num_vars - 2)
+                                    running_prob = 0.45 + 0.5*(1 + running_neighbours)/(1 + len(neighbours))
 
-                                if random.random() <= running_prob:
-                                    determinized_val = 1
+                                    if random.random() <= running_prob:
+                                        determinized_val = 1
+                                    else:
+                                        determinized_val = 0
                                 else:
-                                    determinized_val = 0
+                                    if random.random() <= self.REBOOT_PROB:
+                                        determinized_val = 1
+                                    else:
+                                        determinized_val = 0
 
-                                determinized_transition[neighbours_bitmask] = determinized_val
+                                determinized_transition[dependencies_bitmask] = determinized_val
 
-                            if clique_bitmask & 2 == determinized_val:
+                            if (clique_bitmask & 2) >> 1 == determinized_val:
                                 clique.function_table.append(1)
                             else:
                                 clique.function_table.append(mrf.INVALID_POTENTIAL_VAL)
@@ -181,17 +188,10 @@ class SysAdminMRF(object):
 
         logger.info('set_transition_constraints')
 
-    @staticmethod
-    def count_set_neighbours(clique_bitmask, num_neighbours):
-        bit_pointer = 1 << 2
-        count = 0
-
-        for _ in range(num_neighbours):
-            if clique_bitmask & bit_pointer > 0:
-                count += 1
-            bit_pointer <<= 1
-
-        return count
+    def add_fixed_constrs(self):
+        self.add_concurrency_constrs()
+        self.add_init_actions_constrs()
+        self.add_reward_constrs()
 
     def add_concurrency_constrs(self):
         function_table = []
@@ -225,6 +225,7 @@ class SysAdminMRF(object):
                             for k in range(self.num_futures)]
             clique = MRFClique(vars_indices)
             clique.function_table = function_table
+            self.constrs['init_actions'].append(clique)
 
         logger.info('Added concurrency constraints')
 
@@ -264,6 +265,18 @@ class SysAdminMRF(object):
                     self.topology[computers[1]].append(computers[0])
 
         logger.info('Read network parameters')
+
+    @staticmethod
+    def count_set_neighbours(clique_bitmask, num_neighbours):
+        bit_pointer = 1 << 3
+        count = 0
+
+        for _ in range(num_neighbours):
+            if clique_bitmask & bit_pointer > 0:
+                count += 1
+            bit_pointer <<= 1
+
+        return count
 
     @staticmethod
     def init_computers_list(list_str):

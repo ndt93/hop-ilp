@@ -39,21 +39,6 @@ class MRFSolver(object):
         self.mrf_model.reset_states_clique()
         self.mrf_model.reset_init_states_cliques()
 
-    def print_MAP(self, map_assignments):
-        mdp_states = list(self.problem.variables)
-        mdp_actions = list(self.problem.actions)
-        mdp_states.sort()
-        mdp_actions.sort()
-
-        for k in range(self.num_futures):
-            print('Future %d' % k)
-            for t in range(self.problem.horizon):
-                print(' Horizon: %d' % t)
-                for s in mdp_states:
-                    print('  %s: %d' % (s, map_assignments[(s, k, t)]))
-                for a in mdp_actions:
-                    print('  %s: %d' % (a, map_assignments[(a, k, t)]))
-
     def run_mplp(self):
         logger.info('executing_mplp_solver|exec=%s' % self.MPLP_EXEC)
         mplp_env = os.environ.copy()
