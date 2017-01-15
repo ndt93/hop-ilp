@@ -2,14 +2,14 @@ from logger import logger
 import mrf
 from mrf.mrf_clique import MRFClique
 from mrf.mplp_runner import MPLPRunner
-import mrf.utils as utils
 from mrf.utils import count_set_bits, stringify, write_line
+from mrf.spec.mrf_base import BaseMRF
 import math
 import re
 import random
 
 
-class SysAdminMRF(object):
+class SysAdminMRF(BaseMRF):
     REBOOT_PENALTY = 0.75
     REBOOT_PROB = 0.1
     topology = {}
@@ -19,17 +19,8 @@ class SysAdminMRF(object):
     constr_cats = ['init_states', 'init_actions', 'concurrency', 'transition', 'reward']
     constrs = {}
 
-    def __init__(self, problem_name, problem, num_futures, time_limit=None, debug=False):
-        logger.info('Initializing problem...')
-        self.problem_name = problem_name
-        self.problem = problem
-        self.num_futures = num_futures
-        self.time_limit = time_limit
-        self.debug = debug
-
-        self.map_vars_to_indices(problem, num_futures)
-        self.mplp_runner = MPLPRunner(self.problem.actions, self.idx_to_var, time_limit)
-        self.constrs = {cat: [] for cat in self.constr_cats}
+    def __init__(self, *args, **kwargs):
+        BaseMRF.__init__(self, *args, **kwargs)
         self.get_network_params()
         if self.debug:
             print('TOPOLOGY:\n%s\n' % self.topology)
@@ -43,7 +34,6 @@ class SysAdminMRF(object):
 
         self.write_mrf(mrf.OUTPUT_FILE)
         map_assignments = self.mplp_runner.run_mplp()
-        #utils.print_MAP(map_assignments, self.problem, self.num_futures)
         next_actions = self.mplp_runner.get_next_actions(map_assignments)
 
         logger.info('next_action|states={},actions={}'.format(self.problem.variables, next_actions))
@@ -62,16 +52,12 @@ class SysAdminMRF(object):
             write_line(f, num_cliques)
 
             for cat, cliques in self.constrs.items():
-                #write_line(f, '<%s>' % cat)
                 for clique in cliques:
                     self.write_clique_vars_list(f, clique)
-                #write_line(f, '</%s>' % cat)
 
             for cat, cliques in self.constrs.items():
-                #write_line(f, '<%s>' % cat)
                 for clique in cliques:
                     self.write_clique_function_table(f, clique)
-                #write_line(f, '</%s>' % cat)
 
         logger.info('write_model_to_file|f={}'.format(filename))
 
