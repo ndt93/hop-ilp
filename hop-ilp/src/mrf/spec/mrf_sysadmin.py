@@ -1,7 +1,6 @@
 from logger import logger
 import mrf
 from mrf.mrf_clique import MRFClique
-from mrf.utils import count_set_bits, stringify, write_line
 from mrf.spec.mrf_base import BaseMRF
 import math
 import re
@@ -41,37 +40,6 @@ class SysAdminMRF(BaseMRF):
     def init_next_step(self, states):
         self.problem.variables.update(states)
 
-    def write_mrf(self, filename):
-        with open(filename, 'w') as f:
-            write_line(f, mrf.PREAMBLE)
-            write_line(f, len(self.idx_to_var))
-            write_line(f, ' '.join(['2'] * len(self.idx_to_var)))
-
-            num_cliques = sum([len(self.constrs[cliques]) for cliques in self.constrs])
-            write_line(f, num_cliques)
-
-            for cat, cliques in self.constrs.items():
-                for clique in cliques:
-                    self.write_clique_vars_list(f, clique)
-
-            for cat, cliques in self.constrs.items():
-                for clique in cliques:
-                    self.write_clique_function_table(f, clique)
-
-        logger.info('write_model_to_file|f={}'.format(filename))
-
-    @staticmethod
-    def write_clique_vars_list(f, clique):
-        f.write('{} {}\n'.
-                format(len(clique.vars),
-                       ' '.join(stringify(clique.vars[::-1]))))
-
-    @staticmethod
-    def write_clique_function_table(f, clique):
-        f.write('{} {}\n'.
-                format(len(clique.function_table),
-                       ' '.join(stringify(clique.function_table))))
-
     def map_vars_to_indices(self, problem, num_futures):
         logger.info('Mapping variables to indices...')
         for state in problem.variables:
@@ -99,24 +67,6 @@ class SysAdminMRF(BaseMRF):
     def add_variable_constrs(self, init_state_vals):
         self.set_init_states_constrs(init_state_vals)
         self.set_transition_constrs()
-
-    def set_init_states_constrs(self, init_state_vals):
-        self.constrs['init_states'] = []
-
-        function_table_0 = [1, mrf.INVALID_POTENTIAL_VAL]
-        function_table_1 = [mrf.INVALID_POTENTIAL_VAL, 1]
-
-        for k in range(self.num_futures):
-            for v in self.problem.variables:
-                vars_indices = [self.var_to_idx[(v, k, 0)]]
-                clique = MRFClique(vars_indices)
-                if init_state_vals[v] == 0:
-                    clique.function_table = function_table_0
-                else:
-                    clique.function_table = function_table_1
-                self.constrs['init_states'].append(clique)
-
-        logger.info('set_init_states_constraints')
 
     def set_transition_constrs(self):
         self.constrs['transition'] = []

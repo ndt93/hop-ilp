@@ -23,7 +23,7 @@ def main(argv):
         solver = Solver(problem_name, problem, int(argv[3]), time_limit=time_limit, debug=False)
     elif argv[1] == 'mrf':
         base_args = (problem_name, problem, int(argv[3]))
-        base_kwards = {'time_limit': time_limit, 'debug': False}
+        base_kwards = {'time_limit': time_limit, 'debug': True}
 
         if problem_name.startswith('sysadmin'):
             solver = SysAdminMRF(*base_args, **base_kwards)
@@ -33,8 +33,8 @@ def main(argv):
         print('Use "ilp" or "mrf" as experiment')
         return
 
-    # rddl_experiment = experiment.RDDLExperiment(solver)
-    # rddl_experiment.start()
+    rddl_experiment = experiment.RDDLExperiment(solver)
+    rddl_experiment.start()
 
 if __name__ == '__main__':
     main(sys.argv)
