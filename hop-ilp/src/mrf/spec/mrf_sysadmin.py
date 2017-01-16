@@ -1,7 +1,6 @@
 from logger import logger
 import mrf
 from mrf.mrf_clique import MRFClique
-from mrf.mplp_runner import MPLPRunner
 from mrf.utils import count_set_bits, stringify, write_line
 from mrf.spec.mrf_base import BaseMRF
 import math
@@ -174,47 +173,6 @@ class SysAdminMRF(BaseMRF):
 
         logger.info('set_transition_constraints')
 
-    def add_fixed_constrs(self):
-        self.add_concurrency_constrs()
-        self.add_init_actions_constrs()
-        self.add_reward_constrs()
-
-    def add_concurrency_constrs(self):
-        function_table = []
-        for i in range(2**len(self.problem.actions)):
-            if count_set_bits(i) > self.problem.max_concurrency:
-                function_table.append(mrf.INVALID_POTENTIAL_VAL)
-            else:
-                function_table.append(1)
-
-        for k in range(self.num_futures):
-            for h in range(self.problem.horizon):
-                vars_indices = [self.var_to_idx[(action, k, h)]
-                                for action in self.problem.actions]
-                clique = MRFClique(vars_indices)
-                clique.function_table = function_table
-                self.constrs['concurrency'].append(clique)
-
-        logger.info('Added concurrency constraints')
-
-    def add_init_actions_constrs(self):
-        function_table = []
-        allset = 2**self.num_futures - 1
-        for i in range(2**self.num_futures):
-            if i == 0 or i == allset:
-                function_table.append(1)
-            else:
-                function_table.append(mrf.INVALID_POTENTIAL_VAL)
-
-        for action in self.problem.actions:
-            vars_indices = [self.var_to_idx[(action, k, 0)]
-                            for k in range(self.num_futures)]
-            clique = MRFClique(vars_indices)
-            clique.function_table = function_table
-            self.constrs['init_actions'].append(clique)
-
-        logger.info('Added concurrency constraints')
-
     def add_reward_constrs(self):
         function_table = [math.exp(x) for x in
                           [0, 1, -self.REBOOT_PENALTY, 1 - self.REBOOT_PENALTY]]
@@ -270,16 +228,3 @@ class SysAdminMRF(BaseMRF):
         list_end = list_str.rindex('}')
         computers = list_str[list_start:list_end].split(',')
         return {'running__%s' % computer: [] for computer in computers}
-
-    @staticmethod
-    def get_rddl_assignment_val(rddl_str, t):
-        val_start = rddl_str.index('=') + 1
-        val_end = rddl_str.rindex(';')
-        return t(rddl_str[val_start:val_end])
-
-    @staticmethod
-    def get_rddl_function_params(rddl_str, func_name):
-        params_match = re.search(r'%s\s*\((.*)\)' % (func_name,), rddl_str)
-        params_str = params_match.group(1)
-        return params_str.split(',')
-

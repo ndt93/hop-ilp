@@ -3,8 +3,8 @@ from os import path
 
 import model
 from solver import Solver
-from mrf import MRFSolver
 from mrf.spec.mrf_sysadmin import SysAdminMRF
+from mrf.spec.mrf_gol import GolMRF
 import experiment
 
 
@@ -22,16 +22,19 @@ def main(argv):
     if argv[1] == 'ilp':
         solver = Solver(problem_name, problem, int(argv[3]), time_limit=time_limit, debug=False)
     elif argv[1] == 'mrf':
-        # solver = MRFSolver(problem_name, problem, int(argv[3]), time_limit=time_limit, debug=False)
+        base_args = (problem_name, problem, int(argv[3]))
+        base_kwards = {'time_limit': time_limit, 'debug': False}
+
         if problem_name.startswith('sysadmin'):
-            solver = SysAdminMRF(problem_name, problem, int(argv[3]), time_limit=time_limit, debug=False)
-            solver.solve()
+            solver = SysAdminMRF(*base_args, **base_kwards)
+        elif problem_name.startswith('game_of_life'):
+            solver = GolMRF(*base_args, **base_kwards)
     else:
         print('Use "ilp" or "mrf" as experiment')
         return
 
-    rddl_experiment = experiment.RDDLExperiment(solver)
-    rddl_experiment.start()
+    # rddl_experiment = experiment.RDDLExperiment(solver)
+    # rddl_experiment.start()
 
 if __name__ == '__main__':
     main(sys.argv)
