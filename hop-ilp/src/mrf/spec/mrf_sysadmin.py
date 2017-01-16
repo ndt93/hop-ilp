@@ -99,7 +99,7 @@ class SysAdminMRF(BaseMRF):
                             else:
                                 if clique_bitmask & 4 != 0:
                                     running_neighbours = self.count_set_neighbours(clique_bitmask,
-                                                                                   num_vars - 2)
+                                                                                   len(neighbours))
                                     running_prob = 0.45 + 0.5*(1 + running_neighbours)/(1 + len(neighbours))
 
                                     if random.random() <= running_prob:
