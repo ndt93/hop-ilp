@@ -29,12 +29,12 @@ class GolMRF(BaseMRF):
         self.set_init_states_constrs(self.problem.variables)
         self.set_transition_constrs()
 
-        # self.write_mrf(mrf.OUTPUT_FILE)
-        # map_assignments = self.mplp_runner.run_mplp()
-        # next_actions = self.mplp_runner.get_next_actions(map_assignments)
+        self.write_mrf(mrf.OUTPUT_FILE)
+        map_assignments = self.mplp_runner.run_mplp()
+        next_actions = self.mplp_runner.get_next_actions(map_assignments)
 
-        # logger.info('next_action|states={},actions={}'.format(self.problem.variables, next_actions))
-        # return next_actions, None
+        logger.info('next_action|states={},actions={}'.format(self.problem.variables, next_actions))
+        return next_actions, None
 
     def init_next_step(self, states):
         self.problem.variables.update(states)

@@ -36,14 +36,6 @@ class BaseMRF(object):
                 for h in range(problem.horizon):
                     self.add_var((action, k, h))
 
-        for k in range(num_futures):
-            for h in range(problem.horizon):
-                self.add_var(('__r__', k, h))
-
-        if self.debug:
-            print(self.var_to_idx)
-            print(self.idx_to_var)
-
     def add_var(self, var):
         self.idx_to_var.append(var)
         self.var_to_idx[var] = len(self.idx_to_var) - 1
@@ -57,7 +49,7 @@ class BaseMRF(object):
         function_table = []
         for i in range(2**len(self.problem.actions)):
             if utils.count_set_bits(i) > self.problem.max_concurrency:
-                function_table.append(mrf.INVALID_POTENTIAL_VAL)
+                function_table.append(mrf.INVALID_POTENTIAL_VAL * 10**-2)
             else:
                 function_table.append(1)
 
@@ -90,7 +82,7 @@ class BaseMRF(object):
             clique.function_table = function_table
             self.constrs['init_actions'].append(clique)
 
-        logger.info('Added concurrency constraints')
+        logger.info('Added init actions constraints')
 
     def set_init_states_constrs(self, init_state_vals):
         self.constrs['init_states'] = []
