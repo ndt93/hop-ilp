@@ -5,6 +5,7 @@ import model
 from solver import Solver
 from mrf.spec.mrf_sysadmin import SysAdminMRF
 from mrf.spec.mrf_gol import GolMRF
+from mrf.spec.mrf_nav import NavMRF
 import experiment
 
 
@@ -29,12 +30,14 @@ def main(argv):
             solver = SysAdminMRF(*base_args, **base_kwards)
         elif problem_name.startswith('game_of_life'):
             solver = GolMRF(*base_args, **base_kwards)
+        elif problem_name.startswith('navigation'):
+            solver = NavMRF(*base_args, **base_kwards)
     else:
         print('Use "ilp" or "mrf" as experiment')
         return
 
-    rddl_experiment = experiment.RDDLExperiment(solver)
-    rddl_experiment.start()
+    # rddl_experiment = experiment.RDDLExperiment(solver)
+    # rddl_experiment.start()
 
 if __name__ == '__main__':
     main(sys.argv)
