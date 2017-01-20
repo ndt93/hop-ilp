@@ -32,6 +32,7 @@ def main(argv):
             solver = GolMRF(*base_args, **base_kwards)
         elif problem_name.startswith('navigation'):
             solver = NavMRF(*base_args, **base_kwards)
+            solver.solve()
     else:
         print('Use "ilp" or "mrf" as experiment')
         return

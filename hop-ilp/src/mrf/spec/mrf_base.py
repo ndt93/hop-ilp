@@ -40,8 +40,9 @@ class BaseMRF(object):
         self.idx_to_var.append(var)
         self.var_to_idx[var] = len(self.idx_to_var) - 1
 
-    def add_fixed_constrs(self):
-        self.add_concurrency_constrs()
+    def add_fixed_constrs(self, concurrency=True):
+        if concurrency:
+            self.add_concurrency_constrs()
         self.add_init_actions_constrs()
         self.add_reward_constrs()
 
