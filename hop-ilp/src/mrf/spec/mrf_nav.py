@@ -85,14 +85,13 @@ class NavMRF(BaseMRF):
                         neighbor_info[n] = [action_to_bit_idx[self.opposite_action[action]], len(var_indices)]
                         var_indices.append(self.var_to_idx[(n, k, h - 1)])
 
+                    clique = MRFClique(var_indices)
                     for clique_bitmask in range(2**len(var_indices)):
-                        clique = MRFClique(var_indices)
                         # Concurrency constraints
                         num_set_action = self.count_set_bit(clique_bitmask,
                                                             action_bit_idx_start, neighbor_bit_idx_start)
                         if num_set_action > self.problem.max_concurrency:
                             clique.function_table.append(mrf.INVALID_POTENTIAL_VAL)
-                            self.constrs['transition'].append(clique)
                             continue
 
                         # At most 1 state is set
@@ -102,7 +101,6 @@ class NavMRF(BaseMRF):
                         num_set_state += 1 if v != self.goal and clique_bitmask & 4 != 0 else 0
                         if num_set_state > 1:
                             clique.function_table.append(mrf.INVALID_POTENTIAL_VAL)
-                            self.constrs['transition'].append(clique)
                             continue
 
                         # If at goal, stays at goal
@@ -111,14 +109,12 @@ class NavMRF(BaseMRF):
                                 clique.function_table.append(1)
                             else:
                                 clique.function_table.append(mrf.INVALID_POTENTIAL_VAL)
-                            self.constrs['transition'].append(clique)
                             continue
                         if clique_bitmask & 4 != 0:
                             if clique_bitmask & 1 != 0:
                                 clique.function_table.append(mrf.INVALID_POTENTIAL_VAL)
                             else:
                                 clique.function_table.append(1)
-                            self.constrs['transition'].append(clique)
                             continue
 
                         # Move to neighbors
@@ -133,7 +129,6 @@ class NavMRF(BaseMRF):
                                     set_func_table = True
                                     break
                             if set_func_table:
-                                self.constrs['transition'].append(clique)
                                 continue
                         # Move from neighbors
                         else:
@@ -154,14 +149,14 @@ class NavMRF(BaseMRF):
                                     set_func_table = True
                                     break
                             if set_func_table:
-                                self.constrs['transition'].append(clique)
                                 continue
 
                         if (clique_bitmask & 1) == ((clique_bitmask >> 1) & 1):
                             clique.function_table.append(1)
                         else:
                             clique.function_table.append(mrf.INVALID_POTENTIAL_VAL)
-                        self.constrs['transition'].append(clique)
+
+                    self.constrs['transition'].append(clique)
 
         logger.info('set_transition_constraints')
 
