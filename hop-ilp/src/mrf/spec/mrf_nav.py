@@ -16,6 +16,7 @@ class NavMRF(BaseMRF):
     grid = {}
     probs = {}
     boundary = {}
+    goal = None
 
     def __init__(self, *args, **kwargs):
         BaseMRF.__init__(self, *args, **kwargs)
@@ -27,6 +28,7 @@ class NavMRF(BaseMRF):
             logger.debug(self.grid)
             logger.debug(self.probs)
             logger.debug(self.boundary)
+            logger.debug(self.goal)
 
     def solve(self):
         self.set_init_states_constrs(self.problem.variables)
@@ -44,24 +46,46 @@ class NavMRF(BaseMRF):
 
     def set_transition_constrs(self):
         self.constrs['transition'] = []
-        # TODO: incomplete
+
+        for k in range(self.num_futures):
+            for h in range(1, self.problem.horizon):
+                for v in self.problem.variables:
+                    # If at goal, stays at goal
+                    if v == self.goal:
+                        clique = MRFClique([self.var_to_idx[(v, k, h)], self.var_to_idx[(v, k, h - 1)]])
+                        clique.function_table = [1, 1, mrf.INVALID_POTENTIAL_VAL, 1]
+                        self.constrs['transition'].append(clique)
+                    else:
+                        clique = MRFClique([self.var_to_idx[(v, k, h)], self.var_to_idx[(self.goal, k, h - 1)]])
+                        clique.function_table = [1, 1, 1, mrf.INVALID_POTENTIAL_VAL]
+                        self.constrs['transition'].append(clique)
+
+                    # Clique: LSB[v(h), v(h-1), g(h - 1), a(h-1), n(h-1)]MSB
+                    #               1      2        4        8      16
+                    common_vars = [self.var_to_idx[(v, k, h)],
+                                   self.var_to_idx[(v, k, h - 1)],
+                                   self.var_to_idx[(self.goal, k, h - 1)]]
+                    x, y = self.get_coords_from_state(v)
+
+                    # move_north to neighbor
+                    if 'N' in self.grid[y]:
+                        nx, ny = x, self.grid[y]
+                        clique = MRFClique(common_vars[:])
+                        clique.vars.extend([self.var_to_idx[('move-north', k, h - 1)],
+                                            self.var_to_idx[(self.get_state_from_coords(nx, ny)), k, h - 1]])
+                        for clique_bitmask in range(2**len(clique.vars)):
+                            pass
+
+
+
         logger.info('set_transition_constraints')
 
-    @staticmethod
-    def count_set_neighbours(clique_bitmask, num_neighbours):
-        # TODO: May not need
-        bit_pointer = 1 << 3
-        count = 0
-
-        for _ in range(num_neighbours):
-            if clique_bitmask & bit_pointer > 0:
-                count += 1
-            bit_pointer <<= 1
-
-        return count
-
     def add_reward_constrs(self):
-        # TODO: incomplete
+        for k in range(self.num_futures):
+            for h in range(self.problem.horizon):
+                clique = MRFClique([self.var_to_idx[(self.goal, k, h)]])
+                clique.function_table = [-1, 0]
+                self.constrs['reward'].append(clique)
         logger.info('Added reward constraints')
 
     def get_instance_params(self):
@@ -75,6 +99,10 @@ class NavMRF(BaseMRF):
                     prob = self.get_rddl_assignment_val(line, float)
                     self.probs[self.get_state_from_coords(x, y)] = prob
                     continue
+
+                if line.startswith('GOAL'):
+                    x, y = self.get_rddl_function_params(line, 'GOAL')
+                    self.goal = self.get_state_from_coords(x, y)
 
                 dir_match = re.match(r'(NORTH|EAST|SOUTH|WEST)', line)
                 if dir_match:
@@ -94,3 +122,8 @@ class NavMRF(BaseMRF):
     @staticmethod
     def get_state_from_coords(x, y):
         return 'robot_at__%s_%s' % (x, y)
+
+    @staticmethod
+    def get_coords_from_state(state):
+        coords_start = state.rindex('__')
+        return state[coords_start + 2:].split('_')
