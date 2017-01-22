@@ -17,8 +17,8 @@ class MPLPRunner(object):
         if self.time_limit is not None:
             mplp_env['INF_TIME'] = str(self.time_limit)
 
-        #fdevnull = open(os.devnull, 'w')
-        fdevnull = None
+        fdevnull = open(os.devnull, 'w')
+        # fdevnull = None
         mplp_proc = Popen([mrf.MPLP_EXEC, mrf.OUTPUT_FILE], env=mplp_env, stdout=fdevnull)
         mplp_proc.wait()
         if fdevnull is not None:

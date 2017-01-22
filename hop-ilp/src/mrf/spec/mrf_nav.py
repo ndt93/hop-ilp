@@ -2,17 +2,11 @@ from logger import logger
 import mrf
 from mrf.spec.mrf_base import BaseMRF
 from mrf.mrf_clique import MRFClique
-import math
 import random
 import re
 
 
 class NavMRF(BaseMRF):
-    var_to_idx = {}  # Var is a tuple (name, future, horizon)
-    idx_to_var = []
-    constr_cats = ['init_states', 'init_actions', 'concurrency', 'transition', 'reward']
-    constrs = {}
-
     grid = {}
     probs = {}
     boundary = {}
@@ -35,8 +29,8 @@ class NavMRF(BaseMRF):
             logger.debug(self.goal)
 
     def solve(self):
-        self.set_init_states_constrs(self.problem.variables)
-        self.set_transition_constrs()
+        #self.set_init_states_constrs(self.problem.variables)
+        #self.set_transition_constrs()
 
         self.write_mrf(mrf.OUTPUT_FILE)
         map_assignments = self.mplp_runner.run_mplp()
@@ -63,8 +57,8 @@ class NavMRF(BaseMRF):
 
                     action_to_bit_idx = {}
                     action_bit_idx_start = len(var_indices)
-                    actions = self.grid[x].keys() + self.grid[y].keys()
-                    for action in actions:
+                    move_away_actions = self.grid[x].keys() + self.grid[y].keys()
+                    for action in move_away_actions:
                         if action in action_to_bit_idx:
                             continue
                         action_to_bit_idx[action] = len(var_indices)
@@ -72,17 +66,17 @@ class NavMRF(BaseMRF):
                         action_to_bit_idx[self.opposite_action[action]] = len(var_indices)
                         var_indices.append(self.var_to_idx[(self.opposite_action[action], k, h - 1)])
 
-                    neighbor_info = {} # {n: [action to reach v from n, idx]}
+                    neighbor_info = {} # {n: (action to reach v from n, idx)}
                     neighbor_bit_idx_start = len(var_indices)
                     for action in self.grid[x]:
                         nx, ny = self.grid[x][action], y
                         n = self.get_state_from_coords(nx, ny)
-                        neighbor_info[n] = [action_to_bit_idx[self.opposite_action[action]], len(var_indices)]
+                        neighbor_info[n] = (action_to_bit_idx[self.opposite_action[action]], len(var_indices))
                         var_indices.append(self.var_to_idx[(n, k, h - 1)])
                     for action in self.grid[y]:
                         nx, ny = x, self.grid[y][action]
                         n = self.get_state_from_coords(nx, ny)
-                        neighbor_info[n] = [action_to_bit_idx[self.opposite_action[action]], len(var_indices)]
+                        neighbor_info[n] = (action_to_bit_idx[self.opposite_action[action]], len(var_indices))
                         var_indices.append(self.var_to_idx[(n, k, h - 1)])
 
                     clique = MRFClique(var_indices)
@@ -91,7 +85,7 @@ class NavMRF(BaseMRF):
                         num_set_action = self.count_set_bit(clique_bitmask,
                                                             action_bit_idx_start, neighbor_bit_idx_start)
                         if num_set_action > self.problem.max_concurrency:
-                            clique.function_table.append(mrf.INVALID_POTENTIAL_VAL)
+                            clique.function_table.append(mrf.INVALID_POTENTIAL_VAL_2)
                             continue
 
                         # At most 1 state is set
@@ -100,7 +94,7 @@ class NavMRF(BaseMRF):
                         num_set_state += 1 if clique_bitmask & 2 != 0 else 0
                         num_set_state += 1 if v != self.goal and clique_bitmask & 4 != 0 else 0
                         if num_set_state > 1:
-                            clique.function_table.append(mrf.INVALID_POTENTIAL_VAL)
+                            clique.function_table.append(mrf.INVALID_POTENTIAL_VAL_2)
                             continue
 
                         # If at goal, stays at goal
@@ -120,7 +114,7 @@ class NavMRF(BaseMRF):
                         # Move to neighbors
                         if clique_bitmask & 2 != 0:
                             set_func_table = False
-                            for action in actions:
+                            for action in move_away_actions:
                                 if clique_bitmask & (1 << action_to_bit_idx[action]) != 0:
                                     if clique_bitmask & 1 == 0:
                                         clique.function_table.append(1)
@@ -134,8 +128,8 @@ class NavMRF(BaseMRF):
                         else:
                             set_func_table = False
                             for neighbor in neighbor_info:
-                                is_at_neighbor = (clique_bitmask & (1 << neighbor_info[neighbor][1])) != 0
                                 is_action_set = (clique_bitmask & (1 << neighbor_info[neighbor][0])) != 0
+                                is_at_neighbor = (clique_bitmask & (1 << neighbor_info[neighbor][1])) != 0
                                 if is_at_neighbor and is_action_set:
                                     if random.random() < self.get_disappear_prob(v):
                                         determinized_val = 0

@@ -7,11 +7,6 @@ import random
 
 
 class GolMRF(BaseMRF):
-    var_to_idx = {}  # Var is a tuple (name, future, horizon)
-    idx_to_var = []
-    constr_cats = ['init_states', 'init_actions', 'concurrency', 'transition', 'reward']
-    constrs = {}
-
     neighbours = {}
     noise_probs = {}
 

@@ -32,13 +32,13 @@ def main(argv):
             solver = GolMRF(*base_args, **base_kwards)
         elif problem_name.startswith('navigation'):
             solver = NavMRF(*base_args, **base_kwards)
-            solver.solve()
+            #solver.solve()
     else:
         print('Use "ilp" or "mrf" as experiment')
         return
 
-    # rddl_experiment = experiment.RDDLExperiment(solver)
-    # rddl_experiment.start()
+    rddl_experiment = experiment.RDDLExperiment(solver)
+    rddl_experiment.start()
 
 if __name__ == '__main__':
     main(sys.argv)

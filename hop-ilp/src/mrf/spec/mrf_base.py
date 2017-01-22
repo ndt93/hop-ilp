@@ -7,13 +7,14 @@ import re
 
 
 class BaseMRF(object):
-    var_to_idx = {}  # Var is a tuple (name, future, horizon)
-    idx_to_var = []
-    constr_cats = ['init_states', 'init_actions', 'concurrency', 'transition', 'reward']
-    constrs = {}
-
     def __init__(self, problem_name, problem, num_futures, time_limit=None, debug=False):
         logger.info('Initializing problem...')
+
+        self.var_to_idx = {}  # Var is a tuple (name, future, horizon)
+        self.idx_to_var = []
+        self.constr_cats = ['init_states', 'init_actions', 'concurrency', 'transition', 'reward']
+        self.constrs = {}
+
         self.problem_name = problem_name
         self.problem = problem
         self.num_futures = num_futures
@@ -50,7 +51,7 @@ class BaseMRF(object):
         function_table = []
         for i in range(2**len(self.problem.actions)):
             if utils.count_set_bits(i) > self.problem.max_concurrency:
-                function_table.append(mrf.INVALID_POTENTIAL_VAL * 10**-2)
+                function_table.append(mrf.INVALID_POTENTIAL_VAL_2)
             else:
                 function_table.append(1)
 
@@ -88,8 +89,8 @@ class BaseMRF(object):
     def set_init_states_constrs(self, init_state_vals):
         self.constrs['init_states'] = []
 
-        function_table_0 = [1, mrf.INVALID_POTENTIAL_VAL]
-        function_table_1 = [mrf.INVALID_POTENTIAL_VAL, 1]
+        function_table_0 = [1, mrf.INVALID_POTENTIAL_VAL_2]
+        function_table_1 = [mrf.INVALID_POTENTIAL_VAL_2, 1]
 
         for k in range(self.num_futures):
             for v in self.problem.variables:
@@ -125,10 +126,14 @@ class BaseMRF(object):
             utils.write_line(f, num_cliques)
 
             for cat, cliques in self.constrs.items():
+                if len(cliques) == 0:
+                    continue
                 for clique in cliques:
                     self.write_clique_vars_list(f, clique)
 
             for cat, cliques in self.constrs.items():
+                if len(cliques) == 0:
+                    continue
                 for clique in cliques:
                     self.write_clique_function_table(f, clique)
 
