@@ -3,6 +3,7 @@ import mrf
 from mrf.spec.mrf_base import BaseMRF
 from mrf.mrf_clique import MRFClique
 import random
+import math
 import re
 
 
@@ -29,8 +30,8 @@ class NavMRF(BaseMRF):
             logger.debug(self.goal)
 
     def solve(self):
-        #self.set_init_states_constrs(self.problem.variables)
-        #self.set_transition_constrs()
+        self.set_init_states_constrs(self.problem.variables)
+        self.set_transition_constrs()
 
         self.write_mrf(mrf.OUTPUT_FILE)
         map_assignments = self.mplp_runner.run_mplp()
@@ -176,7 +177,7 @@ class NavMRF(BaseMRF):
         for k in range(self.num_futures):
             for h in range(self.problem.horizon):
                 clique = MRFClique([self.var_to_idx[(self.goal, k, h)]])
-                clique.function_table = [-1, 0]
+                clique.function_table = [math.exp(x) for x in [-1, 0]]
                 self.constrs['reward'].append(clique)
         logger.info('Added reward constraints')
 
