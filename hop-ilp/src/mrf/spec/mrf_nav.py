@@ -2,6 +2,7 @@ from logger import logger
 import mrf
 from mrf.spec.mrf_base import BaseMRF
 from mrf.mrf_clique import MRFClique
+import mrf.utils as utils
 import random
 import math
 import re
@@ -44,134 +45,135 @@ class NavMRF(BaseMRF):
         self.problem.variables.update(states)
 
     def set_transition_constrs(self):
+        """
+        Each logical expression used to specify the transition function corresponds to a clique and
+        an additional variable. If an entry in a clique is sufficient to decide the outcome of the
+        next state or the outcome is already decided by earlier clauses, its extended variable is
+        constrained to 1. Otherwise, it's constrained to 0.
+        :return:
+        """
         self.constrs['transition'] = []
 
         for k in range(self.num_futures):
             for h in range(1, self.problem.horizon):
                 for v in self.problem.variables:
-                    # Clique: LSB{v(h), v(h-1)[, g(h-1)], move-*(h-1),..., n(h-1),...}MSB
-                    x, y = self.get_coords_from_state(v)
-                    var_indices = [self.var_to_idx[(v, k, h)], self.var_to_idx[(v, k, h - 1)]]
+                    # If at goal stays at goal
+                    clique = MRFClique()
+                    goal_ext_var = self.get_ext_variables('goal')
+                    if v == self.goal:
+                        clique.vars = [self.var_to_idx[(v, k, h)],
+                                       self.var_to_idx[(v, k, h-1)],
+                                       self.add_var((goal_ext_var, k, h))]
+                        for bitmask in range(2**len(clique.vars)):
+                            if utils.is_set(bitmask, 1):
+                                if not utils.is_set(bitmask, 2):
+                                    clique.function_table.append(mrf.INVALID_POTENTIAL_VAL)
+                                    continue
+                                if utils.is_set(bitmask, 0):
+                                    clique.function_table.append(1)
+                                else:
+                                    clique.function_table.append(mrf.INVALID_POTENTIAL_VAL)
+                    else:
+                        clique.vars = [self.var_to_idx[(v, k, h)],
+                                       self.var_to_idx[(self.goal, k, h-1)],
+                                       self.add_var((goal_ext_var, k, h))]
+                        for bitmask in range(2**len(clique.vars)):
+                            if utils.is_set(bitmask, 1):
+                                if not utils.is_set(bitmask, 2):
+                                    clique.function_table.append(mrf.INVALID_POTENTIAL_VAL)
+                                    continue
+                                if utils.is_set(bitmask, 0):
+                                    clique.function_table.append(mrf.INVALID_POTENTIAL_VAL)
+                                else:
+                                    clique.function_table.append(1)
+                    self.constrs['transition'].append(clique)
 
-                    if v != self.goal:
-                        var_indices.append(self.var_to_idx[(self.goal, k, h - 1)])
+                    # Moving to neighbours
+                    prev_ext_var = goal_ext_var
+                    for level, action in enumerate(self.grid[v]):
+                        cur_ext_var = self.get_ext_variables('moveto', level)
 
-                    action_to_bit_idx = {}
-                    action_bit_idx_start = len(var_indices)
-                    move_away_actions = self.grid[x].keys() + self.grid[y].keys()
-                    for action in move_away_actions:
-                        if action in action_to_bit_idx:
-                            continue
-                        action_to_bit_idx[action] = len(var_indices)
-                        var_indices.append(self.var_to_idx[(action, k, h - 1)])
-                        action_to_bit_idx[self.opposite_action[action]] = len(var_indices)
-                        var_indices.append(self.var_to_idx[(self.opposite_action[action], k, h - 1)])
+                        clique = MRFClique([self.var_to_idx[(v, k, h)],
+                                            self.var_to_idx[(v, k, h-1)],
+                                            self.var_to_idx[(action, k, h-1)],
+                                            self.var_to_idx[(prev_ext_var, k, h)],
+                                            self.var_to_idx[(cur_ext_var, k, h)]])
 
-                    neighbor_info = {} # {n: (action to reach v from n, idx)}
-                    neighbor_bit_idx_start = len(var_indices)
-                    for action in self.grid[x]:
-                        nx, ny = self.grid[x][action], y
-                        n = self.get_state_from_coords(nx, ny)
-                        neighbor_info[n] = (action_to_bit_idx[self.opposite_action[action]], len(var_indices))
-                        var_indices.append(self.var_to_idx[(n, k, h - 1)])
-                    for action in self.grid[y]:
-                        nx, ny = x, self.grid[y][action]
-                        n = self.get_state_from_coords(nx, ny)
-                        neighbor_info[n] = (action_to_bit_idx[self.opposite_action[action]], len(var_indices))
-                        var_indices.append(self.var_to_idx[(n, k, h - 1)])
-
-                    clique = MRFClique(var_indices)
-                    for clique_bitmask in range(2**len(var_indices)):
-                        # Concurrency constraints
-                        num_set_action = self.count_set_bit(clique_bitmask,
-                                                            action_bit_idx_start, neighbor_bit_idx_start)
-                        if num_set_action > self.problem.max_concurrency:
-                            clique.function_table.append(mrf.INVALID_POTENTIAL_VAL_2)
-                            continue
-
-                        # At most 1 state is set
-                        num_set_state = self.count_set_bit(clique_bitmask,
-                                                           neighbor_bit_idx_start, len(var_indices))
-                        num_set_state += 1 if clique_bitmask & 2 != 0 else 0
-                        num_set_state += 1 if v != self.goal and clique_bitmask & 4 != 0 else 0
-                        if num_set_state > 1:
-                            clique.function_table.append(mrf.INVALID_POTENTIAL_VAL_2)
-                            continue
-
-                        # If at goal, stays at goal
-                        if v == self.goal and clique_bitmask & 2 != 0:
-                            if clique_bitmask & 1 != 0:
-                                clique.function_table.append(1)
-                            else:
-                                clique.function_table.append(mrf.INVALID_POTENTIAL_VAL)
-                            continue
-                        if clique_bitmask & 4 != 0:
-                            if clique_bitmask & 1 != 0:
-                                clique.function_table.append(mrf.INVALID_POTENTIAL_VAL)
-                            else:
-                                clique.function_table.append(1)
-                            continue
-
-                        # Move to neighbors
-                        if clique_bitmask & 2 != 0:
-                            set_func_table = False
-                            for action in move_away_actions:
-                                if clique_bitmask & (1 << action_to_bit_idx[action]) != 0:
-                                    if clique_bitmask & 1 == 0:
-                                        clique.function_table.append(1)
-                                    else:
-                                        clique.function_table.append(mrf.INVALID_POTENTIAL_VAL)
-                                    set_func_table = True
-                                    break
-                            if set_func_table:
-                                continue
-                        # Move from neighbors
-                        else:
-                            set_func_table = False
-                            for neighbor in neighbor_info:
-                                is_action_set = (clique_bitmask & (1 << neighbor_info[neighbor][0])) != 0
-                                is_at_neighbor = (clique_bitmask & (1 << neighbor_info[neighbor][1])) != 0
-                                if is_at_neighbor and is_action_set:
-                                    if random.random() < self.get_disappear_prob(v):
-                                        determinized_val = 0
-                                    else:
-                                        determinized_val = 1
-
-                                    if (clique_bitmask & 1) == determinized_val:
-                                        clique.function_table.append(1)
-                                    else:
-                                        clique.function_table.append(mrf.INVALID_POTENTIAL_VAL)
-                                    set_func_table = True
-                                    break
-                            if set_func_table:
+                        for bitmask in range(2**len(clique.vars)):
+                            if utils.is_set(bitmask, 3):
+                                if utils.is_set(bitmask, 4):
+                                    clique.function_table.append(1)
+                                else:
+                                    clique.function_table.append(mrf.INVALID_POTENTIAL_VAL)
                                 continue
 
-                        if (clique_bitmask & 1) == ((clique_bitmask >> 1) & 1):
+                            if utils.is_set(bitmask, 1) and utils.is_set(bitmask, 2):
+                                if not utils.is_set(bitmask, 4):
+                                    clique.function_table.append(mrf.INVALID_POTENTIAL_VAL)
+                                    continue
+                                if utils.is_set(bitmask, 0):
+                                    clique.function_table.append(mrf.INVALID_POTENTIAL_VAL)
+                                else:
+                                    clique.function_table.append(1)
+
+                        prev_ext_var = self.get_ext_variables('moveto', level)
+                        self.constrs['transition'].append(clique)
+
+                    # Moving to neighbours
+                    for level, action in enumerate(self.grid[v]):
+                        cur_ext_var = self.get_ext_variables('movefrom', level)
+                        neighbour_action = self.opposite_action[action]
+
+                        clique = MRFClique([self.var_to_idx[(v, k, h)],
+                                            self.var_to_idx[(self.grid[v][action], k, h-1)],
+                                            self.var_to_idx[(neighbour_action, k, h-1)],
+                                            self.var_to_idx[(prev_ext_var, k, h)],
+                                            self.var_to_idx[(cur_ext_var, k, h)]])
+
+                        for bitmask in range(2**len(clique.vars)):
+                            if utils.is_set(bitmask, 3):
+                                if utils.is_set(bitmask, 4):
+                                    clique.function_table.append(1)
+                                else:
+                                    clique.function_table.append(mrf.INVALID_POTENTIAL_VAL)
+                                continue
+
+                            if utils.is_set(bitmask, 1) and utils.is_set(bitmask, 2):
+                                if not utils.is_set(bitmask, 4):
+                                    clique.function_table.append(mrf.INVALID_POTENTIAL_VAL)
+                                    continue
+                                if utils.is_set(bitmask, 0):
+                                    clique.function_table.append(1)
+                                else:
+                                    clique.function_table.append(mrf.INVALID_POTENTIAL_VAL)
+
+                        prev_ext_var = self.get_ext_variables('moveto', level)
+                        self.constrs['transition'].append(clique)
+
+                    # Otherwise keeps the same state
+                    clique = MRFClique([self.var_to_idx[(v, k, h)],
+                                        self.var_to_idx[(v, k, h-1)],
+                                        self.var_to_idx[(prev_ext_var, k, h)]])
+                    for bitmask in range(2**len(clique.vars)):
+                        if utils.is_set(bitmask, 2):
+                            clique.function_table.append(1)
+                            continue
+                        if utils.is_set(bitmask, 0) == utils.is_set(bitmask, 1):
                             clique.function_table.append(1)
                         else:
                             clique.function_table.append(mrf.INVALID_POTENTIAL_VAL)
-
                     self.constrs['transition'].append(clique)
 
         logger.info('set_transition_constraints')
+
+    @staticmethod
+    def get_ext_variables(name, *levels):
+        return 'ext-%s__%' % (name, '_'.join([str(l) for l in levels]))
 
     def get_disappear_prob(self, v):
         if v in self.probs:
             return self.probs[v]
         return 0
-
-    @staticmethod
-    def count_set_bit(bitmask, start, end):
-        """
-        Counts number of set bit in bitmask[start:end]
-        """
-        count = 0
-        i = 1 << start
-        for _ in range(end - start):
-            if bitmask & i != 0:
-                count += 1
-            i <<= 1
-        return count
 
     def add_reward_constrs(self):
         for k in range(self.num_futures):

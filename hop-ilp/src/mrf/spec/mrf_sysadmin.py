@@ -3,7 +3,6 @@ import mrf
 from mrf.mrf_clique import MRFClique
 from mrf.spec.mrf_base import BaseMRF
 import math
-import re
 import random
 
 
