@@ -21,7 +21,7 @@ class NavMRF(BaseMRF):
     def __init__(self, *args, **kwargs):
         BaseMRF.__init__(self, *args, **kwargs)
         self.get_instance_params()
-        self.add_fixed_constrs(concurrency=False)
+        self.add_fixed_constrs(concurrency=True)
         if self.debug:
             logger.debug(self.problem.variables)
             logger.debug(self.problem.actions)
@@ -58,7 +58,7 @@ class NavMRF(BaseMRF):
             for h in range(1, self.problem.horizon):
                 for v in self.problem.variables:
                     # If at goal stays at goal
-                    clique = MRFClique()
+                    clique = MRFClique([])
                     goal_ext_var = self.get_ext_variables('goal')
                     if v == self.goal:
                         clique.vars = [self.var_to_idx[(v, k, h)],
@@ -88,16 +88,20 @@ class NavMRF(BaseMRF):
                                     clique.function_table.append(1)
                     self.constrs['transition'].append(clique)
 
+                    x, y = self.get_coords_from_state(v)
+                    all_actions = self.grid[x].keys() + self.grid[y].keys()
+
                     # Moving to neighbours
                     prev_ext_var = goal_ext_var
-                    for level, action in enumerate(self.grid[v]):
+                    for level, action in enumerate(all_actions):
                         cur_ext_var = self.get_ext_variables('moveto', level)
+                        cur_ext_var_idx = self.add_var((cur_ext_var, k, h))
 
                         clique = MRFClique([self.var_to_idx[(v, k, h)],
                                             self.var_to_idx[(v, k, h-1)],
                                             self.var_to_idx[(action, k, h-1)],
                                             self.var_to_idx[(prev_ext_var, k, h)],
-                                            self.var_to_idx[(cur_ext_var, k, h)]])
+                                            cur_ext_var_idx])
 
                         for bitmask in range(2**len(clique.vars)):
                             if utils.is_set(bitmask, 3):
@@ -119,16 +123,24 @@ class NavMRF(BaseMRF):
                         prev_ext_var = self.get_ext_variables('moveto', level)
                         self.constrs['transition'].append(clique)
 
-                    # Moving to neighbours
-                    for level, action in enumerate(self.grid[v]):
+                    # Moving from neighbours
+                    for level, action in enumerate(all_actions):
                         cur_ext_var = self.get_ext_variables('movefrom', level)
+                        cur_ext_var_idx = self.add_var((cur_ext_var, k, h))
+
                         neighbour_action = self.opposite_action[action]
+                        nx, ny = x, y
+                        if action in self.grid[x]:
+                            nx = self.grid[x][action]
+                        else:
+                            ny = self.grid[y][action]
+                        neighbour = self.get_state_from_coords(nx, ny)
 
                         clique = MRFClique([self.var_to_idx[(v, k, h)],
-                                            self.var_to_idx[(self.grid[v][action], k, h-1)],
+                                            self.var_to_idx[(neighbour, k, h-1)],
                                             self.var_to_idx[(neighbour_action, k, h-1)],
                                             self.var_to_idx[(prev_ext_var, k, h)],
-                                            self.var_to_idx[(cur_ext_var, k, h)]])
+                                            cur_ext_var_idx])
 
                         for bitmask in range(2**len(clique.vars)):
                             if utils.is_set(bitmask, 3):
@@ -142,7 +154,11 @@ class NavMRF(BaseMRF):
                                 if not utils.is_set(bitmask, 4):
                                     clique.function_table.append(mrf.INVALID_POTENTIAL_VAL)
                                     continue
-                                if utils.is_set(bitmask, 0):
+                                if random.random() < self.get_disappear_prob(v):
+                                    determinized_val = 0
+                                else:
+                                    determinized_val = 1
+                                if utils.is_set(bitmask, 0) == (determinized_val == 1):
                                     clique.function_table.append(1)
                                 else:
                                     clique.function_table.append(mrf.INVALID_POTENTIAL_VAL)
@@ -168,7 +184,7 @@ class NavMRF(BaseMRF):
 
     @staticmethod
     def get_ext_variables(name, *levels):
-        return 'ext-%s__%' % (name, '_'.join([str(l) for l in levels]))
+        return 'ext-%s__%s' % (name, '_'.join([str(l) for l in levels]))
 
     def get_disappear_prob(self, v):
         if v in self.probs:
