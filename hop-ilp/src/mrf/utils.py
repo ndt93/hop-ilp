@@ -31,7 +31,13 @@ def print_MAP(map_assignments, problem, num_futures):
 
 
 def is_set(bitmask, idx):
+    # type: (int, int) -> bool
     return (bitmask & (1 << idx)) != 0
+
+
+def match_determinized_val(bitmask, idx, determinized_val):
+    # type: (int, int, int) -> bool
+    return is_set(bitmask, idx) == (determinized_val == 1)
 
 
 def count_set_bit(bitmask, start, end):

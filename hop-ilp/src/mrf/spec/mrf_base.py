@@ -108,12 +108,14 @@ class BaseMRF(object):
 
     @staticmethod
     def get_rddl_assignment_val(rddl_str, t):
+        # type: (str, type) -> t
         val_start = rddl_str.index('=') + 1
         val_end = rddl_str.rindex(';')
         return t(rddl_str[val_start:val_end])
 
     @staticmethod
     def get_rddl_function_params(rddl_str, func_name):
+        # type: (str, str) -> [str]
         params_match = re.search(r'%s\s*\((.*)\)' % (func_name,), rddl_str)
         params_str = params_match.group(1)
         return params_str.split(',')
