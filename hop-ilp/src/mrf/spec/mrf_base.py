@@ -10,10 +10,10 @@ class BaseMRF(object):
     def __init__(self, problem_name, problem, num_futures, time_limit=None, debug=False):
         logger.info('Initializing problem...')
 
-        self.var_to_idx = {}  # Var is a tuple (name, future, horizon)
-        self.idx_to_var = []
+        self.var_to_idx = {}  # type: dict[(str, int, int), int]
+        self.idx_to_var = []  # type: list[(str, int, int)]
         self.constr_cats = ['init_states', 'init_actions', 'concurrency', 'transition', 'reward']
-        self.constrs = {}
+        self.constrs = {}  # type: dict[str, list[MRFClique]]
 
         self.problem_name = problem_name
         self.problem = problem

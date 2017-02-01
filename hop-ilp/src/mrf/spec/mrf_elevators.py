@@ -51,7 +51,47 @@ class ElevatorsMRF(BaseMRF):
             for h in range(1, self.problem.horizon):
                 self.set_person_waiting_transition(k, h)
                 self.set_person_in_elevator_transition(k, h)
+                self.set_elevator_closed_transition(k, h)
+                self.set_elevator_dir_up_transition(k, h)
         logger.info('set_transition_constraints')
+
+    def set_elevator_dir_up_transition(self, k, h):
+        for elevator in self.inst_params['elevators']:
+            var_indices = [self.get_elevator_dir_state(elevator, 'up'),
+                           self.get_elevator_dir_state(elevator, 'up'),
+                           self.get_open_door_action(elevator, 'up'),
+                           self.get_open_door_action(elevator, 'down')]
+            clique = MRFClique(var_indices)
+            for bitmask in range(2**len(var_indices)):
+                if utils.is_set(bitmask, 2):
+                    utils.append_function_entry(clique, bitmask, 0, 1)
+                    continue
+
+                if utils.is_set(bitmask, 3):
+                    utils.append_function_entry(clique, bitmask, 0, 0)
+                    continue
+
+                val = 1 if utils.is_set(bitmask, 1) else 0
+                utils.append_function_entry(clique, bitmask, 0, val)
+
+    def set_elevator_closed_transition(self, k, h):
+        for elevator in self.inst_params['elevators']:
+            var_indices = [self.get_elevator_closed_state(elevator),
+                           self.get_elevator_closed_state(elevator),
+                           self.get_open_door_action(elevator, 'up'),
+                           self.get_open_door_action(elevator, 'down'),
+                           self.get_close_door_action(elevator)]
+            var_indices[0] = self.var_to_idx[(var_indices[0], k, h)]
+            var_indices[1:] = [self.var_to_idx[(v, k, h - 1)] for v in var_indices[1:]]
+
+            clique = MRFClique(var_indices)
+            for bitmask in range(2**len(var_indices)):
+                if utils.is_set(bitmask, 1) and not utils.is_set(bitmask, 2) \
+                        and not utils.is_set(bitmask, 3) and utils.is_set(bitmask, 4):
+                    utils.append_function_entry(clique, bitmask, 0, 1)
+                else:
+                    utils.append_function_entry(clique, bitmask, 0, 0)
+            self.constrs['transition'].append(clique)
 
     def set_person_in_elevator_transition(self, k, h):
         for elevator in self.inst_params['elevators']:
@@ -133,7 +173,6 @@ class ElevatorsMRF(BaseMRF):
                         break
                 if not done:
                     utils.append_function_entry(clique, bitmask, 0, 0)
-
 
     def set_person_waiting_transition(self, k, h):
         for floor in self.inst_params['floors']:
@@ -251,3 +290,15 @@ class ElevatorsMRF(BaseMRF):
     @staticmethod
     def get_elevator_closed_state(elevator):
         return 'elevator_closed__%s' % (elevator,)
+
+    @staticmethod
+    def get_open_door_action(elevator, direction):
+        return 'open_door_going_%s__%s' % (direction, elevator)
+
+    @staticmethod
+    def get_close_door_action(elevator):
+        return 'close_door__%s' % (elevator,)
+
+    @staticmethod
+    def get_move_current_dir_action(elevator):
+        return 'move_current_dir__%s' % (elevator,)
