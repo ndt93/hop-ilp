@@ -13,10 +13,12 @@ class ElevatorsMRF(BaseMRF):
     inst_params = {
         'elevators': [],
         'floors': [],
+        'arrive_probs': {},
         'ELEVATOR-PENALTY-RIGHT-DIR': 0.75,
         'ELEVATOR-PENALTY-WRONG-DIR': 3.0,
         'DEFAULT-ARRIVE-PROB': 0.0,
-        'arrive_probs': {}
+        'TOP-FLOOR': '',
+        'BOTTOM-FLOOR': '',
     }
 
     def __init__(self, *args, **kwargs):
@@ -48,7 +50,90 @@ class ElevatorsMRF(BaseMRF):
         for k in range(self.num_futures):
             for h in range(1, self.problem.horizon):
                 self.set_person_waiting_transition(k, h)
+                self.set_person_in_elevator_transition(k, h)
         logger.info('set_transition_constraints')
+
+    def set_person_in_elevator_transition(self, k, h):
+        for elevator in self.inst_params['elevators']:
+            person_in_elevator_going_up = self.get_person_in_elevator_state(elevator, 'up')
+            person_in_elevator_going_down = self.get_person_in_elevator_state(elevator, 'down')
+            elevator_closed = self.get_elevator_closed_state(elevator)
+            elevator_dir_up = self.get_elevator_dir_state(elevator, 'up')
+            elevator_at_floor = [self.get_elevator_at_state(elevator, floor)
+                                 for floor in self.inst_params['floors']]
+            person_waiting_up = [self.get_person_waiting_state(floor, 'up')
+                                 for floor in self.inst_params['floors']]
+            person_waiting_down = [self.get_person_waiting_state(floor, 'down')
+                                   for floor in self.inst_params['floors']]
+
+            floor_offset = 4
+            waiting_offset = floor_offset + len(elevator_at_floor)
+            common_indices = [(elevator_closed, k, h - 1), (elevator_dir_up, k, h - 1)]
+            common_indices += [(v, k, h - 1) for v in elevator_at_floor]
+
+            # Going up
+            var_indices = [(person_in_elevator_going_up, k, h), (person_in_elevator_going_up, k, h - 1)]
+            var_indices += common_indices + [(v, k, h - 1) for v in person_waiting_up]
+            var_indices = [self.var_to_idx[v] for v in var_indices]
+            elevator_at_top_floor_idx = 4 + self.inst_params['TOP-FLOOR']
+            clique = MRFClique(var_indices)
+            for bitmask in range(2**len(var_indices)):
+                if utils.is_set(bitmask, 1):
+                    if utils.is_set(bitmask, elevator_at_top_floor_idx):
+                        utils.append_function_entry(clique, bitmask, 0, 0)
+                    else:
+                        utils.append_function_entry(clique, bitmask, 0, 1)
+                    continue
+
+                if utils.is_set(bitmask, 2):
+                    utils.append_function_entry(clique, bitmask, 0, 0)
+                    continue
+
+                if not utils.is_set(bitmask, 3):
+                    utils.append_function_entry(clique, bitmask, 0, 0)
+                    continue
+
+                done = False
+                for i in range(len(elevator_at_floor)):
+                    if utils.is_set(bitmask, floor_offset + i) and utils.is_set(bitmask, waiting_offset + i):
+                        utils.append_function_entry(clique, bitmask, 0, 1)
+                        done = True
+                        break
+                if not done:
+                    utils.append_function_entry(clique, bitmask, 0, 0)
+            self.constrs['transition'].append(clique)
+
+            # Going down
+            var_indices = [(person_in_elevator_going_down, k, h), (person_in_elevator_going_down, k, h - 1)]
+            var_indices += common_indices + [(v, k, h - 1) for v in person_waiting_down]
+            var_indices = [self.var_to_idx[v] for v in var_indices]
+            elevator_at_bottom_floor_idx = 4 + self.inst_params['BOTTOM-FLOOR']
+            clique = MRFClique(var_indices)
+            for bitmask in range(2**len(var_indices)):
+                if utils.is_set(bitmask, 1):
+                    if utils.is_set(bitmask, elevator_at_bottom_floor_idx):
+                        utils.append_function_entry(clique, bitmask, 0, 0)
+                    else:
+                        utils.append_function_entry(clique, bitmask, 0, 1)
+                    continue
+
+                if utils.is_set(bitmask, 2):
+                    utils.append_function_entry(clique, bitmask, 0, 0)
+                    continue
+
+                if utils.is_set(bitmask, 3):
+                    utils.append_function_entry(clique, bitmask, 0, 0)
+                    continue
+
+                done = False
+                for i in range(len(elevator_at_floor)):
+                    if utils.is_set(bitmask, floor_offset + i) and utils.is_set(bitmask, waiting_offset + i):
+                        utils.append_function_entry(clique, bitmask, 0, 1)
+                        done = True
+                        break
+                if not done:
+                    utils.append_function_entry(clique, bitmask, 0, 0)
+
 
     def set_person_waiting_transition(self, k, h):
         for floor in self.inst_params['floors']:
@@ -65,8 +150,8 @@ class ElevatorsMRF(BaseMRF):
                 is_elevator_available = False
                 for i in range(len(elevator_states)):
                     if (utils.is_set(bitmask, 2+i*3)
-                        and utils.is_set(bitmask, 3+i*3)
-                        and not utils.is_set(bitmask, 4+i*3)):
+                            and utils.is_set(bitmask, 3+i*3)
+                            and not utils.is_set(bitmask, 4+i*3)):
                         is_elevator_available = True
                 if utils.is_set(bitmask, 1) and not is_elevator_available:
                     if utils.is_set(bitmask, 0):
@@ -126,6 +211,18 @@ class ElevatorsMRF(BaseMRF):
                     floor = self.get_rddl_function_params(line, 'ARRIVE-PARAM')[0]
                     prob = self.get_rddl_assignment_val(line, float)
                     self.inst_params['arrive_probs'][floor] = prob
+                elif line.startswith('TOP-FLOOR'):
+                    top_floor = self.get_rddl_function_params(line, 'TOP-FLOOR')[0]
+                    for i, floor in enumerate(self.inst_params['floors']):
+                        if floor == top_floor:
+                            self.inst_params['TOP-FLOOR'] = i
+                            break
+                elif line.startswith('BOTTOM-FLOOR'):
+                    bottom_floor = self.get_rddl_function_params(line, 'BOTTOM-FLOOR')[0]
+                    for i, floor in enumerate(self.inst_params['floors']):
+                        if floor == bottom_floor:
+                            self.inst_params['BOTTOM-FLOOR'] = i
+                            break
 
     def get_arrive_prob(self, floor):
         return self.inst_params['arrive_probs'].get(floor, self.inst_params['DEFAULT-ARRIVE-PROB'])

@@ -1,3 +1,6 @@
+import mrf
+import mrf.mrf_clique
+
 def count_set_bits(n):
     count = 0
     while n != 0:
@@ -38,6 +41,14 @@ def is_set(bitmask, idx):
 def match_determinized_val(bitmask, idx, determinized_val):
     # type: (int, int, int) -> bool
     return is_set(bitmask, idx) == (determinized_val == 1)
+
+
+def append_function_entry(clique, bitmask, idx, val, invalid_val=mrf.INVALID_POTENTIAL_VAL):
+    # type: (mrf.mrf_clique.MRFClique, int, int, int, float) -> None
+    if match_determinized_val(bitmask, idx, val):
+        clique.function_table.append(1)
+    else:
+        clique.function_table.append(invalid_val)
 
 
 def count_set_bit(bitmask, start, end):

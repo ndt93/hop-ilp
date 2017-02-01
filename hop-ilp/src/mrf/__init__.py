@@ -1,5 +1,3 @@
-from mrf_solver import MRFSolver
-
 INVALID_POTENTIAL_VAL = 0.000001
 INVALID_POTENTIAL_VAL_2 = 0.00000001
 
