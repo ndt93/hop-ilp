@@ -64,3 +64,6 @@ def count_set_bit(bitmask, start, end):
     return count
 
 
+def btoi(bool_val):
+    # type: (bool) -> int
+    return 1 if bool_val else 0

@@ -19,6 +19,8 @@ class ElevatorsMRF(BaseMRF):
         'DEFAULT-ARRIVE-PROB': 0.0,
         'TOP-FLOOR': '',
         'BOTTOM-FLOOR': '',
+        'ADJACENT-UP': {},
+        'ADJACENT-DOWN': {}
     }
 
     def __init__(self, *args, **kwargs):
@@ -34,12 +36,12 @@ class ElevatorsMRF(BaseMRF):
         self.set_init_states_constrs(self.problem.variables)
         self.set_transition_constrs()
 
-        #self.write_mrf(mrf.OUTPUT_FILE)
-        #map_assignments = self.mplp_runner.run_mplp()
-        #next_actions = self.mplp_runner.get_next_actions(map_assignments)
+        self.write_mrf(mrf.OUTPUT_FILE)
+        map_assignments = self.mplp_runner.run_mplp()
+        next_actions = self.mplp_runner.get_next_actions(map_assignments)
 
-        #logger.info('next_action|states={},actions={}'.format(self.problem.variables, next_actions))
-        #return next_actions, None
+        logger.info('next_action|states={},actions={}'.format(self.problem.variables, next_actions))
+        return next_actions, None
 
     def init_next_step(self, states):
         self.problem.variables.update(states)
@@ -53,7 +55,64 @@ class ElevatorsMRF(BaseMRF):
                 self.set_person_in_elevator_transition(k, h)
                 self.set_elevator_closed_transition(k, h)
                 self.set_elevator_dir_up_transition(k, h)
+                self.set_elevator_at_floor_transition(k, h)
         logger.info('set_transition_constraints')
+
+    def set_elevator_at_floor_transition(self, k, h):
+        for elevator in self.inst_params['elevators']:
+            for floor in self.inst_params['floors']:
+                adjacent_floors = []
+                upper_floor_idx = len(adjacent_floors) if floor in self.inst_params['ADJACENT-UP'] else None
+                if upper_floor_idx is not None:
+                    adjacent_floors.append(self.inst_params['ADJACENT-UP'][floor])
+                lower_floor_idx = len(adjacent_floors) if floor in self.inst_params['ADJACENT-DOWN'] else None
+                if lower_floor_idx is not None:
+                    adjacent_floors.append(self.inst_params['ADJACENT-DOWN'][floor])
+
+                elevator_at_floor = self.get_elevator_at_state(elevator, floor)
+                elevator_closed = self.get_elevator_closed_state(elevator)
+                elevator_dir_up = self.get_elevator_dir_state(elevator, 'up')
+                move_cur_dir = self.get_move_current_dir_action(elevator)
+                at_adjacent_floors = [self.get_elevator_at_state(elevator, fl) for fl in adjacent_floors]
+
+                var_indices = [elevator_at_floor, elevator_at_floor,
+                               elevator_closed, elevator_dir_up, move_cur_dir]
+                var_indices += at_adjacent_floors
+                var_indices[0] = self.var_to_idx[var_indices[0], k, h]
+                var_indices[1:] = [self.var_to_idx[v, k, h - 1] for v in var_indices[1:]]
+                adjacent_floors_offset = 5
+
+                clique = MRFClique(var_indices)
+                for bitmask in range(2**len(var_indices)):
+                    prev_val = utils.btoi(utils.is_set(bitmask, 1))
+
+                    if not utils.is_set(bitmask, 2) or not utils.is_set(bitmask, 4):
+                        utils.append_function_entry(clique, bitmask, 0, prev_val)
+                        continue
+
+                    if utils.is_set(bitmask, 4) and utils.is_set(bitmask, 3):
+                        if lower_floor_idx is not None:
+                            if utils.is_set(bitmask, adjacent_floors_offset + lower_floor_idx):
+                                utils.append_function_entry(clique, bitmask, 0, 1)
+                            else:
+                                utils.append_function_entry(clique, bitmask, 0, 0)
+                        else:
+                            utils.append_function_entry(clique, bitmask, 0, prev_val)
+                        continue
+
+                    if utils.is_set(bitmask, 4) and not utils.is_set(bitmask, 3):
+                        if upper_floor_idx is not None:
+                            if utils.is_set(bitmask, adjacent_floors_offset + upper_floor_idx):
+                                utils.append_function_entry(clique, bitmask, 0, 1)
+                            else:
+                                utils.append_function_entry(clique, bitmask, 0, 0)
+                        else:
+                            utils.append_function_entry(clique, bitmask, 0, prev_val)
+                        continue
+
+                    utils.append_function_entry(clique, bitmask, 0, prev_val)
+
+                self.constrs['transition'].append(clique)
 
     def set_elevator_dir_up_transition(self, k, h):
         for elevator in self.inst_params['elevators']:
@@ -61,6 +120,8 @@ class ElevatorsMRF(BaseMRF):
                            self.get_elevator_dir_state(elevator, 'up'),
                            self.get_open_door_action(elevator, 'up'),
                            self.get_open_door_action(elevator, 'down')]
+            var_indices[0] = self.var_to_idx[var_indices[0], k, h]
+            var_indices[1:] = [self.var_to_idx[v, k, h - 1] for v in var_indices[1:]]
             clique = MRFClique(var_indices)
             for bitmask in range(2**len(var_indices)):
                 if utils.is_set(bitmask, 2):
@@ -73,6 +134,7 @@ class ElevatorsMRF(BaseMRF):
 
                 val = 1 if utils.is_set(bitmask, 1) else 0
                 utils.append_function_entry(clique, bitmask, 0, val)
+            self.constrs['transition'].append(clique)
 
     def set_elevator_closed_transition(self, k, h):
         for elevator in self.inst_params['elevators']:
@@ -81,8 +143,8 @@ class ElevatorsMRF(BaseMRF):
                            self.get_open_door_action(elevator, 'up'),
                            self.get_open_door_action(elevator, 'down'),
                            self.get_close_door_action(elevator)]
-            var_indices[0] = self.var_to_idx[(var_indices[0], k, h)]
-            var_indices[1:] = [self.var_to_idx[(v, k, h - 1)] for v in var_indices[1:]]
+            var_indices[0] = self.var_to_idx[var_indices[0], k, h]
+            var_indices[1:] = [self.var_to_idx[v, k, h - 1] for v in var_indices[1:]]
 
             clique = MRFClique(var_indices)
             for bitmask in range(2**len(var_indices)):
@@ -173,6 +235,7 @@ class ElevatorsMRF(BaseMRF):
                         break
                 if not done:
                     utils.append_function_entry(clique, bitmask, 0, 0)
+            self.constrs['transition'].append(clique)
 
     def set_person_waiting_transition(self, k, h):
         for floor in self.inst_params['floors']:
@@ -181,9 +244,9 @@ class ElevatorsMRF(BaseMRF):
                                 self.get_elevator_dir_state(e, 'up'),
                                 self.get_elevator_closed_state(e))
                                for e in self.inst_params['elevators']]
-            var_indices = [self.var_to_idx[(person_waiting_up, k, h)],
-                           self.var_to_idx[(person_waiting_up, k, h-1)]]
-            var_indices += [self.var_to_idx[(es, k, h-1)] for es in itertools.chain(*elevator_states)]
+            var_indices = [self.var_to_idx[person_waiting_up, k, h],
+                           self.var_to_idx[person_waiting_up, k, h-1]]
+            var_indices += [self.var_to_idx[es, k, h-1] for es in itertools.chain(*elevator_states)]
             clique = MRFClique(var_indices)
             for bitmask in range(2**len(var_indices)):
                 is_elevator_available = False
@@ -218,14 +281,14 @@ class ElevatorsMRF(BaseMRF):
                     person_going_up = self.get_person_in_elevator_state(elevator, 'up')
                     person_going_down = self.get_person_in_elevator_state(elevator, 'down')
 
-                    clique = MRFClique([self.var_to_idx[(elevator_dir_up, k, h)],
-                                        self.var_to_idx[(person_going_up, k, h)]])
+                    clique = MRFClique([self.var_to_idx[elevator_dir_up, k, h],
+                                        self.var_to_idx[person_going_up, k, h]])
                     clique.function_table = [1, 1,
                                              math.exp(-wrong_dir_penalty), math.exp(-right_dir_penalty)]
                     self.constrs['reward'].append(clique)
 
-                    clique = MRFClique([self.var_to_idx[(elevator_dir_up, k, h)],
-                                        self.var_to_idx[(person_going_down, k, h)]])
+                    clique = MRFClique([self.var_to_idx[elevator_dir_up, k, h],
+                                        self.var_to_idx[person_going_down, k, h]])
                     clique.function_table = [1, 1,
                                              math.exp(-right_dir_penalty), math.exp(-wrong_dir_penalty)]
                     self.constrs['reward'].append(clique)
@@ -262,6 +325,10 @@ class ElevatorsMRF(BaseMRF):
                         if floor == bottom_floor:
                             self.inst_params['BOTTOM-FLOOR'] = i
                             break
+                elif line.startswith('ADJACENT-UP'):
+                    lower_floor, upper_floor = self.get_rddl_function_params(line, 'ADJACENT-UP')
+                    self.inst_params['ADJACENT-UP'][lower_floor] = upper_floor
+                    self.inst_params['ADJACENT-DOWN'][upper_floor] = lower_floor
 
     def get_arrive_prob(self, floor):
         return self.inst_params['arrive_probs'].get(floor, self.inst_params['DEFAULT-ARRIVE-PROB'])

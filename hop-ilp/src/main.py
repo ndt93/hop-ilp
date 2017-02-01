@@ -41,8 +41,8 @@ def main(argv):
         print('Use "ilp" or "mrf" as experiment')
         return
 
-    #rddl_experiment = experiment.RDDLExperiment(solver)
-    #rddl_experiment.start()
+    rddl_experiment = experiment.RDDLExperiment(solver)
+    rddl_experiment.start()
 
 if __name__ == '__main__':
     main(sys.argv)
