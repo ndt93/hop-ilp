@@ -27,11 +27,34 @@ class ILPBase(object):
         self.all_vars, self.states, self.actions = self.add_variables()
         self.add_fixed_constrs()
 
+    def solve(self):
+        logger.info('optimizing_model')
+        self.model.optimize()
+
+        if self.model.Status == GRB.Status.INFEASIBLE or self.model.Status == GRB.Status.INF_OR_UNBD:
+            raise Exception('Failed to find solution')
+
+        if self.model.Status == GRB.Status.TIME_LIMIT:
+            logger.info('time_limit_exceeded')
+
+        suggested_actions = {}
+        for a in self.actions.select('*', 0, 0):
+            suggested_actions[a[0]] = int(self.all_vars[a].X)
+
+        return suggested_actions, self.model.objVal
+
+    def init_next_step(self, states):
+        self.problem.variables.update(states)
+        self.set_init_states_constraints()
+        self.set_transition_constrs()
+        logger.info("reinitialized_model")
+
     def add_variables(self):
         """
         Adds variables to the LP model. Variables include both
         state variables and action variables
-        :return : (all variables, states tuplelist, actions tuplelist)
+        :rtype: (dict[(str, int, int), Var], tuplelist, tuplelist)
+        :return : (all variables, states, actions)
         """
         variables = {}
         states = tuplelist()
@@ -70,7 +93,7 @@ class ILPBase(object):
 
         for k in range(self.num_futures):
             for t in range(self.problem.horizon):
-                s = quicksum([self.variables[a]
+                s = quicksum([self.all_vars[a]
                               for a in self.actions.select('*', k, t)])
                 constr = self.model.addConstr(s <= max_concurrency, 'maxcon:{}^{}'.format(k, t))
                 self.constrs['concurrency'].append(constr)
@@ -105,4 +128,7 @@ class ILPBase(object):
             constr_name = 'init:{}^{}'.format(v[0], v[1])
             constr = self.model.addConstr(self.all_vars[v] == init_value, name=constr_name)
             self.constrs['init_states'].append(constr)
+
+    def set_transition_constrs(self):
+        logger.warn('set_transition_constrs is not implemented by subclass %s' % self.__class__.__name__)
 

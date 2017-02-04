@@ -2,7 +2,7 @@ import sys
 from os import path
 
 import model
-from solver import Solver
+from solver.spec.ilp_sysadmin import ILPSysadmin
 from mrf.spec.mrf_sysadmin import SysAdminMRF
 from mrf.spec.mrf_gol import GolMRF
 from mrf.spec.mrf_nav import NavMRF
@@ -21,12 +21,13 @@ def main(argv):
     problem = model.from_json_file(file_path)
     time_limit = float(argv[4]) if len(argv) > 4 else None
 
-    if argv[1] == 'ilp':
-        solver = Solver(problem_name, problem, int(argv[3]), time_limit=time_limit, debug=False)
-    elif argv[1] == 'mrf':
-        base_args = (problem_name, problem, int(argv[3]))
-        base_kwards = {'time_limit': time_limit, 'debug': True}
+    base_args = (problem_name, problem, int(argv[3]))
+    base_kwards = {'time_limit': time_limit, 'debug': True}
 
+    if argv[1] == 'ilp':
+        if problem_name.startswith('sysadmin'):
+            solver = ILPSysadmin(*base_args, **base_kwards)
+    elif argv[1] == 'mrf':
         if problem_name.startswith('sysadmin'):
             solver = SysAdminMRF(*base_args, **base_kwards)
         elif problem_name.startswith('game_of_life'):
@@ -35,7 +36,6 @@ def main(argv):
             solver = NavMRF(*base_args, **base_kwards)
         elif problem_name.startswith('elevators'):
             solver = ElevatorsMRF(*base_args, **base_kwards)
-
     else:
         print('Use "ilp" or "mrf" as experiment')
         return
