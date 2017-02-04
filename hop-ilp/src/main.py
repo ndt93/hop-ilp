@@ -35,7 +35,6 @@ def main(argv):
             solver = NavMRF(*base_args, **base_kwards)
         elif problem_name.startswith('elevators'):
             solver = ElevatorsMRF(*base_args, **base_kwards)
-            solver.solve()
 
     else:
         print('Use "ilp" or "mrf" as experiment')
