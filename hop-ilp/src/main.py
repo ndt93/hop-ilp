@@ -22,7 +22,7 @@ def main(argv):
     time_limit = float(argv[4]) if len(argv) > 4 else None
 
     base_args = (problem_name, problem, int(argv[3]))
-    base_kwards = {'time_limit': time_limit, 'debug': True}
+    base_kwards = {'time_limit': time_limit, 'debug': False}
 
     if argv[1] == 'ilp':
         if problem_name.startswith('sysadmin'):

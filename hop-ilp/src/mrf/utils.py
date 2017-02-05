@@ -1,6 +1,7 @@
 import mrf
 import mrf.mrf_clique
 
+
 def count_set_bits(n):
     count = 0
     while n != 0:

@@ -1,27 +1,26 @@
 from gurobipy import *
 from logger import logger
+import model.model
+import utils
 
 
 class ILPBase(object):
     constr_cats = ['init_states', 'init_actions', 'concurrency', 'transition', 'reward']
 
     def __init__(self, name, problem, num_futures, time_limit=None, debug=False):
-        self.problem_name = name
-        self.problem = problem
-        self.num_futures = num_futures
-        self.debug = debug
+        self.problem_name = name  # type: str
+        self.problem = problem  # type: model.model.Model
+        self.num_futures = num_futures  # type: int
+        self.debug = debug  # type: bool
 
-        self.constrs = {cat: [] for cat in self.constr_cats} # type: dict[str, list[Constr]]
-
+        self.constrs = {cat: [] for cat in self.constr_cats}  # type: dict[str, list[Constr]]
+        self.transition_vars = []
         self.model = Model(name)
 
         if time_limit:
             self.model.params.timeLimit = time_limit
 
-        if debug:
-            self.model.update()
-            self.model.write('model.lp')
-        else:
+        if not debug:
             self.model.setParam(GRB.Param.OutputFlag, 0)
 
         self.all_vars, self.states, self.actions = self.add_variables()
@@ -83,7 +82,6 @@ class ILPBase(object):
     def add_fixed_constrs(self):
         self.add_concurrency_constrs()
         self.add_init_actions_constrs()
-        self.add_reward_constrs()
 
     def add_concurrency_constrs(self):
         max_concurrency = self.problem.max_concurrency
@@ -110,9 +108,9 @@ class ILPBase(object):
                 constr = self.model.addConstr(a1 == a2, name=constr_name)
                 self.constrs['init_actions'].append(constr)
 
-        logger.info('added_hop_action_constraints')
+        logger.info('added_init_actions_constraints')
 
-    def add_reward_constrs(self):
+    def add_reward_objective(self):
         logger.warn('add_reward_constrs is not implemented by subclass %s' % self.__class__.__name__)
 
     def set_init_states_constraints(self):
@@ -131,4 +129,46 @@ class ILPBase(object):
 
     def set_transition_constrs(self):
         logger.warn('set_transition_constrs is not implemented by subclass %s' % self.__class__.__name__)
+
+    def reset_transition_constrs(self):
+        for constr in self.constrs['transition']:
+            self.model.remove(constr)
+        for v in self.transition_vars:
+            self.model.remove(v)
+
+        self.constrs['transition'] = []
+        self.transition_vars = []
+
+    def paths_to_transition_constrs(self, paths, k, h, v):
+        paths = self.str_paths_to_var_paths(paths, k, h - 1)
+        path_fvars = []
+
+        for path_idx, path in enumerate(paths):
+            fvarname = 'f:{}^{}^{}^{}'.format(v, k, h, path_idx)
+            fvar = self.model.addVar(vtype=GRB.BINARY, name=fvarname)
+            path_fvars.append(fvar)
+            self.model.update()
+            constrs = utils.add_and_constraints(self.model, path, fvar, name=fvarname)
+            self.constrs['transition'].extend(constrs)
+
+        tvarname = 'fs:{}^{}^{}'.format(v, k, h)
+        tvar = self.model.addVar(vtype=GRB.BINARY, name=tvarname)
+        self.model.update()
+        constrs = utils.add_or_constraints(self.model, path_fvars, tvar, name=tvarname)
+        self.constrs['transition'].extend(constrs)
+
+        next_state = self.all_vars[v, k, h]
+        constr_name = 'transition:{}^{}^{}'.format(v, k, h)
+        constr = self.model.addConstr(next_state == tvar, name=constr_name)
+        self.constrs['transition'].append(constr)
+
+        self.transition_vars.extend(path_fvars)
+        self.transition_vars.append(tvar)
+
+    def str_paths_to_var_paths(self, str_paths, k, h):
+        return [self.str_path_to_var_path(p, k, h) for p in str_paths]
+
+    def str_path_to_var_path(self, str_path, k, h):
+        # type: (list[(str, int)], int, int) -> list[(Var, int)]
+        return [(self.all_vars[v, k, h], s) for v, s in str_path]
 

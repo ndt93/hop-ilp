@@ -2,12 +2,12 @@ from logger import logger
 
 
 class Model(object):
-    variables = {}
-    actions = []
+    variables = {}  # type: dict[str, int]
+    actions = []  # type: list[str]
     transition_trees = {}
     reward_tree = None
-    horizon = None
-    max_concurrency = None
+    horizon = None  # type: int
+    max_concurrency = None  # type: int
     file = ""
 
     def log_transition_trees(self):
