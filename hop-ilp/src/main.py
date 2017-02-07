@@ -3,10 +3,13 @@ from os import path
 
 import model
 from solver.spec.ilp_sysadmin import ILPSysadmin
+from solver.spec.ilp_gol import ILPGol
+
 from mrf.spec.mrf_sysadmin import SysAdminMRF
 from mrf.spec.mrf_gol import GolMRF
 from mrf.spec.mrf_nav import NavMRF
 from mrf.spec.mrf_elevators import ElevatorsMRF
+
 import experiment
 
 
@@ -27,6 +30,8 @@ def main(argv):
     if argv[1] == 'ilp':
         if problem_name.startswith('sysadmin'):
             solver = ILPSysadmin(*base_args, **base_kwards)
+        elif problem_name.startswith('game_of_life'):
+            solver = ILPGol(*base_args, **base_kwards)
     elif argv[1] == 'mrf':
         if problem_name.startswith('sysadmin'):
             solver = SysAdminMRF(*base_args, **base_kwards)
