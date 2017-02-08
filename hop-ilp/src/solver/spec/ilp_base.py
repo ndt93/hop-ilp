@@ -140,6 +140,7 @@ class ILPBase(object):
         self.transition_vars = []
 
     def paths_to_transition_constrs(self, paths, k, h, v):
+        # type: (list[list[(Var, int)]], int, int, str) -> None
         paths = self.str_paths_to_var_paths(paths, k, h - 1)
         path_fvars = []
 
@@ -164,6 +165,17 @@ class ILPBase(object):
 
         self.transition_vars.extend(path_fvars)
         self.transition_vars.append(tvar)
+
+    def paths_to_reward_constrs(self, paths, leaves, k, h):
+        # type: (list[list[(Var, int)]], list[float], int, int) -> None
+        for i, (p, l) in enumerate(zip(paths, leaves)):
+            coeff = 1. / self.num_futures * l
+            name = 'w^{}^{}^{}'.format(k, h, i)
+            w = self.model.addVar(vtype=GRB.BINARY, obj=coeff, name=name)
+            self.model.update()
+
+            constr_name = 'reward^{}^{}^{}'.format(k, h, i)
+            utils.add_and_constraints(self.model, p, w, name=constr_name)
 
     def str_paths_to_var_paths(self, str_paths, k, h):
         return [self.str_path_to_var_path(p, k, h) for p in str_paths]

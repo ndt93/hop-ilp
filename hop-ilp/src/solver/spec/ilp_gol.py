@@ -6,13 +6,13 @@ import random
 
 
 class ILPGol(ILPBase):
-    inst_params = {
-        'neighbours': {},
-        'NOISE-PROB': {},
-    }
 
     def __init__(self, *args, **kwargs):
         super(ILPGol, self).__init__(*args, **kwargs)
+        self.inst_params = {
+            'neighbours': {},
+            'NOISE-PROB': {},
+        }
         self.get_instance_params()
         self.add_reward_objective()
 

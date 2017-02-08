@@ -6,14 +6,13 @@ import random
 
 
 class ILPSysadmin(ILPBase):
-    inst_params = {
-        'topology': None,
-        'REBOOT-PROB': 0.1,
-        'REBOOT-PENALTY': 0.75,
-    }
-
     def __init__(self, *args, **kwargs):
         super(ILPSysadmin, self).__init__(*args, **kwargs)
+        self.inst_params = {
+            'topology': None,
+            'REBOOT-PROB': 0.1,
+            'REBOOT-PENALTY': 0.75,
+        }
         self.get_instance_params()
         self.add_reward_objective()
 
