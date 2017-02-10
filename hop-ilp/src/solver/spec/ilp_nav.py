@@ -4,7 +4,6 @@ import utils
 from logger import logger
 import random
 import re
-import sys
 
 
 class ILPNav(ILPBase):
@@ -23,16 +22,32 @@ class ILPNav(ILPBase):
             'goal': None,
         }
         self.get_instance_params()
-        sys.exit(0)
         self.add_reward_objective()
 
     def set_transition_constrs(self):
         self.reset_transition_constrs()
+        goal = self.inst_params['goal']
 
         for k in range(self.num_futures):
             for h in range(1, self.problem.horizon):
                 for v in self.problem.variables:
+                    neighbours = self.inst_params['neighbours'][v]
                     paths = []
+
+                    if v == goal:
+                        paths.append([(goal, 1)])
+
+                    for a in neighbours:
+                        path = [(goal, 0)] if v != goal else []
+                        if random.random() < 1. - self.get_disappear_prob(v):
+                            path.extend([(self.opposite_action[a], 1), (neighbours[a], 1)])
+                        if len(path) > 0:
+                            paths.append(path)
+
+                    if v != goal:
+                        path = [(goal, 0), (v, 1)] + [(a, 0) for a in neighbours]
+                        paths.append(path)
+
                     self.paths_to_transition_constrs(paths, k, h, v)
 
         logger.info('set_transition_constrs')
@@ -41,12 +56,15 @@ class ILPNav(ILPBase):
         goal = self.inst_params['goal']
         for k in range(self.num_futures):
             for h in range(self.problem.horizon):
-                paths = self.str_paths_to_var_paths([[(goal, 0)], [goal, 1]], k, h)
+                paths = self.str_paths_to_var_paths([[(goal, 0)], [(goal, 1)]], k, h)
                 leaves = (-1, 0)
                 self.paths_to_reward_constrs(paths, leaves, k, h)
 
         self.model.ModelSense = GRB.MAXIMIZE
         logger.info('added_reward_objective')
+
+    def get_disappear_prob(self, v):
+        return self.inst_params['probs'].get(v, 0.)
 
     def get_instance_params(self):
         rddl_file = self.problem.file.replace('json', 'rddl')

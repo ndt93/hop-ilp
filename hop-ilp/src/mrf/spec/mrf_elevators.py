@@ -10,21 +10,21 @@ import itertools
 
 
 class ElevatorsMRF(BaseMRF):
-    inst_params = {
-        'elevators': [],
-        'floors': [],
-        'arrive_probs': {},
-        'ELEVATOR-PENALTY-RIGHT-DIR': 0.75,
-        'ELEVATOR-PENALTY-WRONG-DIR': 3.0,
-        'DEFAULT-ARRIVE-PROB': 0.0,
-        'TOP-FLOOR': '',
-        'BOTTOM-FLOOR': '',
-        'ADJACENT-UP': {},
-        'ADJACENT-DOWN': {}
-    }
 
     def __init__(self, *args, **kwargs):
         BaseMRF.__init__(self, *args, **kwargs)
+        self.inst_params = {
+            'elevators': [],
+            'floors': [],
+            'arrive_probs': {},
+            'ELEVATOR-PENALTY-RIGHT-DIR': 0.75,
+            'ELEVATOR-PENALTY-WRONG-DIR': 3.0,
+            'DEFAULT-ARRIVE-PROB': 0.0,
+            'TOP-FLOOR': '',
+            'BOTTOM-FLOOR': '',
+            'ADJACENT-UP': {},
+            'ADJACENT-DOWN': {}
+        }
         self.get_instance_params()
         self.add_fixed_constrs(concurrency=True)
         if self.debug:
@@ -292,6 +292,14 @@ class ElevatorsMRF(BaseMRF):
                     clique.function_table = [1, 1,
                                              math.exp(-right_dir_penalty), math.exp(-wrong_dir_penalty)]
                     self.constrs['reward'].append(clique)
+                for fl in self.inst_params['floors']:
+                    person_waiting_up = self.get_person_waiting_state(fl, 'up')
+                    person_waiting_down = self.get_person_waiting_state(fl, 'down')
+                    clique = MRFClique([self.var_to_idx[person_waiting_up, k, h],
+                                        self.var_to_idx[person_waiting_down, k, h]])
+                    clique.function_table = [math.exp(val) for val in [0, -1, -1, -2]]
+                    self.constrs['reward'].append(clique)
+
         logger.info('Added reward constraints')
 
     def get_instance_params(self):
