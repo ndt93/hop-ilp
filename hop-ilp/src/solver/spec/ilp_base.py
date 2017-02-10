@@ -139,7 +139,7 @@ class ILPBase(object):
         self.constrs['transition'] = []
         self.transition_vars = []
 
-    def paths_to_transition_constrs(self, paths, k, h, v):
+    def paths_to_transition_constrs(self, paths, k, h, v, paths_val=1):
         # type: (list[list[(Var, int)]], int, int, str) -> None
         paths = self.str_paths_to_var_paths(paths, k, h - 1)
         path_fvars = []
@@ -160,7 +160,10 @@ class ILPBase(object):
 
         next_state = self.all_vars[v, k, h]
         constr_name = 'transition:{}^{}^{}'.format(v, k, h)
-        constr = self.model.addConstr(next_state == tvar, name=constr_name)
+        if paths_val == 1:
+            constr = self.model.addConstr(next_state == tvar, name=constr_name)
+        else:
+            constr = self.model.addConstr(next_state == (1 - tvar), name=constr_name)
         self.constrs['transition'].append(constr)
 
         self.transition_vars.extend(path_fvars)

@@ -5,6 +5,7 @@ import model
 from solver.spec.ilp_sysadmin import ILPSysadmin
 from solver.spec.ilp_gol import ILPGol
 from solver.spec.ilp_nav import ILPNav
+from solver.spec.ilp_elevators import ILPElevators
 
 from mrf.spec.mrf_sysadmin import SysAdminMRF
 from mrf.spec.mrf_gol import GolMRF
@@ -35,6 +36,8 @@ def main(argv):
             solver = ILPGol(*base_args, **base_kwards)
         elif problem_name.startswith('navigation'):
             solver = ILPNav(*base_args, **base_kwards)
+        elif problem_name.startswith('elevators'):
+            solver = ILPElevators(*base_args, **base_kwards)
     elif argv[1] == 'mrf':
         if problem_name.startswith('sysadmin'):
             solver = SysAdminMRF(*base_args, **base_kwards)
