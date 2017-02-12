@@ -11,6 +11,7 @@ from mrf.spec.mrf_sysadmin import SysAdminMRF
 from mrf.spec.mrf_gol import GolMRF
 from mrf.spec.mrf_nav import NavMRF
 from mrf.spec.mrf_elevators import ElevatorsMRF
+from mrf.spec.mrf_copycat import CopycatMRF
 
 import experiment
 
@@ -47,6 +48,8 @@ def main(argv):
             solver = NavMRF(*base_args, **base_kwards)
         elif problem_name.startswith('elevators'):
             solver = ElevatorsMRF(*base_args, **base_kwards)
+        elif problem_name.endswith('copycat'):
+            solver = CopycatMRF(*base_args, **base_kwards)
     else:
         print('Use "ilp" or "mrf" as experiment')
         return
