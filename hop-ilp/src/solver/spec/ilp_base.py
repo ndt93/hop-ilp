@@ -27,7 +27,8 @@ class ILPBase(object):
         self.add_fixed_constrs()
 
     def solve(self):
-        logger.info('optimizing_model')
+        logger.info('optimizing_model|#vars=%d,#constrs=%d'
+                    % (self.model.NumVars, self.model.NumConstrs))
         self.model.optimize()
 
         if self.model.Status == GRB.Status.INFEASIBLE or self.model.Status == GRB.Status.INF_OR_UNBD:
@@ -40,6 +41,8 @@ class ILPBase(object):
         for a in self.actions.select('*', 0, 0):
             suggested_actions[a[0]] = int(self.all_vars[a].X)
 
+        logger.info('Found solution|obj=%f,intgap=%f' %
+                    (self.model.objVal, self.model.MIPGap))
         return suggested_actions, self.model.objVal
 
     def init_next_step(self, states):

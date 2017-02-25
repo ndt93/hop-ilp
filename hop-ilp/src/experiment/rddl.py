@@ -18,7 +18,9 @@ class RDDLExperiment(Experiment):
 
     def loop_rounds(self):
         while True:
-            round_info = self.client.request_round()
+            t, round_info = self.client.request_round()
+            if t == 'session':
+                return round_info
             logger.info('round_start|round={}'.format(round_info));
 
             t, end_info = self.loop_turns()

@@ -5,7 +5,7 @@ from logger import logger
 
 
 class Client(object):
-    buffer = bytearray() # Left-over data from the previous recv
+    buffer = bytearray()  # Left-over data from the previous recv
 
     def __init__(self, client_name, hostname="localhost", port=2323):
         self.client_name = client_name
@@ -36,8 +36,10 @@ class Client(object):
         return self.receive_round_init()
 
     def receive_round_init(self):
-        resp = self.receive_response(end_tags=['</round-init>'])
-        return resp['round-init']
+        resp = self.receive_response(end_tags=['</round-init>', '</session-end>'])
+        if 'session-end' in resp:
+            return 'session', resp['session-end']
+        return 'round', resp['round-init']
 
     def request_session(self, inst_name):
         req_data = {
