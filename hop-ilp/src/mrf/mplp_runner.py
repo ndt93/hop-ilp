@@ -40,7 +40,9 @@ class MPLPRunner(object):
                 pass
             l = l.rstrip().split(' ')
 
-            assert(len(l) == len(self.idx_to_var) + 1)
+            if len(l) != len(self.idx_to_var) + 1:
+                l = [0] * (len(self.idx_to_var) + 1)
+
             for i, v in enumerate(l[1:]):
                 map_assignments[self.idx_to_var[i]] = int(v)
 
