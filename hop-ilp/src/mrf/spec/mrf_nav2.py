@@ -167,6 +167,11 @@ class NavMRF(BaseMRF):
                 clique = MRFClique([self.var_to_idx[(self.goal, k, h)]])
                 clique.function_table = [math.exp(x) for x in [-1, 0]]
                 self.constrs['reward'].append(clique)
+                for v in self.problem.variables:
+                    clique = MRFClique([self.var_to_idx[(v, k, h)]])
+                    clique.function_table = [math.exp(x) for x in [0, -self.get_disappear_prob(v)]]
+                    self.constrs['reward'].append(clique)
+
         logger.info('Added reward constraints')
 
     def get_instance_params(self):
