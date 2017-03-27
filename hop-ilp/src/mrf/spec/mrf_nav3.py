@@ -74,14 +74,14 @@ class NavMRF(BaseMRF):
                                 if utils.is_set(bitmask, 0):
                                     clique.function_table.append(1)
                                 else:
-                                    clique.function_table.append(mrf.INVALID_POTENTIAL_VAL_4)
+                                    clique.function_table.append(10**(-18))
                     else:
                         clique.vars = [self.var_to_idx[(v, k, h)],
                                        self.var_to_idx[(self.goal, k, h-1)]]
                         for bitmask in range(2**len(clique.vars)):
                             if utils.is_set(bitmask, 1):
                                 if utils.is_set(bitmask, 0):
-                                    clique.function_table.append(mrf.INVALID_POTENTIAL_VAL_4)
+                                    clique.function_table.append(10**(-18))
                                 else:
                                     clique.function_table.append(1)
                     self.constrs['transition'].append(clique)
@@ -98,7 +98,7 @@ class NavMRF(BaseMRF):
                         for bitmask in range(2**len(clique.vars)):
                             if utils.is_set(bitmask, 1) and utils.is_set(bitmask, 2):
                                 if utils.is_set(bitmask, 0):
-                                    clique.function_table.append(mrf.INVALID_POTENTIAL_VAL_3)
+                                    clique.function_table.append(10**(-2))
                                 else:
                                     clique.function_table.append(1)
 
@@ -127,7 +127,7 @@ class NavMRF(BaseMRF):
                                 if utils.is_set(bitmask, 0) == (determinized_val == 1):
                                     clique.function_table.append(1)
                                 else:
-                                    clique.function_table.append(mrf.INVALID_POTENTIAL_VAL_2)
+                                    clique.function_table.append(10**-2)
 
                         self.constrs['transition'].append(clique)
 
@@ -138,7 +138,7 @@ class NavMRF(BaseMRF):
                         if utils.is_set(bitmask, 0) == utils.is_set(bitmask, 1):
                             clique.function_table.append(1)
                         else:
-                            clique.function_table.append(mrf.INVALID_POTENTIAL_VAL)
+                            clique.function_table.append(10**(-1))
                     self.constrs['transition'].append(clique)
 
         logger.info('set_transition_constraints')

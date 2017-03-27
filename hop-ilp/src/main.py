@@ -10,7 +10,7 @@ from solver.spec.ilp_copycat import ILPCopycat
 
 from mrf.spec.mrf_sysadmin import SysAdminMRF
 from mrf.spec.mrf_gol import GolMRF
-from mrf.spec.mrf_nav2 import NavMRF
+from mrf.spec.mrf_nav3 import NavMRF
 from mrf.spec.mrf_elevators import ElevatorsMRF
 from mrf.spec.mrf_copycat import CopycatMRF
 
